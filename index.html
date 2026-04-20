@@ -4,15 +4,97 @@
   <meta charset="utf-8" />
   <title>Alma</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-</head>
-<body>
-  <h1>Hei 😊</h1>
-  <p>Dette er Alma sitt sted.</p>
 
-  <ul>
-    <li><a href="#">💰 Ukelønn</a></li>
-    <li><a href="#">🎮 Spill (kommer)</a></li>
-    <li><a href="#">📘 Læring (kommer)</a></li>
-  </ul>
+  <style>
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+                   Arial, sans-serif;
+      background: #f0f7ff;
+      text-align: center;
+      color: #102a43;
+    }
+
+    h1 {
+      font-size: 3rem;
+      margin-top: 2rem;
+    }
+
+    p {
+      font-size: 1.4rem;
+      margin-bottom: 2rem;
+    }
+
+    .buttons {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.5rem;
+      max-width: 700px;
+      margin: 0 auto;
+      padding: 1rem;
+    }
+
+    a.button {
+      display: block;
+      padding: 2rem 1.5rem;
+      font-size: 1.8rem;
+      font-weight: 600;
+      text-decoration: none;
+      border-radius: 20px;
+      color: white;
+      box-shadow: 0 8px 0 rgba(0, 0, 0, 0.15);
+      transition: transform 0.1s ease;
+    }
+
+    a.button:active {
+      transform: translateY(6px);
+      box-shadow: 0 2px 0 rgba(0, 0, 0, 0.15);
+    }
+
+    .ukelonn {
+      background: #22c55e;
+    }
+
+    .spill {
+      background: #3b82f6;
+      opacity: 0.6;
+    }
+
+    .laering {
+      background: #f97316;
+      opacity: 0.6;
+    }
+
+    footer {
+      margin-top: 3rem;
+      font-size: 0.9rem;
+      color: #486581;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Hei Alma 👋</h1>
+  <p>Velg hva du vil gjøre</p>
+
+  <div class="buttons">
+    <a class="button ukelonn" href="/ukelonn/">
+      💰 Ukelønn
+    </a>
+
+    <a class="button spill" href="#">
+      🎮 Spill
+      <div style="font-size: 1rem; opacity: 0.8;">(kommer)</div>
+    </a>
+
+    <a class="button laering" href="#">
+      📘 Læring
+      <div style="font-size: 1rem; opacity: 0.8;">(kommer)</div>
+    </a>
+  </div>
+
+  <footer>
+    Laget av pappa ❤️
+  </footer>
 </body>
 </html>
