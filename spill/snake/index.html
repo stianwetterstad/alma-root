@@ -2,53 +2,156 @@
 <html lang="no">
 <head>
   <meta charset="utf-8" />
-  <title>Snake</title>
+  <title>Snake | Alma.rocks</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
+    :root{
+      --bg:#0b1220;
+      --panel:#121a33;
+      --text:#e5e7eb;
+      --muted:#a9b1d6;
+      --border: rgba(255,255,255,.10);
+      --border2: rgba(255,255,255,.12);
+      --btnbg: rgba(255,255,255,.06);
+      --green:#22c55e;
+      --greenDark:#052e16;
+      font-family: system-ui, -apple-system, Segoe UI, Arial, sans-serif;
+    }
+
     html,body{height:100%;margin:0}
     body{
-      background:#0b1220;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    /* Samme toppmeny-stil som de andre spillene */
+    .topbar{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      justify-content:space-between;
+      padding:12px 14px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(255,255,255,.03);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .topbar .left{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+    .topbar a{
+      text-decoration:none;
+      color: var(--text);
+      background: var(--btnbg);
+      border: 1px solid var(--border2);
+      padding: 8px 12px;
+      border-radius: 999px;
+      user-select:none;
+    }
+    .topbar .label{
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    /* Innhold under toppmenyen */
+    .wrap{
+      min-height: calc(100vh - 54px);
       display:flex;
       flex-direction:column;
       align-items:center;
       justify-content:center;
-      font-family:system-ui,-apple-system,Segoe UI,Arial,sans-serif;
-      color:#e5e7eb;
       gap:12px;
-      padding:12px;
+      padding: 14px 12px 18px;
     }
+
     h1{margin:0;font-size:1.6rem}
-    .hud{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
-    .pill{background:#111b31;border:1px solid #243152;border-radius:999px;padding:8px 12px;font-weight:600}
-    canvas{border:2px solid #334155;border-radius:12px;background:#060a14;touch-action:none}
-    .buttons{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
-    button,a{
-      appearance:none;border:0;border-radius:12px;padding:10px 14px;
-      font-size:1rem;font-weight:700;cursor:pointer;text-decoration:none;
+
+    .hud{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      justify-content:center
     }
-    button{background:#22c55e;color:#052e16}
-    a{background:#64748b;color:#fff}
-    .hint{opacity:.85;font-size:.95rem;text-align:center;max-width:520px}
+    .pill{
+      background:#111b31;
+      border:1px solid #243152;
+      border-radius:999px;
+      padding:8px 12px;
+      font-weight:600
+    }
+
+    canvas{
+      border:2px solid #334155;
+      border-radius:12px;
+      background:#060a14;
+      touch-action:none;
+      /* iPad: mindre “bounce/scroll” */
+      display:block;
+    }
+
+    .buttons{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:center
+    }
+    button{
+      appearance:none;
+      border:0;
+      border-radius:12px;
+      padding:10px 14px;
+      font-size:1rem;
+      font-weight:700;
+      cursor:pointer;
+      background: var(--green);
+      color: var(--greenDark);
+      user-select:none;
+    }
+    button:active{ transform: translateY(1px); }
+
+    .hint{
+      opacity:.85;
+      font-size:.95rem;
+      text-align:center;
+      max-width:520px;
+      color: var(--muted);
+      line-height: 1.35;
+    }
   </style>
 </head>
+
 <body>
-  <h1>🐍 Snake</h1>
-
-  <div class="hud">
-    <div class="pill">Poeng: <span id="score">0</span></div>
-    <div class="pill">Beste: <span id="best">0</span></div>
+  <!-- Toppmeny (samme mønster som Tetris/Space Invaders) -->
+  <div class="topbar">
+    <div class="left">
+      <a href="/spill/">← Spillmeny</a>
+      <a href="/">← Alma.rocks</a>
+    </div>
+    <div class="label">Snake</div>
   </div>
 
-  <canvas id="game" width="360" height="360"></canvas>
+  <div class="wrap">
+    <h1>🐍 Snake</h1>
 
-  <div class="buttons">
-    <button id="restart">Start på nytt</button>
-    /spill/">⬅ Tilbake til Spill</a>
-  </div>
+    <div class="hud">
+      <div class="pill">Poeng: <span id="score">0</span></div>
+      <div class="pill">Beste: <span id="best">0</span></div>
+    </div>
 
-  <div class="hint">
-    Bruk piltaster ⬅⬆➡⬇. På mobil: sveip på brettet.
-    Målet er å spise eplet 🍎 uten å krasje i deg selv.
+    <canvas id="game" width="360" height="360" aria-label="Snake canvas"></canvas>
+
+    <div class="buttons">
+      <button id="restart">Start på nytt</button>
+    </div>
+
+    <div class="hint">
+      Bruk piltaster ⬅⬆➡⬇. På iPad/mobil: sveip på brettet.
+      Målet er å spise eplet 🍎 uten å krasje i deg selv.
+    </div>
   </div>
 
 <script>
@@ -57,7 +160,7 @@
   const ctx = canvas.getContext('2d');
 
   // Grid
-  const grid = 18;                 // størrelse på rutenett
+  const grid = 18;               // størrelse på rutenett
   const cells = canvas.width / grid; // 360/18 = 20 ruter
   let count = 0;
 
@@ -65,8 +168,9 @@
   const scoreEl = document.getElementById('score');
   const bestEl  = document.getElementById('best');
   const bestKey = 'alma_snake_best';
+
   let score = 0;
-  let best = Number(localStorage.getItem(bestKey) || 0);
+  let best  = Number(localStorage.getItem(bestKey) || 0);
   bestEl.textContent = best;
 
   const snake = {
@@ -115,10 +219,10 @@
 
   function loop() {
     requestAnimationFrame(loop);
+
     if (++count < 4) return; // fart (lavere = raskere)
     count = 0;
 
-    // bakgrunn
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     // flytt
@@ -128,6 +232,7 @@
     // wrap rundt vegger (snillere for barn)
     if (snake.x < 0) snake.x = canvas.width - grid;
     else if (snake.x >= canvas.width) snake.x = 0;
+
     if (snake.y < 0) snake.y = canvas.height - grid;
     else if (snake.y >= canvas.height) snake.y = 0;
 
@@ -146,6 +251,7 @@
         snake.maxCells++;
         score++;
         scoreEl.textContent = score;
+
         if (score > best) {
           best = score;
           localStorage.setItem(bestKey, String(best));
@@ -167,14 +273,15 @@
   // keyboard
   document.addEventListener('keydown', (e) => {
     const key = e.key;
-    if (key === 'ArrowLeft' && snake.dx === 0) { snake.dx = -grid; snake.dy = 0; }
-    else if (key === 'ArrowUp' && snake.dy === 0) { snake.dy = -grid; snake.dx = 0; }
-    else if (key === 'ArrowRight' && snake.dx === 0) { snake.dx = grid; snake.dy = 0; }
-    else if (key === 'ArrowDown' && snake.dy === 0) { snake.dy = grid; snake.dx = 0; }
+    if (key === 'ArrowLeft'  && snake.dx === 0) { snake.dx = -grid; snake.dy = 0; }
+    else if (key === 'ArrowUp'    && snake.dy === 0) { snake.dy = -grid; snake.dx = 0; }
+    else if (key === 'ArrowRight' && snake.dx === 0) { snake.dx = grid;  snake.dy = 0; }
+    else if (key === 'ArrowDown'  && snake.dy === 0) { snake.dy = grid;  snake.dx = 0; }
   });
 
-  // touch: swipe
+  // touch: swipe (bra på iPad)
   let touchStart = null;
+
   canvas.addEventListener('touchstart', (e) => {
     const t = e.changedTouches[0];
     touchStart = { x: t.clientX, y: t.clientY };
@@ -185,9 +292,11 @@
     const t = e.changedTouches[0];
     const dx = t.clientX - touchStart.x;
     const dy = t.clientY - touchStart.y;
+
     const ax = Math.abs(dx);
     const ay = Math.abs(dy);
     if (Math.max(ax, ay) < 18) return; // lite sveip
+
     if (ax > ay) {
       if (dx < 0 && snake.dx === 0) { snake.dx = -grid; snake.dy = 0; }
       else if (dx > 0 && snake.dx === 0) { snake.dx = grid; snake.dy = 0; }
