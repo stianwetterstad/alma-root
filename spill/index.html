@@ -2,209 +2,158 @@
 <html lang="no">
 <head>
   <meta charset="utf-8" />
-  <title>Snake</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Spill | Alma.rocks</title>
   <style>
-    html,body{height:100%;margin:0}
+    :root{
+      --bg:#0b1020; --card:#121a33; --text:#e9ecff; --muted:#a9b1d6;
+      --accent:#7aa2f7; --accent2:#9ece6a; --danger:#f7768e;
+      --radius:16px;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --max: 980px;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    }
     body{
-      background:#0b1220;
+      margin:0; background: radial-gradient(1200px 600px at 15% 10%, #1a2a6b33, transparent),
+                     radial-gradient(1000px 700px at 90% 30%, #7aa2f733, transparent),
+                     var(--bg);
+      color:var(--text);
+      min-height:100vh;
       display:flex;
-      flex-direction:column;
-      align-items:center;
       justify-content:center;
-      font-family:system-ui,-apple-system,Segoe UI,Arial,sans-serif;
-      color:#e5e7eb;
-      gap:12px;
-      padding:12px;
     }
-    h1{margin:0;font-size:1.6rem}
-    .hud{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
-    .pill{background:#111b31;border:1px solid #243152;border-radius:999px;padding:8px 12px;font-weight:600}
-    canvas{border:2px solid #334155;border-radius:12px;background:#060a14;touch-action:none}
-    .buttons{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
-    button,a{
-      appearance:none;border:0;border-radius:12px;padding:10px 14px;
-      font-size:1rem;font-weight:700;cursor:pointer;text-decoration:none;
+    .wrap{ width: min(var(--max), 92vw); padding: 22px 0 40px; }
+    header{
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+      margin-bottom:18px;
     }
-    button{background:#22c55e;color:#052e16}
-    a{background:#64748b;color:#fff}
-    .hint{opacity:.85;font-size:.95rem;text-align:center;max-width:520px}
+    h1{ margin:0; font-size: clamp(22px, 3vw, 34px); letter-spacing: .3px; }
+    .btn{
+      display:inline-flex; align-items:center; gap:10px;
+      padding:10px 14px;
+      border-radius:999px;
+      color:var(--text);
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.12);
+      text-decoration:none;
+      box-shadow: 0 6px 18px rgba(0,0,0,.20);
+      transition: transform .08s ease, background .2s ease;
+      user-select:none;
+    }
+    .btn:hover{ background: rgba(255,255,255,.10); }
+    .btn:active{ transform: translateY(1px); }
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap:14px;
+    }
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border: 1px solid rgba(255,255,255,.10);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding:16px;
+      display:flex; flex-direction:column; gap:10px;
+    }
+    .card h2{ margin:0; font-size: 20px; }
+    .card p{ margin:0; color:var(--muted); line-height:1.35; }
+    .tags{ display:flex; flex-wrap:wrap; gap:8px; margin-top:4px;}
+    .tag{
+      font-size:12px; color:var(--muted);
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.04);
+      padding:4px 8px; border-radius:999px;
+    }
+    .play{
+      margin-top:auto;
+      display:flex; gap:10px; flex-wrap:wrap;
+    }
+    .play a{
+      border-radius: 12px;
+      padding:10px 12px;
+      text-decoration:none;
+      color:#0b1020;
+      background: var(--accent);
+      font-weight: 700;
+      display:inline-flex; align-items:center; gap:8px;
+      box-shadow: 0 10px 24px rgba(122,162,247,.25);
+    }
+    .play a.secondary{
+      background: rgba(255,255,255,.08);
+      color: var(--text);
+      border: 1px solid rgba(255,255,255,.12);
+      box-shadow:none;
+      font-weight: 600;
+    }
+    footer{ margin-top:18px; color:var(--muted); font-size:13px; }
+    kbd{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 12px;
+      padding: 2px 6px;
+      border: 1px solid rgba(255,255,255,.18);
+      border-bottom-width: 2px;
+      border-radius: 8px;
+      background: rgba(255,255,255,.06);
+      color: var(--text);
+    }
   </style>
 </head>
 <body>
-  <h1>🐍 Snake</h1>
+  <div class="wrap">
+    <header>
+      <h1>🎮 Spill</h1>
+      <!-- Viktig: Knapp tilbake til Alma.rocks hovedside -->
+      <a class="btn" href="/" aria-label="Tilbake til Alma.rocks hovedside">← Tilbake til Alma.rocks</a>
+    </header>
 
-  <div class="hud">
-    <div class="pill">Poeng: <span id="score">0</span></div>
-    <div class="pill">Beste: <span id="best">0</span></div>
+    <div class="grid">
+      <section class="card">
+        <h2>🐍 Snake</h2>
+        <p>Samle mat og unngå å krasje. Perfekt startspill.</p>
+        <div class="tags">
+          <span class="tag">Enkelt</span>
+          <span class="tag">Tastatur</span>
+          <span class="tag">Mobilvennlig</span>
+        </div>
+        <div class="play">
+          <a href="/spill/snake/">Spill Snake →</a>
+          <a class="secondary" href="/spill/snake/" aria-label="Åpne Snake">Åpne</a>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>🧱 Tetris</h2>
+        <p>Roter brikker og lag fulle linjer. Øker i fart etter hvert.</p>
+        <div class="tags">
+          <span class="tag"><kbd>←</kbd><kbd>→</kbd> flytt</span>
+          <span class="tag"><kbd>↑</kbd> roter</span>
+          <span class="tag"><kbd>Space</kbd> dropp</span>
+          <span class="tag"><kbd>P</kbd> pause</span>
+        </div>
+        <div class="play">
+          <a href="/spill/tetris/">Spill Tetris →</a>
+          <a class="secondary" href="/spill/tetris/">Åpne</a>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>👾 Space Invaders</h2>
+        <p>Skyt invaderne før de kommer ned. Pass på livene!</p>
+        <div class="tags">
+          <span class="tag"><kbd>←</kbd><kbd>→</kbd> flytt</span>
+          <span class="tag"><kbd>Space</kbd> skyt</span>
+          <span class="tag"><kbd>R</kbd> restart</span>
+        </div>
+        <div class="play">
+          <a href="/spill/space-invaders/">Spill Space Invaders →</a>
+          <a class="secondary" href="/spill/space-invaders/">Åpne</a>
+        </div>
+      </section>
+    </div>
+
+    <footer>
+      Tips: Dette er en spillmeny. Legg til flere spill senere ved å lage en ny mappe under <code>/spill</code>.
+    </footer>
   </div>
-
-  <canvas id="game" width="360" height="360"></canvas>
-
-  <div class="buttons">
-    <button id="restart">Start på nytt</button>
-    /spill/">⬅ Tilbake til Spill</a>
-  </div>
-
-  <div class="hint">
-    Bruk piltaster ⬅⬆➡⬇. På mobil: sveip på brettet.
-    Målet er å spise eplet 🍎 uten å krasje i deg selv.
-  </div>
-
-<script>
-(() => {
-  const canvas = document.getElementById('game');
-  const ctx = canvas.getContext('2d');
-
-  // Grid
-  const grid = 18;                 // størrelse på rutenett
-  const cells = canvas.width / grid; // 360/18 = 20 ruter
-  let count = 0;
-
-  // Score
-  const scoreEl = document.getElementById('score');
-  const bestEl  = document.getElementById('best');
-  const bestKey = 'alma_snake_best';
-  let score = 0;
-  let best = Number(localStorage.getItem(bestKey) || 0);
-  bestEl.textContent = best;
-
-  const snake = {
-    x: grid * 10,
-    y: grid * 10,
-    dx: grid,
-    dy: 0,
-    cells: [],
-    maxCells: 4
-  };
-
-  let apple = { x: grid * 5, y: grid * 5 };
-
-  function randInt(min, max) {
-    return Math.floor(Math.random() * (max - min)) + min;
-  }
-
-  function placeApple() {
-    // prøv til vi finner et ledig felt
-    for (let tries = 0; tries < 200; tries++) {
-      const ax = randInt(0, cells) * grid;
-      const ay = randInt(0, cells) * grid;
-      const onSnake = snake.cells.some(c => c.x === ax && c.y === ay);
-      if (!onSnake) { apple = { x: ax, y: ay }; return; }
-    }
-    // fallback (skjer nesten aldri)
-    apple = { x: randInt(0, cells) * grid, y: randInt(0, cells) * grid };
-  }
-
-  function reset() {
-    snake.x = grid * 10;
-    snake.y = grid * 10;
-    snake.dx = grid;
-    snake.dy = 0;
-    snake.cells = [];
-    snake.maxCells = 4;
-    score = 0;
-    scoreEl.textContent = score;
-    placeApple();
-  }
-
-  function drawCell(x, y, color) {
-    ctx.fillStyle = color;
-    ctx.fillRect(x + 1, y + 1, grid - 2, grid - 2);
-  }
-
-  function loop() {
-    requestAnimationFrame(loop);
-    if (++count < 4) return; // fart (lavere = raskere)
-    count = 0;
-
-    // bakgrunn
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    // flytt
-    snake.x += snake.dx;
-    snake.y += snake.dy;
-
-    // wrap rundt vegger (snillere for barn)
-    if (snake.x < 0) snake.x = canvas.width - grid;
-    else if (snake.x >= canvas.width) snake.x = 0;
-    if (snake.y < 0) snake.y = canvas.height - grid;
-    else if (snake.y >= canvas.height) snake.y = 0;
-
-    snake.cells.unshift({ x: snake.x, y: snake.y });
-    if (snake.cells.length > snake.maxCells) snake.cells.pop();
-
-    // eple
-    drawCell(apple.x, apple.y, '#ef4444');
-
-    // slange
-    snake.cells.forEach((cell, index) => {
-      drawCell(cell.x, cell.y, index === 0 ? '#22c55e' : '#16a34a');
-
-      // spis eple
-      if (cell.x === apple.x && cell.y === apple.y) {
-        snake.maxCells++;
-        score++;
-        scoreEl.textContent = score;
-        if (score > best) {
-          best = score;
-          localStorage.setItem(bestKey, String(best));
-          bestEl.textContent = best;
-        }
-        placeApple();
-      }
-
-      // krasj i seg selv
-      for (let i = index + 1; i < snake.cells.length; i++) {
-        if (cell.x === snake.cells[i].x && cell.y === snake.cells[i].y) {
-          reset();
-          break;
-        }
-      }
-    });
-  }
-
-  // keyboard
-  document.addEventListener('keydown', (e) => {
-    const key = e.key;
-    if (key === 'ArrowLeft' && snake.dx === 0) { snake.dx = -grid; snake.dy = 0; }
-    else if (key === 'ArrowUp' && snake.dy === 0) { snake.dy = -grid; snake.dx = 0; }
-    else if (key === 'ArrowRight' && snake.dx === 0) { snake.dx = grid; snake.dy = 0; }
-    else if (key === 'ArrowDown' && snake.dy === 0) { snake.dy = grid; snake.dx = 0; }
-  });
-
-  // touch: swipe
-  let touchStart = null;
-  canvas.addEventListener('touchstart', (e) => {
-    const t = e.changedTouches[0];
-    touchStart = { x: t.clientX, y: t.clientY };
-  }, { passive: true });
-
-  canvas.addEventListener('touchend', (e) => {
-    if (!touchStart) return;
-    const t = e.changedTouches[0];
-    const dx = t.clientX - touchStart.x;
-    const dy = t.clientY - touchStart.y;
-    const ax = Math.abs(dx);
-    const ay = Math.abs(dy);
-    if (Math.max(ax, ay) < 18) return; // lite sveip
-    if (ax > ay) {
-      if (dx < 0 && snake.dx === 0) { snake.dx = -grid; snake.dy = 0; }
-      else if (dx > 0 && snake.dx === 0) { snake.dx = grid; snake.dy = 0; }
-    } else {
-      if (dy < 0 && snake.dy === 0) { snake.dy = -grid; snake.dx = 0; }
-      else if (dy > 0 && snake.dy === 0) { snake.dy = grid; snake.dx = 0; }
-    }
-    touchStart = null;
-  }, { passive: true });
-
-  // restart button
-  document.getElementById('restart').addEventListener('click', reset);
-
-  // start
-  reset();
-  requestAnimationFrame(loop);
-})();
-</script>
 </body>
 </html>
