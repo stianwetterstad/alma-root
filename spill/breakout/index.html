@@ -213,3 +213,117 @@
     const speedMul = state.speedMode === 1 ? 1.25 : 1;
 
     if (ball.stuck){
+      ball.x = paddle.x + paddle.w/2;
+      ball.y = paddle.y - 10;
+      return;
+    }
+
+    ball.x += ball.vx * speedMul;
+    ball.y += ball.vy * speedMul;
+
+    // walls
+    if (ball.x - ball.r < 0){ ball.x = ball.r; ball.vx *= -1; }
+    if (ball.x + ball.r > canvas.width){ ball.x = canvas.width - ball.r; ball.vx *= -1; }
+    if (ball.y - ball.r < 0){ ball.y = ball.r; ball.vy *= -1; }
+
+    // paddle
+    if (ball.y + ball.r >= paddle.y &&
+        ball.x >= paddle.x && ball.x <= paddle.x + paddle.w &&
+        ball.y < paddle.y + paddle.h + 12){
+      ball.y = paddle.y - ball.r;
+      ball.vy = -Math.abs(ball.vy);
+      const hit = (ball.x - (paddle.x + paddle.w/2)) / (paddle.w/2);
+      ball.vx = 4.4 * hit;
+    }
+
+    // bricks
+    collideBrick();
+
+    // bottom = lose life
+    if (ball.y - ball.r > canvas.height){
+      state.lives--;
+      updateHUD();
+      if (state.lives <= 0){
+        state.running = false;
+        setStatus('Game Over');
+        ball.stuck = true;
+      } else {
+        ball.stuck = true;
+        setStatus('Prøv igjen!');
+      }
+    }
+
+    // win
+    if (allCleared()){
+      state.running = false;
+      setStatus('Du vant! 🎉');
+      ball.stuck = true;
+    }
+  }
+
+  // Controls
+  function movePaddle(dx){
+    paddle.x = clamp(paddle.x + dx, 10, canvas.width - paddle.w - 10);
+  }
+
+  document.getElementById('left').addEventListener('pointerdown', () => { holdDir = -1; });
+  document.getElementById('right').addEventListener('pointerdown', () => { holdDir = 1; });
+  const stopHold = () => { holdDir = 0; };
+  document.getElementById('left').addEventListener('pointerup', stopHold);
+  document.getElementById('right').addEventListener('pointerup', stopHold);
+  document.getElementById('left').addEventListener('pointercancel', stopHold);
+  document.getElementById('right').addEventListener('pointercancel', stopHold);
+  document.getElementById('left').addEventListener('pointerleave', stopHold);
+  document.getElementById('right').addEventListener('pointerleave', stopHold);
+
+  let holdDir = 0;
+
+  document.getElementById('start').addEventListener('click', () => {
+    state.running = true;
+    state.paused = false;
+    ball.stuck = false;
+    setStatus('Spiller');
+  });
+
+  document.getElementById('pause').addEventListener('click', () => {
+    if (!state.running) return;
+    state.paused = !state.paused;
+    setStatus(state.paused ? 'Pause' : 'Spiller');
+  });
+
+  document.getElementById('restart').addEventListener('click', restart);
+
+  const speedBtn = document.getElementById('speed');
+  speedBtn.addEventListener('click', () => {
+    state.speedMode = (state.speedMode + 1) % 2;
+    speedBtn.textContent = state.speedMode === 1 ? 'Tempo: Rask' : 'Tempo: Normal';
+  });
+
+  // Touch: drag on canvas to set paddle position
+  canvas.addEventListener('pointerdown', (e) => {
+    canvas.setPointerCapture(e.pointerId);
+    const rect = canvas.getBoundingClientRect();
+    const x = (e.clientX - rect.left) * (canvas.width / rect.width);
+    paddle.x = clamp(x - paddle.w/2, 10, canvas.width - paddle.w - 10);
+  });
+
+  canvas.addEventListener('pointermove', (e) => {
+    if (e.buttons === 0 && e.pointerType === 'mouse') return;
+    const rect = canvas.getBoundingClientRect();
+    const x = (e.clientX - rect.left) * (canvas.width / rect.width);
+    paddle.x = clamp(x - paddle.w/2, 10, canvas.width - paddle.w - 10);
+  });
+
+  function loop(){
+    if (holdDir !== 0) movePaddle(holdDir * paddle.speed);
+    step();
+    draw();
+    requestAnimationFrame(loop);
+  }
+
+  restart();
+  loop();
+})();
+</script>
+</body>
+</html>
