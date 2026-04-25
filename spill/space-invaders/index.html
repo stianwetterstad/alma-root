@@ -1,0 +1,475 @@
+<!doctype html>
+<html lang="no">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Space Invaders | Alma.rocks</title>
+  <style>
+    :root{ --bg:#0b1020; --panel:#121a33; --text:#e9ecff; --muted:#a9b1d6; --accent:#7aa2f7; --ok:#9ece6a; --danger:#f7768e; }
+    body{ margin:0; background: var(--bg); color:var(--text); font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
+    .topbar{
+      display:flex; gap:10px; align-items:center; justify-content:space-between;
+      padding:12px 14px; border-bottom:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.03);
+      position: sticky; top:0;
+    }
+    .topbar a{
+      text-decoration:none; color:var(--text);
+      background: rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.12);
+      padding:8px 12px; border-radius:999px;
+    }
+    .wrap{
+      display:grid;
+      grid-template-columns: 1fr minmax(220px, 260px);
+      gap:14px;
+      padding:14px;
+      width: min(980px, 96vw);
+      margin: 0 auto;
+      align-items:start;
+    }
+    .panel{
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border:1px solid rgba(255,255,255,.10);
+      border-radius:16px;
+      padding:12px;
+    }
+    canvas{
+      width:100%;
+      height:auto;
+      display:block;
+      background: #060915;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,.12);
+    }
+    h1{ margin:0 0 8px 0; font-size: 20px; }
+    .stat{ display:flex; justify-content:space-between; color:var(--muted); padding:6px 0; border-bottom:1px dashed rgba(255,255,255,.12); }
+    .stat:last-child{ border-bottom:none; }
+    .big{ font-weight:800; color:var(--text); }
+    .hint{ color:var(--muted); font-size: 13px; line-height:1.35; margin-top:10px;}
+    .controls{
+      display:grid; grid-template-columns: repeat(3, 1fr);
+      gap:10px; margin-top: 10px;
+    }
+    button{
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      color: var(--text);
+      padding:12px 10px;
+      border-radius: 14px;
+      font-weight:700;
+      cursor:pointer;
+      user-select:none;
+    }
+    button:active{ transform: translateY(1px); }
+    .primary{ background: var(--accent); color:#0b1020; border-color: transparent; }
+    .danger{ background: rgba(247,118,142,.16); border-color: rgba(247,118,142,.35); }
+    kbd{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 12px; padding:2px 6px;
+      border:1px solid rgba(255,255,255,.18);
+      border-bottom-width:2px;
+      border-radius:8px; background: rgba(255,255,255,.06);
+      color:var(--text);
+    }
+    @media (max-width: 820px){
+      .wrap{ grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div style="display:flex; gap:10px; flex-wrap:wrap;">
+      <a href="/spill/">← Spillmeny</a>
+      <a href="/">← Alma.rocks</a>
+    </div>
+    <div style="color:var(--muted); font-size:13px;">Space Invaders</div>
+  </div>
+
+  <div class="wrap">
+    <div class="panel">
+      <canvas id="game" width="480" height="640" aria-label="Space Invaders canvas"></canvas>
+    </div>
+
+    <div class="panel">
+      <h1>👾 Space Invaders</h1>
+
+      <div class="stat"><span>Score</span><span class="big" id="score">0</span></div>
+      <div class="stat"><span>Liv</span><span class="big" id="lives">3</span></div>
+      <div class="stat"><span>Nivå</span><span class="big" id="level">1</span></div>
+      <div class="stat"><span>Status</span><span class="big" id="status">Klar</span></div>
+
+      <div class="controls">
+        <button id="left">←</button>
+        <button id="shoot" class="primary">Skyt</button>
+        <button id="right">→</button>
+        <button id="pause" class="danger">Pause</button>
+        <button id="restart" class="primary">Restart</button>
+        <button id="mute">🔊</button>
+      </div>
+
+      <div class="hint">
+        Tastatur: <kbd>←</kbd><kbd>→</kbd> flytt, <kbd>Space</kbd> skyt, <kbd>P</kbd> pause, <kbd>R</kbd> restart.
+      </div>
+    </div>
+  </div>
+
+<script>
+(() => {
+  const canvas = document.getElementById('game');
+  const ctx = canvas.getContext('2d');
+
+  const scoreEl = document.getElementById('score');
+  const livesEl = document.getElementById('lives');
+  const levelEl = document.getElementById('level');
+  const statusEl = document.getElementById('status');
+
+  let muted = false;
+
+  // Simple beep (no external assets)
+  function beep(freq=440, ms=60, vol=0.05){
+    if (muted) return;
+    try{
+      const ac = beep.ac || (beep.ac = new (window.AudioContext || window.webkitAudioContext)());
+      const o = ac.createOscillator();
+      const g = ac.createGain();
+      o.frequency.value = freq;
+      o.type = 'square';
+      g.gain.value = vol;
+      o.connect(g); g.connect(ac.destination);
+      o.start();
+      setTimeout(() => { o.stop(); }, ms);
+    } catch { /* ignore */ }
+  }
+
+  // Game state
+  let score = 0;
+  let lives = 3;
+  let level = 1;
+  let paused = false;
+  let gameOver = false;
+
+  const keys = { left:false, right:false, shoot:false };
+
+  const player = {
+    w: 42, h: 16,
+    x: canvas.width/2 - 21,
+    y: canvas.height - 40,
+    speed: 5,
+    cooldown: 0
+  };
+
+  const bullets = [];
+  const enemyBullets = [];
+
+  let invaders = [];
+  let invDir = 1; // 1 right, -1 left
+  let invSpeed = 0.5;
+  let invStepDown = 14;
+  let invShootTimer = 0;
+
+  function createInvaders(){
+    invaders = [];
+    const rows = 5;
+    const cols = 10;
+    const pad = 10;
+    const startX = 50;
+    const startY = 80;
+    const iw = 26, ih = 18;
+
+    for (let r=0; r<rows; r++){
+      for (let c=0; c<cols; c++){
+        invaders.push({
+          x: startX + c*(iw+pad),
+          y: startY + r*(ih+pad),
+          w: iw, h: ih,
+          alive: true,
+          type: r // just for scoring
+        });
+      }
+    }
+    invDir = 1;
+    invSpeed = 0.55 + (level-1)*0.10;
+    invShootTimer = 0;
+  }
+
+  function reset(){
+    score = 0;
+    lives = 3;
+    level = 1;
+    paused = false;
+    gameOver = false;
+
+    bullets.length = 0;
+    enemyBullets.length = 0;
+
+    player.x = canvas.width/2 - player.w/2;
+    player.cooldown = 0;
+
+    createInvaders();
+    updateHUD();
+    statusEl.textContent = 'Spiller';
+  }
+
+  function updateHUD(){
+    scoreEl.textContent = String(score);
+    livesEl.textContent = String(lives);
+    levelEl.textContent = String(level);
+  }
+
+  function rectsOverlap(a,b){
+    return a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
+  }
+
+  function shoot(){
+    if (player.cooldown > 0) return;
+    bullets.push({ x: player.x + player.w/2 - 2, y: player.y, w:4, h:10, vy:-7 });
+    player.cooldown = 14;
+    beep(880, 50, 0.04);
+  }
+
+  function enemyShoot(){
+    // pick a random alive invader near bottom of its column
+    const alive = invaders.filter(i => i.alive);
+    if (!alive.length) return;
+
+    // group by column approximate (x)
+    const byCol = new Map();
+    for (const inv of alive){
+      const key = Math.round(inv.x / 10);
+      const cur = byCol.get(key);
+      if (!cur || inv.y > cur.y) byCol.set(key, inv);
+    }
+    const shooters = [...byCol.values()];
+    const s = shooters[(Math.random() * shooters.length) | 0];
+    enemyBullets.push({ x: s.x + s.w/2 - 2, y: s.y + s.h, w:4, h:10, vy: 4.2 + (level-1)*0.4 });
+  }
+
+  function step(){
+    if (paused || gameOver) return;
+
+    // player move
+    if (keys.left) player.x -= player.speed;
+    if (keys.right) player.x += player.speed;
+    player.x = Math.max(10, Math.min(canvas.width - player.w - 10, player.x));
+    if (player.cooldown > 0) player.cooldown--;
+
+    // shooting
+    if (keys.shoot) shoot();
+
+    // bullets update
+    for (let i=bullets.length-1; i>=0; i--){
+      bullets[i].y += bullets[i].vy;
+      if (bullets[i].y < -20) bullets.splice(i,1);
+    }
+    for (let i=enemyBullets.length-1; i>=0; i--){
+      enemyBullets[i].y += enemyBullets[i].vy;
+      if (enemyBullets[i].y > canvas.height+30) enemyBullets.splice(i,1);
+    }
+
+    // invaders movement
+    let minX = Infinity, maxX = -Infinity, maxY = -Infinity;
+    for (const inv of invaders){
+      if (!inv.alive) continue;
+      inv.x += invDir * invSpeed;
+      minX = Math.min(minX, inv.x);
+      maxX = Math.max(maxX, inv.x + inv.w);
+      maxY = Math.max(maxY, inv.y + inv.h);
+    }
+
+    // edge check
+    if (minX < 10 || maxX > canvas.width - 10){
+      invDir *= -1;
+      for (const inv of invaders){
+        if (inv.alive) inv.y += invStepDown;
+      }
+      beep(220, 40, 0.03);
+    }
+
+    // lose if invaders reach player line
+    if (maxY > player.y - 10){
+      lives = 0;
+      endGame(false);
+      return;
+    }
+
+    // invader shooting
+    invShootTimer += 1;
+    const shootEvery = Math.max(35, 85 - level*6);
+    if (invShootTimer >= shootEvery){
+      invShootTimer = 0;
+      enemyShoot();
+    }
+
+    // collisions: player bullets vs invaders
+    for (let b=bullets.length-1; b>=0; b--){
+      const bullet = bullets[b];
+      let hit = false;
+      for (const inv of invaders){
+        if (!inv.alive) continue;
+        if (rectsOverlap(bullet, inv)){
+          inv.alive = false;
+          bullets.splice(b,1);
+          hit = true;
+
+          // scoring
+          const base = [50,40,30,20,10][inv.type] || 10;
+          score += base;
+          beep(660, 45, 0.04);
+          break;
+        }
+      }
+      if (hit) updateHUD();
+    }
+
+    // collisions: enemy bullets vs player
+    for (let b=enemyBullets.length-1; b>=0; b--){
+      const bullet = enemyBullets[b];
+      if (rectsOverlap(bullet, player)){
+        enemyBullets.splice(b,1);
+        lives--;
+        beep(140, 120, 0.05);
+        updateHUD();
+        if (lives <= 0){
+          endGame(false);
+          return;
+        }
+      }
+    }
+
+    // next level
+    if (invaders.every(i => !i.alive)){
+      level++;
+      updateHUD();
+      bullets.length = 0;
+      enemyBullets.length = 0;
+      createInvaders();
+      statusEl.textContent = 'Nivå ' + level;
+      beep(990, 120, 0.05);
+    }
+  }
+
+  function endGame(win){
+    gameOver = true;
+    paused = true;
+    statusEl.textContent = win ? 'Du vant! (R)' : 'Game Over (R)';
+  }
+
+  function draw(){
+    // background
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.fillStyle = '#060915';
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+
+    // stars
+    ctx.fillStyle = 'rgba(255,255,255,.12)';
+    for (let i=0; i<40; i++){
+      const x = (i*97) % canvas.width;
+      const y = (i*173 + (Date.now()/30)) % canvas.height;
+      ctx.fillRect(x, y, 2, 2);
+    }
+
+    // player
+    ctx.fillStyle = '#7aa2f7';
+    roundRect(player.x, player.y, player.w, player.h, 6, true);
+
+    // bullets
+    ctx.fillStyle = '#e9ecff';
+    bullets.forEach(b => ctx.fillRect(b.x, b.y, b.w, b.h));
+
+    // enemy bullets
+    ctx.fillStyle = '#f7768e';
+    enemyBullets.forEach(b => ctx.fillRect(b.x, b.y, b.w, b.h));
+
+    // invaders
+    for (const inv of invaders){
+      if (!inv.alive) continue;
+      ctx.fillStyle = '#9ece6a';
+      roundRect(inv.x, inv.y, inv.w, inv.h, 6, true);
+      ctx.fillStyle = 'rgba(11,16,32,.35)';
+      ctx.fillRect(inv.x+6, inv.y+5, inv.w-12, 3);
+    }
+
+    // overlay text
+    if (paused){
+      ctx.fillStyle = 'rgba(0,0,0,.35)';
+      ctx.fillRect(0,0,canvas.width,canvas.height);
+      ctx.fillStyle = '#e9ecff';
+      ctx.font = '700 26px system-ui,Segoe UI,Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText(gameOver ? 'Game Over' : 'Pause', canvas.width/2, canvas.height/2 - 8);
+      ctx.font = '14px system-ui,Segoe UI,Arial';
+      ctx.fillStyle = 'rgba(233,236,255,.85)';
+      ctx.fillText('Trykk P for å fortsette • R for restart', canvas.width/2, canvas.height/2 + 20);
+    }
+  }
+
+  function roundRect(x, y, w, h, r, fill){
+    const rr = Math.min(r, w/2, h/2);
+    ctx.beginPath();
+    ctx.moveTo(x+rr, y);
+    ctx.arcTo(x+w, y, x+w, y+h, rr);
+    ctx.arcTo(x+w, y+h, x, y+h, rr);
+    ctx.arcTo(x, y+h, x, y, rr);
+    ctx.arcTo(x, y, x+w, y, rr);
+    ctx.closePath();
+    if (fill) ctx.fill();
+  }
+
+  function loop(){
+    step();
+    draw();
+    requestAnimationFrame(loop);
+  }
+
+  // keyboard input
+  document.addEventListener('keydown', (e) => {
+    if (e.code === 'KeyP'){
+      paused = !paused;
+      statusEl.textContent = paused ? 'Pause' : 'Spiller';
+      return;
+    }
+    if (e.code === 'KeyR'){ reset(); return; }
+    if (e.code === 'ArrowLeft') keys.left = true;
+    if (e.code === 'ArrowRight') keys.right = true;
+    if (e.code === 'Space'){ e.preventDefault(); keys.shoot = true; }
+  }, { passive: false });
+
+  document.addEventListener('keyup', (e) => {
+    if (e.code === 'ArrowLeft') keys.left = false;
+    if (e.code === 'ArrowRight') keys.right = false;
+    if (e.code === 'Space') keys.shoot = false;
+  });
+
+  // buttons (touch/mouse)
+  const bindHold = (btn, on, off) => {
+    btn.addEventListener('pointerdown', (e) => { e.preventDefault(); on(); });
+    btn.addEventListener('pointerup', off);
+    btn.addEventListener('pointercancel', off);
+    btn.addEventListener('pointerleave', off);
+  };
+
+  bindHold(document.getElementById('left'), () => keys.left = true, () => keys.left = false);
+  bindHold(document.getElementById('right'), () => keys.right = true, () => keys.right = false);
+  bindHold(document.getElementById('shoot'), () => keys.shoot = true, () => keys.shoot = false);
+
+  document.getElementById('pause').addEventListener('click', () => {
+    paused = !paused;
+    statusEl.textContent = paused ? 'Pause' : 'Spiller';
+  });
+  document.getElementById('restart').addEventListener('click', () => reset());
+  document.getElementById('mute').addEventListener('click', (e) => {
+    muted = !muted;
+    e.currentTarget.textContent = muted ? '🔇' : '🔊';
+  });
+
+  // init
+  reset();
+  paused = false;
+  statusEl.textContent = 'Spiller';
+  loop();
+})();
+</script>
+</body>
+</html>
+``
