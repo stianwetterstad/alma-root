@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="no">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>2048 | Alma.rocks</title>
+  <style>
+    :root{--bg:#0b1020;--text:#e9ecff;--muted:#a9b1d6;--border:rgba(255,255,255,.10);--border2:rgba(255,255,255,.12);--btnbg:rgba(255,255,255,.06);--accent:#7aa2f7;--danger:#f7768e;}
+    body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;}
+    .topbar{display:flex;gap:10px;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid var(--border);background:rgba(255,255,255,.03);position:sticky;top:0;z-index:10}
+    .topbar .left{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    .topbar a{text-decoration:none;color:var(--text);background:var(--btnbg);border:1px solid var(--border2);padding:8px 12px;border-radius:999px;user-select:none}
+    .topbar .label{color:var(--muted);font-size:13px}
+    .wrap{display:grid;grid-template-columns: 1fr minmax(220px,260px);gap:14px;padding:14px;width:min(980px,96vw);margin:0 auto;align-items:start}
+    .panel{background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));border:1px solid var(--border);border-radius:16px;padding:12px}
+    h1{margin:0 0 8px 0;font-size:20px}
+    .stat{display:flex;justify-content:space-between;color:var(--muted);padding:6px 0;border-bottom:1px dashed rgba(255,255,255,.12)}
+    .stat:last-child{border-bottom:none}
+    .big{font-weight:800;color:var(--text)}
+    .controls{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:10px}
+    button{border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06);color:var(--text);padding:12px 10px;border-radius:14px;font-weight:700;cursor:pointer;user-select:none;touch-action:manipulation}
+    button:active{transform:translateY(1px)}
+    .primary{background:var(--accent);color:#0b1020;border-color:transparent}
+    .danger{background:rgba(247,118,142,.16);border-color:rgba(247,118,142,.35)}
+    .board{
+      width: min(420px, 90vw);
+      aspect-ratio: 1 / 1;
+      margin: 0 auto;
+      background: rgba(255,255,255,.05);
+      border: 1px solid var(--border2);
+      border-radius: 18px;
+      padding: 10px;
+      display:grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      touch-action: none;
+      user-select:none;
+    }
+    .cell{
+      border-radius: 14px;
+      display:flex;align-items:center;justify-content:center;
+      font-weight: 900;
+      font-size: clamp(18px, 4vw, 34px);
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.08);
+      color: var(--text);
+    }
+    .hint{color:var(--muted);font-size:13px;line-height:1.35;margin-top:10px}
+    @media (max-width: 820px){.wrap{grid-template-columns:1fr}.board{width:min(420px, 96vw)}}
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="left">
+      <a href="/spill/">← Spillmeny</a>
+      <a href="/">← Alma.rocks</a>
+    </div>
+    <div class="label">2048</div>
+  </div>
+
+  <div class="wrap">
+    <div class="panel">
+      <div class="board" id="board" aria-label="2048 board"></div>
+    </div>
+
+    <div class="panel">
+      <h1>🔢 2048</h1>
+      <div class="stat"><span>Score</span><span class="big" id="score">0</span></div>
+      <div class="stat"><span>Beste</span><span class="big" id="best">0</span></div>
+      <div class="stat"><span>Status</span><span class="big" id="status">Klar</span></div>
+
+      <div class="controls">
+        <button id="new" class="primary">Nytt spill</button>
+        <button id="undo">Angre (1)</button>
+        <button id="hint" class="danger">Tips</button>
+        <button id="keys">Piltaster</button>
+      </div>
+
+      <div class="hint">
+        Sveip opp/ned/venstre/høyre på brettet.<br/>
+        Mål: lag en 2048-brikke. (Barnemodus: vi kan også sette mål = 512 hvis du vil.)
+      </div>
+    </div>
+  </div>
+
+<script>
+(() => {
+  const boardEl = document.getElementById('board');
+  const scoreEl = document.getElementById('score');
+  const bestEl  = document.getElementById('best');
+  const statusEl= document.getElementById('status');
+  const undoBtn = document.getElementById('undo');
+
+  const BEST_KEY = 'alma_2048_best';
+  let best = Number(localStorage.getItem(BEST_KEY) || 0);
+  bestEl.textContent = best;
+
+  let grid = Array.from({length:4}, () => Array(4).fill(0));
+  let score = 0;
+  let undo = null; // {grid, score}
+  let canUndo = true;
+
+  function setStatus(s){ statusEl.textContent = s; }
+  function updateHUD(){
+    scoreEl.textContent = String(score);
+    bestEl.textContent = String(best);
+    undoBtn.textContent = canUndo && undo ? "Angre (1)" : "Angre (0)";
+    undoBtn.disabled = !(canUndo && undo);
+    undoBtn.style.opacity = undoBtn.disabled ? 0.5 : 1;
+  }
+
+  function emptyCells(){
+    const out = [];
+    for(let r=0;r<4;r++) for(let c=0;c<4;c++) if(grid[r][c]===0) out.push([r,c]);
+    return out;
+  }
+
+  function addTile(){
+    const empties = emptyCells();
+    if(!empties.length) return false;
+    const [r,c] = empties[(Math.random()*empties.length)|0];
+    grid[r][c] = Math.random() < 0.9 ? 2 : 4;
+    return true;
+  }
+
+  function cloneGrid(g){ return g.map(row => row.slice()); }
+
+  function render(){
+    boardEl.innerHTML = "";
+    for(let r=0;r<4;r++){
+      for(let c=0;c<4;c++){
+        const v = grid[r][c];
+        const el = document.createElement('div');
+        el.className = 'cell';
+        el.textContent = v ? String(v) : "";
+        el.style.background = tileBg(v);
+        el.style.borderColor = 'rgba(255,255,255,.10)';
+        el.style.color = v >= 8 ? '#0b1020' : '#e9ecff';
+        boardEl.appendChild(el);
+      }
+    }
+    updateHUD();
+  }
+
+  function tileBg(v){
+    if (!v) return 'rgba(255,255,255,.04)';
+    const map = {
+      2:'#7aa2f7', 4:'#2ac3de', 8:'#9ece6a', 16:'#e0af68',
+      32:'#ff9e64', 64:'#f7768e', 128:'#bb9af7', 256:'#7dcfff',
+      512:'#a6e3a1', 1024:'#f2cdcd', 2048:'#ffd866'
+    };
+    return map[v] || '#ffd866';
+  }
+
+  function compress(line){
+    const a = line.filter(v=>v!==0);
+    while(a.length<4) a.push(0);
+    return a;
+  }
+
+  function merge(line){
+    for(let i=0;i<3;i++){
+      if(line[i]!==0 && line[i]===line[i+1]){
+        line[i] *= 2;
+        score += line[i];
+        line[i+1] = 0;
+      }
+    }
+    return line;
+  }
+
+  function move(dir){
+    const before = cloneGrid(grid);
+    const beforeScore = score;
+
+    // save undo only if we actually move
+    let moved = false;
+
+    function getLine(i){
+      if(dir==='left')  return grid[i].slice();
+      if(dir==='right') return grid[i].slice().reverse();
+      if(dir==='up')    return [grid[0][i],grid[1][i],grid[2][i],grid[3][i]];
+      if(dir==='down')  return [grid[0][i],grid[1][i],grid[2][i],grid[3][i]].reverse();
+    }
+
+    function setLine(i, line){
+      if(dir==='left'){
+        for(let c=0;c<4;c++) grid[i][c]=line[c];
+      } else if(dir==='right'){
+        line = line.reverse();
+        for(let c=0;c<4;c++) grid[i][c]=line[c];
+      } else if(dir==='up'){
+        for(let r=0;r<4;r++) grid[r][i]=line[r];
+      } else if(dir==='down'){
+        line = line.reverse();
+        for(let r=0;r<4;r++) grid[r][i]=line[r];
+      }
+    }
+
+    for(let i=0;i<4;i++){
+      let line = getLine(i);
+      const original = line.slice();
+      line = compress(line);
+      line = merge(line);
+      line = compress(line);
+      if(line.join(',') !== original.join(',')) moved = true;
+      setLine(i, line);
+    }
+
+    if(!moved){
+      score = beforeScore;
+      setStatus("Ingen flytt");
+      return;
+    }
+
+    // store undo
+    undo = { grid: before, score: beforeScore };
+    canUndo = true;
+
+    addTile();
+
+    // best
+    if(score > best){ best = score; localStorage.setItem(BEST_KEY, String(best)); }
+
+    setStatus("Spiller");
+    render();
+
+    if (has2048()) setStatus("🎉 2048!");
+    else if (!movesAvailable()) setStatus("Game Over");
+  }
+
+  function has2048(){
+    for(let r=0;r<4;r++) for(let c=0;c<4;c++) if(grid[r][c] >= 2048) return true;
+    return false;
+  }
+
+  function movesAvailable(){
+    if (emptyCells().length) return true;
+    for(let r=0;r<4;r++){
+      for(let c=0;c<4;c++){
+        const v = grid[r][c];
+        if (r<3 && grid[r+1][c]===v) return true;
+        if (c<3 && grid[r][c+1]===v) return true;
+      }
+    }
+    return false;
+  }
+
+  function newGame(){
+    grid = Array.from({length:4}, () => Array(4).fill(0));
+    score = 0;
+    undo = null;
+    canUndo = true;
+    addTile(); addTile();
+    setStatus("Klar");
+    render();
+  }
+
+  function doUndo(){
+    if(!(canUndo && undo)) return;
+    grid = cloneGrid(undo.grid);
+    score = undo.score;
+    undo = null;
+    canUndo = false; // only once
+    setStatus("Angret");
+    render();
+  }
+
+  // Swipe / pointer
+  let start = null;
+  const board = document.getElementById('board');
+
+  board.addEventListener('pointerdown', (e) => {
+    board.setPointerCapture(e.pointerId);
+    start = { x: e.clientX, y: e.clientY };
+  });
+
+  board.addEventListener('pointerup', (e) => {
+    if(!start) return;
+    const dx = e.clientX - start.x;
+    const dy = e.clientY - start.y;
+    start = null;
+
+    const ax = Math.abs(dx), ay = Math.abs(dy);
+    if (Math.max(ax, ay) < 18) return;
+
+    if (ax > ay){
+      move(dx > 0 ? 'right' : 'left');
+    } else {
+      move(dy > 0 ? 'down' : 'up');
+    }
+  });
+
+  // Keyboard (for desktop)
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowLeft') move('left');
+    else if (e.key === 'ArrowRight') move('right');
+    else if (e.key === 'ArrowUp') move('up');
+    else if (e.key === 'ArrowDown') move('down');
+  });
+
+  document.getElementById('new').addEventListener('click', newGame);
+  document.getElementById('undo').addEventListener('click', doUndo);
+  document.getElementById('hint').addEventListener('click', () => setStatus("Tips: hold hjørnet med store tall 🙂"));
+  document.getElementById('keys').addEventListener('click', () => setStatus("Desktop: bruk piltaster"));
+
+  newGame();
+})();
+</script>
+</body>
+</html>
