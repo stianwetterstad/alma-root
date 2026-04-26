@@ -29,7 +29,7 @@
     }
     .wrap{ width: min(var(--max), 92vw); padding: 18px 0 40px; }
 
-    /* Toppmeny (samme “pattern” som spillene) */
+    /* Toppmeny */
     .topbar{
       display:flex; gap:10px; align-items:center; justify-content:space-between;
       padding:12px 14px;
@@ -55,6 +55,8 @@
       display:inline-flex;
       align-items:center;
       gap:8px;
+      touch-action: manipulation;
+      min-height: 44px;
     }
     .topbar a:hover{ background: rgba(255,255,255,.10); }
     .topbar a:active{ transform: translateY(1px); }
@@ -69,6 +71,84 @@
     }
     h1{ margin:0; font-size: clamp(22px, 3vw, 34px); letter-spacing: .3px; }
     .sub{ color: var(--muted); font-size: 13px; line-height: 1.35; max-width: 56ch; }
+
+    /* Fortsett-blokk */
+    .continue-block{
+      background: linear-gradient(135deg, rgba(158, 206, 106, .15), rgba(122, 162, 247, .15));
+      border: 1px solid rgba(158, 206, 106, .3);
+      border-radius: var(--radius);
+      padding: 18px;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .continue-block .left{ flex: 1; min-width: 150px; }
+    .continue-block .left div:first-child{
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    .continue-block .left div:last-child{
+      font-weight: 700;
+      font-size: 16px;
+      color: var(--accent2);
+    }
+    .continue-block .right{
+      display: flex;
+      gap: 10px;
+    }
+    .continue-block a{
+      border-radius: 12px;
+      padding: 11px 16px;
+      text-decoration: none;
+      color: #0b1020;
+      background: var(--accent2);
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 10px 24px rgba(158, 206, 106, .3);
+      transition: transform .08s ease, opacity .2s ease;
+      touch-action: manipulation;
+      min-height: 44px;
+      font-size: 14px;
+    }
+    .continue-block a:hover{ opacity: 0.9; }
+    .continue-block a:active{ transform: translateY(1px); }
+
+    /* Filter-knapper */
+    .filters{
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+      margin-top: 16px;
+    }
+    .filter-btn{
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.06);
+      color: var(--text);
+      padding: 9px 14px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .15s ease;
+      touch-action: manipulation;
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+    }
+    .filter-btn:hover{ background: rgba(255,255,255,.10); }
+    .filter-btn.active{
+      background: var(--accent);
+      color: #0b1020;
+      border-color: var(--accent);
+      font-weight: 700;
+    }
 
     .grid{
       display:grid;
@@ -86,7 +166,9 @@
       gap:10px;
       position:relative;
       overflow:hidden;
+      transition: all .2s ease;
     }
+    .card.hidden{ display: none; }
     .card::before{
       content:"";
       position:absolute; inset:-60px -60px auto auto;
@@ -95,54 +177,92 @@
       transform: rotate(18deg);
       pointer-events:none;
     }
-    .card h2{ margin:0; font-size: 20px; }
-    .card p{ margin:0; color:var(--muted); line-height:1.35; }
 
-    .tags{ display:flex; flex-wrap:wrap; gap:8px; margin-top:4px;}
-    .tag{
-      font-size:12px; color:var(--muted);
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(255,255,255,.04);
-      padding:4px 8px; border-radius:999px;
+    .card-header{
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .card-title{
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0;
+      font-size: 20px;
+    }
+    .card-title-emoji{ font-size: 24px; }
+    .favorite-btn{
+      background: none;
+      border: none;
+      font-size: 22px;
+      cursor: pointer;
+      transition: transform .15s ease;
+      touch-action: manipulation;
+      padding: 8px;
+      min-width: 44px;
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .favorite-btn:hover{ transform: scale(1.15); }
+    .favorite-btn:active{ transform: scale(0.95); }
+
+    .card p{ margin:0; color:var(--muted); line-height:1.35; font-size: 14px; }
+
+    .card-stats{
+      display: flex;
+      gap: 12px;
+      margin-top: 4px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .stat-item{
+      display: flex;
+      flex-direction: column;
+    }
+    .stat-label{
+      font-size: 11px;
+      opacity: 0.7;
+      margin-bottom: 2px;
+    }
+    .stat-value{
+      font-weight: 600;
+      color: var(--accent2);
     }
 
     .play{
       margin-top:auto;
-      display:flex; gap:10px; flex-wrap:wrap;
+      display:flex;
+      gap:10px;
     }
     .play a{
+      flex: 1;
       border-radius: 12px;
-      padding:10px 12px;
+      padding:11px 12px;
       text-decoration:none;
       color:#0b1020;
       background: var(--accent);
       font-weight: 800;
-      display:inline-flex; align-items:center; gap:8px;
+      display:inline-flex;
+      align-items:center;
+      justify-content: center;
+      gap:8px;
       box-shadow: 0 10px 24px rgba(122,162,247,.25);
+      transition: transform .08s ease, opacity .2s ease;
+      touch-action: manipulation;
+      min-height: 44px;
+      font-size: 14px;
     }
-    .play a.secondary{
-      background: rgba(255,255,255,.08);
-      color: var(--text);
-      border: 1px solid rgba(255,255,255,.12);
-      box-shadow:none;
-      font-weight: 650;
-    }
+    .play a:hover{ opacity: 0.9; }
+    .play a:active{ transform: translateY(1px); }
 
     footer{
       margin-top:18px;
       color:var(--muted);
       font-size:13px;
       line-height: 1.4;
-    }
-    kbd{
-      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-      font-size: 12px;
-      padding: 2px 6px;
-      border: 1px solid rgba(255,255,255,.18);
-      border-bottom-width: 2px;
-      border-radius: 8px;
-      background: rgba(255,255,255,.06);
-      color: var(--text);
     }
   </style>
 </head>
@@ -165,98 +285,266 @@
       </div>
     </header>
 
-    <div class="grid">
+    <div id="continueContainer"></div>
 
-      <section class="card">
-        <h2>🐍 Snake</h2>
-        <p>Samle epler 🍎 og unngå å krasje i deg selv. Klassikeren!</p>
-        <div class="tags">
-          <span class="tag">Touch: sveip</span>
-          <span class="tag"><kbd>←</kbd><kbd>↑</kbd><kbd>→</kbd><kbd>↓</kbd></span>
-          <span class="tag">Raskt</span>
-        </div>
-        <div class="play">
-          <a href="/spill/snake/">Spill Snake →</a>
-          <a class="secondary" href="/spill/snake/">Åpne</a>
-        </div>
-      </section>
+    <div class="filters" id="filterContainer"></div>
 
-      <section class="card">
-        <h2>🧱 Tetris</h2>
-        <p>Roter brikker og lag linjer. Øker i fart etter hvert.</p>
-        <div class="tags">
-          <span class="tag"><kbd>←</kbd><kbd>→</kbd> flytt</span>
-          <span class="tag"><kbd>↑</kbd> roter</span>
-          <span class="tag"><kbd>Space</kbd> dropp</span>
-          <span class="tag">Touch-knapper</span>
-        </div>
-        <div class="play">
-          <a href="/spill/tetris/">Spill Tetris →</a>
-          <a class="secondary" href="/spill/tetris/">Åpne</a>
-        </div>
-      </section>
-
-      <section class="card">
-        <h2>👾 Space Invaders</h2>
-        <p>Skyt invaderne før de når bunnen. Pass på livene!</p>
-        <div class="tags">
-          <span class="tag"><kbd>←</kbd><kbd>→</kbd> flytt</span>
-          <span class="tag"><kbd>Space</kbd> skyt</span>
-          <span class="tag">Touch-knapper</span>
-        </div>
-        <div class="play">
-          <a href="/spill/space-invaders/">Spill Space Invaders →</a>
-          <a class="secondary" href="/spill/space-invaders/">Åpne</a>
-        </div>
-      </section>
-
-      <section class="card">
-        <h2>🧱🏓 Breakout</h2>
-        <p>Dra fingeren for å styre plata og knus alle klossene!</p>
-        <div class="tags">
-          <span class="tag">iPad: dra for å styre</span>
-          <span class="tag">Enkelt</span>
-          <span class="tag">Korte runder</span>
-        </div>
-        <div class="play">
-          <a href="/spill/breakout/">Spill Breakout →</a>
-          <a class="secondary" href="/spill/breakout/">Åpne</a>
-        </div>
-      </section>
-
-      <section class="card">
-        <h2>🧠 Memory</h2>
-        <p>Finn like par! Rolig og supert på touch.</p>
-        <div class="tags">
-          <span class="tag">Trykk på kort</span>
-          <span class="tag">Barnevennlig</span>
-          <span class="tag">Enkel/Vanskelig</span>
-        </div>
-        <div class="play">
-          <a href="/spill/memory/">Spill Memory →</a>
-          <a class="secondary" href="/spill/memory/">Åpne</a>
-        </div>
-      </section>
-
-      <section class="card">
-        <h2>🔢 2048</h2>
-        <p>Sveip for å slå sammen tall. Klarer du 2048?</p>
-        <div class="tags">
-          <span class="tag">iPad: sveip</span>
-          <span class="tag"><kbd>←</kbd><kbd>↑</kbd><kbd>→</kbd><kbd>↓</kbd></span>
-          <span class="tag">Hjernetrim</span>
-        </div>
-        <div class="play">
-          <a href="/spill/2048/">Spill 2048 →</a>
-          <a class="secondary" href="/spill/2048/">Åpne</a>
-        </div>
-      </section>
-
-    </div>
+    <div class="grid" id="gamesContainer"></div>
 
     <footer>
-      Tips: På iPad kan det hjelpe å legge siden til på hjemskjermen (Del → “Legg til på Hjem-skjerm”) for en mer “app”-følelse.
+      Tips: På iPad kan det hjelpe å legge siden til på hjemskjermen (Del → "Legg til på Hjem-skjerm") for en mer "app"-følelse.
     </footer>
   </div>
+
+  <script>
+    // Spill-data
+    const games = [
+      {
+        name: "Snake",
+        emoji: "🐍",
+        path: "/spill/snake/",
+        description: "Samle epler 🍎 og unngå å krasje i deg selv. Klassikeren!",
+        category: "Klassikere"
+      },
+      {
+        name: "Tetris",
+        emoji: "🧱",
+        path: "/spill/tetris/",
+        description: "Roter brikker og lag linjer. Øker i fart etter hvert.",
+        category: "Klassikere"
+      },
+      {
+        name: "Space Invaders",
+        emoji: "👾",
+        path: "/spill/space-invaders/",
+        description: "Skyt invaderne før de når bunnen. Pass på livene!",
+        category: "Action"
+      },
+      {
+        name: "Breakout",
+        emoji: "🏓",
+        path: "/spill/breakout/",
+        description: "Dra fingeren for å styre plata og knus alle klossene!",
+        category: "Action"
+      },
+      {
+        name: "Memory",
+        emoji: "🧠",
+        path: "/spill/memory/",
+        description: "Finn like par! Rolig og supert på touch.",
+        category: "Rolig"
+      },
+      {
+        name: "2048",
+        emoji: "🔢",
+        path: "/spill/2048/",
+        description: "Sveip for å slå sammen tall. Klarer du 2048?",
+        category: "Rolig"
+      }
+    ];
+
+    const categories = ["Alle", "Rolig", "Action", "Klassikere"];
+
+    // Hent data fra localStorage
+    function getLocalStorage() {
+      return {
+        favorites: JSON.parse(localStorage.getItem("games_favorites") || "[]"),
+        lastPlayed: localStorage.getItem("games_lastPlayed"),
+        stats: JSON.parse(localStorage.getItem("games_stats") || "{}"),
+        filter: localStorage.getItem("games_filter") || "Alle"
+      };
+    }
+
+    // Lagre data til localStorage
+    function saveLocalStorage(data) {
+      localStorage.setItem("games_favorites", JSON.stringify(data.favorites));
+      localStorage.setItem("games_lastPlayed", data.lastPlayed);
+      localStorage.setItem("games_stats", JSON.stringify(data.stats));
+      localStorage.setItem("games_filter", data.filter);
+    }
+
+    // Formatere dato
+    function formatDate(isoString) {
+      if (!isoString) return "—";
+      const date = new Date(isoString);
+      const now = new Date();
+      const diffMs = now - date;
+      const diffMins = Math.floor(diffMs / 60000);
+      const diffHours = Math.floor(diffMs / 3600000);
+      const diffDays = Math.floor(diffMs / 86400000);
+
+      if (diffMins < 1) return "akkurat nå";
+      if (diffMins < 60) return `${diffMins}m siden`;
+      if (diffHours < 24) return `${diffHours}t siden`;
+      if (diffDays === 1) return "i går";
+      if (diffDays < 7) return `${diffDays}d siden`;
+      
+      return date.toLocaleDateString("no-NO", { month: "short", day: "numeric" });
+    }
+
+    // Sorter spill (favoritter først, så alfabetisk)
+    function sortGames(gamesList, favorites) {
+      return gamesList.sort((a, b) => {
+        const aFav = favorites.includes(a.path) ? 0 : 1;
+        const bFav = favorites.includes(b.path) ? 0 : 1;
+        if (aFav !== bFav) return aFav - bFav;
+        return a.name.localeCompare(b.name);
+      });
+    }
+
+    // Filtrer og render spillkort
+    function renderGames(filter = "Alle") {
+      const data = getLocalStorage();
+      const container = document.getElementById("gamesContainer");
+      container.innerHTML = "";
+
+      let filtered = games;
+      if (filter !== "Alle") {
+        filtered = games.filter(g => g.category === filter);
+      }
+
+      const sorted = sortGames(filtered, data.favorites);
+
+      sorted.forEach(game => {
+        const stat = data.stats[game.path] || {};
+        const isFav = data.favorites.includes(game.path);
+        const card = document.createElement("section");
+        card.className = "card";
+        card.innerHTML = `
+          <div class="card-header">
+            <div class="card-title">
+              <span class="card-title-emoji">${game.emoji}</span>
+              <span>${game.name}</span>
+            </div>
+            <button class="favorite-btn" data-path="${game.path}" title="Favoritt">
+              ${isFav ? "⭐" : "☆"}
+            </button>
+          </div>
+          <p>${game.description}</p>
+          <div class="card-stats">
+            <div class="stat-item">
+              <div class="stat-label">Best</div>
+              <div class="stat-value">${stat.bestScore || "—"}</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-label">Sist spilt</div>
+              <div class="stat-value">${formatDate(stat.lastPlayedAt)}</div>
+            </div>
+          </div>
+          <div class="play">
+            <a href="${game.path}" data-game-path="${game.path}" class="play-btn">Spill ${game.name} →</a>
+          </div>
+        `;
+        container.appendChild(card);
+
+        // Event-listener for favoritt
+        card.querySelector(".favorite-btn").addEventListener("click", (e) => {
+          e.preventDefault();
+          toggleFavorite(game.path);
+          renderGames(filter);
+        });
+
+        // Event-listener for "Spill"-knapp
+        card.querySelector(".play-btn").addEventListener("click", (e) => {
+          e.preventDefault();
+          playGame(game.path, game.name);
+        });
+      });
+    }
+
+    // Toggle favoritt
+    function toggleFavorite(gamePath) {
+      const data = getLocalStorage();
+      const idx = data.favorites.indexOf(gamePath);
+      if (idx > -1) {
+        data.favorites.splice(idx, 1);
+      } else {
+        data.favorites.push(gamePath);
+      }
+      saveLocalStorage(data);
+    }
+
+    // Spill spill
+    function playGame(gamePath, gameName) {
+      const data = getLocalStorage();
+      const now = new Date().toISOString();
+      
+      if (!data.stats[gamePath]) {
+        data.stats[gamePath] = {};
+      }
+      data.stats[gamePath].lastPlayedAt = now;
+      data.lastPlayed = gamePath;
+      
+      saveLocalStorage(data);
+      window.location.href = gamePath;
+    }
+
+    // Render "Fortsett"-blokk
+    function renderContinueBlock() {
+      const data = getLocalStorage();
+      const container = document.getElementById("continueContainer");
+      
+      if (!data.lastPlayed) {
+        container.innerHTML = "";
+        return;
+      }
+
+      const game = games.find(g => g.path === data.lastPlayed);
+      if (!game) {
+        container.innerHTML = "";
+        return;
+      }
+
+      const stat = data.stats[data.lastPlayed] || {};
+      const timeStr = formatDate(stat.lastPlayedAt);
+
+      container.innerHTML = `
+        <div class="continue-block">
+          <div class="left">
+            <div>Sist spilt</div>
+            <div>${game.emoji} ${game.name} (${timeStr})</div>
+          </div>
+          <div class="right">
+            <a href="${game.path}" data-continue-btn="true" class="continue-play-btn">▶ Fortsett</a>
+          </div>
+        </div>
+      `;
+
+      container.querySelector(".continue-play-btn").addEventListener("click", (e) => {
+        e.preventDefault();
+        playGame(data.lastPlayed, game.name);
+      });
+    }
+
+    // Render filter-knapper
+    function renderFilters(activeFilter = "Alle") {
+      const container = document.getElementById("filterContainer");
+      container.innerHTML = "";
+
+      categories.forEach(cat => {
+        const btn = document.createElement("button");
+        btn.className = `filter-btn ${cat === activeFilter ? "active" : ""}`;
+        btn.textContent = cat;
+        btn.addEventListener("click", () => {
+          const data = getLocalStorage();
+          data.filter = cat;
+          saveLocalStorage(data);
+          renderFilters(cat);
+          renderGames(cat);
+        });
+        container.appendChild(btn);
+      });
+    }
+
+    // Init
+    function init() {
+      const data = getLocalStorage();
+      renderFilters(data.filter);
+      renderGames(data.filter);
+      renderContinueBlock();
+    }
+
+    init();
+  </script>
 </body>
 </html>

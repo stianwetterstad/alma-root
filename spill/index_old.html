@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="no">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Spill | Alma.rocks</title>
+  <style>
+    :root{
+      --bg:#0b1020; --card:#121a33; --text:#e9ecff; --muted:#a9b1d6;
+      --accent:#7aa2f7; --accent2:#9ece6a; --danger:#f7768e;
+      --border: rgba(255,255,255,.10);
+      --border2: rgba(255,255,255,.12);
+      --btnbg: rgba(255,255,255,.06);
+      --radius:16px;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --max: 980px;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    }
+    body{
+      margin:0;
+      background:
+        radial-gradient(1200px 600px at 15% 10%, #1a2a6b33, transparent),
+        radial-gradient(1000px 700px at 90% 30%, #7aa2f733, transparent),
+        var(--bg);
+      color:var(--text);
+      min-height:100vh;
+      display:flex;
+      justify-content:center;
+    }
+    .wrap{ width: min(var(--max), 92vw); padding: 18px 0 40px; }
+
+    /* Toppmeny (samme “pattern” som spillene) */
+    .topbar{
+      display:flex; gap:10px; align-items:center; justify-content:space-between;
+      padding:12px 14px;
+      border:1px solid var(--border);
+      border-radius: 16px;
+      background: rgba(255,255,255,.03);
+      position: sticky;
+      top: 10px;
+      z-index: 10;
+      backdrop-filter: blur(6px);
+    }
+    .topbar .left{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+    .topbar a{
+      text-decoration:none;
+      color:var(--text);
+      background: var(--btnbg);
+      border:1px solid var(--border2);
+      padding:8px 12px;
+      border-radius:999px;
+      user-select:none;
+      box-shadow: 0 6px 18px rgba(0,0,0,.20);
+      transition: transform .08s ease, background .2s ease;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+    }
+    .topbar a:hover{ background: rgba(255,255,255,.10); }
+    .topbar a:active{ transform: translateY(1px); }
+    .topbar .label{ color:var(--muted); font-size:13px; }
+
+    header{
+      margin: 18px 2px 14px;
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap:12px;
+    }
+    h1{ margin:0; font-size: clamp(22px, 3vw, 34px); letter-spacing: .3px; }
+    .sub{ color: var(--muted); font-size: 13px; line-height: 1.35; max-width: 56ch; }
+
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap:14px;
+    }
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding:16px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      position:relative;
+      overflow:hidden;
+    }
+    .card::before{
+      content:"";
+      position:absolute; inset:-60px -60px auto auto;
+      width:160px; height:160px;
+      background: radial-gradient(circle at 30% 30%, rgba(122,162,247,.28), transparent 60%);
+      transform: rotate(18deg);
+      pointer-events:none;
+    }
+    .card h2{ margin:0; font-size: 20px; }
+    .card p{ margin:0; color:var(--muted); line-height:1.35; }
+
+    .tags{ display:flex; flex-wrap:wrap; gap:8px; margin-top:4px;}
+    .tag{
+      font-size:12px; color:var(--muted);
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.04);
+      padding:4px 8px; border-radius:999px;
+    }
+
+    .play{
+      margin-top:auto;
+      display:flex; gap:10px; flex-wrap:wrap;
+    }
+    .play a{
+      border-radius: 12px;
+      padding:10px 12px;
+      text-decoration:none;
+      color:#0b1020;
+      background: var(--accent);
+      font-weight: 800;
+      display:inline-flex; align-items:center; gap:8px;
+      box-shadow: 0 10px 24px rgba(122,162,247,.25);
+    }
+    .play a.secondary{
+      background: rgba(255,255,255,.08);
+      color: var(--text);
+      border: 1px solid rgba(255,255,255,.12);
+      box-shadow:none;
+      font-weight: 650;
+    }
+
+    footer{
+      margin-top:18px;
+      color:var(--muted);
+      font-size:13px;
+      line-height: 1.4;
+    }
+    kbd{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 12px;
+      padding: 2px 6px;
+      border: 1px solid rgba(255,255,255,.18);
+      border-bottom-width: 2px;
+      border-radius: 8px;
+      background: rgba(255,255,255,.06);
+      color: var(--text);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="left">
+        <a href="/" aria-label="Tilbake til Alma.rocks">← Alma.rocks</a>
+      </div>
+      <div class="label">Spillmeny</div>
+    </div>
+
+    <header>
+      <div>
+        <h1>🎮 Spill</h1>
+        <div class="sub">
+          Velg et spill! Alle er laget for å fungere bra på iPad (touch/knapper), og også på PC med tastatur.
+        </div>
+      </div>
+    </header>
+
+    <div class="grid">
+
+      <section class="card">
+        <h2>🐍 Snake</h2>
+        <p>Samle epler 🍎 og unngå å krasje i deg selv. Klassikeren!</p>
+        <div class="tags">
+          <span class="tag">Touch: sveip</span>
+          <span class="tag"><kbd>←</kbd><kbd>↑</kbd><kbd>→</kbd><kbd>↓</kbd></span>
+          <span class="tag">Raskt</span>
+        </div>
+        <div class="play">
+          <a href="/spill/snake/">Spill Snake →</a>
+          <a class="secondary" href="/spill/snake/">Åpne</a>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>🧱 Tetris</h2>
+        <p>Roter brikker og lag linjer. Øker i fart etter hvert.</p>
+        <div class="tags">
+          <span class="tag"><kbd>←</kbd><kbd>→</kbd> flytt</span>
+          <span class="tag"><kbd>↑</kbd> roter</span>
+          <span class="tag"><kbd>Space</kbd> dropp</span>
+          <span class="tag">Touch-knapper</span>
+        </div>
+        <div class="play">
+          <a href="/spill/tetris/">Spill Tetris →</a>
+          <a class="secondary" href="/spill/tetris/">Åpne</a>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>👾 Space Invaders</h2>
+        <p>Skyt invaderne før de når bunnen. Pass på livene!</p>
+        <div class="tags">
+          <span class="tag"><kbd>←</kbd><kbd>→</kbd> flytt</span>
+          <span class="tag"><kbd>Space</kbd> skyt</span>
+          <span class="tag">Touch-knapper</span>
+        </div>
+        <div class="play">
+          <a href="/spill/space-invaders/">Spill Space Invaders →</a>
+          <a class="secondary" href="/spill/space-invaders/">Åpne</a>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>🧱🏓 Breakout</h2>
+        <p>Dra fingeren for å styre plata og knus alle klossene!</p>
+        <div class="tags">
+          <span class="tag">iPad: dra for å styre</span>
+          <span class="tag">Enkelt</span>
+          <span class="tag">Korte runder</span>
+        </div>
+        <div class="play">
+          <a href="/spill/breakout/">Spill Breakout →</a>
+          <a class="secondary" href="/spill/breakout/">Åpne</a>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>🧠 Memory</h2>
+        <p>Finn like par! Rolig og supert på touch.</p>
+        <div class="tags">
+          <span class="tag">Trykk på kort</span>
+          <span class="tag">Barnevennlig</span>
+          <span class="tag">Enkel/Vanskelig</span>
+        </div>
+        <div class="play">
+          <a href="/spill/memory/">Spill Memory →</a>
+          <a class="secondary" href="/spill/memory/">Åpne</a>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>🔢 2048</h2>
+        <p>Sveip for å slå sammen tall. Klarer du 2048?</p>
+        <div class="tags">
+          <span class="tag">iPad: sveip</span>
+          <span class="tag"><kbd>←</kbd><kbd>↑</kbd><kbd>→</kbd><kbd>↓</kbd></span>
+          <span class="tag">Hjernetrim</span>
+        </div>
+        <div class="play">
+          <a href="/spill/2048/">Spill 2048 →</a>
+          <a class="secondary" href="/spill/2048/">Åpne</a>
+        </div>
+      </section>
+
+    </div>
+
+    <footer>
+      Tips: På iPad kan det hjelpe å legge siden til på hjemskjermen (Del → “Legg til på Hjem-skjerm”) for en mer “app”-følelse.
+    </footer>
+  </div>
+</body>
+</html>

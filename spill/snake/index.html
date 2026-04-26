@@ -23,6 +23,58 @@
       background: var(--bg);
       color: var(--text);
     }
+    .ui-topbar{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+      justify-content:flex-start;
+      padding:calc(10px + env(safe-area-inset-top)) calc(12px + env(safe-area-inset-right)) 10px calc(12px + env(safe-area-inset-left));
+      border-bottom: 1px solid var(--border);
+      background: rgba(255,255,255,.04);
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+    .ui-btn{
+      border:1px solid rgba(255,255,255,.18);
+      background: rgba(255,255,255,.08);
+      color: var(--text);
+      padding:10px 14px;
+      border-radius:12px;
+      font-weight:800;
+      cursor:pointer;
+      user-select:none;
+      text-decoration:none;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-height:44px;
+      min-width:44px;
+      touch-action:manipulation;
+    }
+    .ui-overlay{
+      position:fixed;
+      inset:0;
+      background: rgba(6,9,21,.6);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      z-index:30;
+      padding:16px;
+    }
+    .ui-card{
+      background: rgba(11,16,32,.96);
+      border:1px solid var(--border2);
+      border-radius:16px;
+      padding:16px;
+      max-width:340px;
+      width:100%;
+      text-align:center;
+    }
+    .ui-card h2{margin:0 0 10px 0;font-size:28px}
+    .ui-card p{margin:0 0 12px 0;color:var(--muted)}
+    .ui-hidden{display:none}
 
     /* Samme toppmeny-stil som de andre spillene */
     .topbar{
@@ -51,6 +103,12 @@
       padding: 8px 12px;
       border-radius: 999px;
       user-select:none;
+    }
+    .ui-btn:focus-visible,
+    button:focus-visible,
+    .topbar a:focus-visible{
+      outline:3px solid var(--green);
+      outline-offset:2px;
     }
     .topbar .label{
       color: var(--muted);
@@ -110,6 +168,9 @@
       background: var(--green);
       color: var(--greenDark);
       user-select:none;
+      min-height:44px;
+      min-width:44px;
+      touch-action:manipulation;
     }
     button:active{ transform: translateY(1px); }
 
@@ -126,12 +187,24 @@
 
 <body>
   <!-- Toppmeny (samme mønster som Tetris/Space Invaders) -->
-  <div class="topbar">
-    <div class="left">
-      <a href="/spill/">← Spillmeny</a>
-      <a href="/">← Alma.rocks</a>
+  <div class="ui-topbar" role="navigation" aria-label="Spillkontroller">
+    <a class="ui-btn" href="/spill/">⬅️ Spillmeny</a>
+    <button class="ui-btn" id="uiRestartBtn" type="button">🔄 Start på nytt</button>
+    <button class="ui-btn" id="uiPauseBtn" type="button">⏸️ Pause</button>
+  </div>
+
+  <div class="ui-overlay ui-hidden" id="pauseOverlay" aria-hidden="true">
+    <div class="ui-card">
+      <h2>Pauset</h2>
+      <button class="ui-btn" id="resumeBtn" type="button">Fortsett</button>
     </div>
-    <div class="label">Snake</div>
+  </div>
+
+  <div class="ui-overlay ui-hidden" id="hintOverlay" aria-hidden="true">
+    <div class="ui-card">
+      <p>Tips: Sveip eller bruk piltaster.</p>
+      <button class="ui-btn" id="hintOkBtn" type="button">OK</button>
+    </div>
   </div>
 
   <div class="wrap">
@@ -154,10 +227,17 @@
     </div>
   </div>
 
+<script src="../shared/game-runtime-utils.js"></script>
 <script>
 (() => {
+  const gameId = 'snake';
+  const DEBUG = false;
+  const hintKey = `alma:hintSeen:${gameId}`;
   const canvas = document.getElementById('game');
   const ctx = canvas.getContext('2d');
+  const pauseOverlay = document.getElementById('pauseOverlay');
+  const hintOverlay = document.getElementById('hintOverlay');
+  const uiPauseBtn = document.getElementById('uiPauseBtn');
 
   // Grid
   const grid = 18;               // størrelse på rutenett
@@ -172,6 +252,43 @@
   let score = 0;
   let best  = Number(localStorage.getItem(bestKey) || 0);
   bestEl.textContent = best;
+  let paused = false;
+
+  function softVibrate(ms = 12){ if (navigator.vibrate) navigator.vibrate(ms); }
+
+  function setPaused(value){
+    paused = Boolean(value);
+    pauseOverlay.classList.toggle('ui-hidden', !paused);
+    pauseOverlay.setAttribute('aria-hidden', paused ? 'false' : 'true');
+    uiPauseBtn.textContent = paused ? '▶️ Fortsett' : '⏸️ Pause';
+  }
+
+  function restartGame(){
+    softVibrate(16);
+    reset();
+    setPaused(false);
+  }
+
+  function showHintIfNeeded(){
+    if (localStorage.getItem(hintKey) === '1') return;
+    hintOverlay.classList.remove('ui-hidden');
+    hintOverlay.setAttribute('aria-hidden', 'false');
+  }
+
+  const inputLock = window.AlmaGameUtils.createInputLock({
+    gameId,
+    debug: DEBUG,
+    overlayElement: pauseOverlay,
+    isLocked: () => paused
+  });
+
+  const pauseController = window.AlmaGameUtils.createPauseVisibilityController({
+    gameId,
+    debug: DEBUG,
+    isPaused: () => paused,
+    setPaused,
+    canPause: () => true
+  });
 
   const snake = {
     x: grid * 10,
@@ -219,6 +336,7 @@
 
   function loop() {
     requestAnimationFrame(loop);
+    if (paused) return;
 
     if (++count < 4) return; // fart (lavere = raskere)
     count = 0;
@@ -272,22 +390,31 @@
 
   // keyboard
   document.addEventListener('keydown', (e) => {
+    const t = e.target;
+    const isTextInput = t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable);
+    if (!isTextInput && (e.key === 'ArrowLeft' || e.key === 'ArrowRight' || e.key === 'ArrowUp' || e.key === 'ArrowDown' || e.key === ' ' || e.key === 'Enter')) {
+      e.preventDefault();
+    }
+    if (inputLock.blocked('keydown', { key: e.key })) return;
     const key = e.key;
     if (key === 'ArrowLeft'  && snake.dx === 0) { snake.dx = -grid; snake.dy = 0; }
     else if (key === 'ArrowUp'    && snake.dy === 0) { snake.dy = -grid; snake.dx = 0; }
     else if (key === 'ArrowRight' && snake.dx === 0) { snake.dx = grid;  snake.dy = 0; }
     else if (key === 'ArrowDown'  && snake.dy === 0) { snake.dy = grid;  snake.dx = 0; }
-  });
+  }, { passive: false });
 
   // touch: swipe (bra på iPad)
   let touchStart = null;
+  function resetSwipeInput(){ touchStart = null; }
 
   canvas.addEventListener('touchstart', (e) => {
+    if (inputLock.blocked('touchstart')) return;
     const t = e.changedTouches[0];
     touchStart = { x: t.clientX, y: t.clientY };
   }, { passive: true });
 
   canvas.addEventListener('touchend', (e) => {
+    if (inputLock.blocked('touchend')) return;
     if (!touchStart) return;
     const t = e.changedTouches[0];
     const dx = t.clientX - touchStart.x;
@@ -304,14 +431,33 @@
       if (dy < 0 && snake.dy === 0) { snake.dy = -grid; snake.dx = 0; }
       else if (dy > 0 && snake.dy === 0) { snake.dy = grid; snake.dx = 0; }
     }
-    touchStart = null;
+    resetSwipeInput();
   }, { passive: true });
+  canvas.addEventListener('touchcancel', resetSwipeInput, { passive: true });
+  window.addEventListener('touchend', resetSwipeInput, { passive: true });
+  window.addEventListener('touchcancel', resetSwipeInput, { passive: true });
 
   // restart button
   document.getElementById('restart').addEventListener('click', reset);
+  document.getElementById('uiPauseBtn').addEventListener('click', () => {
+    softVibrate(12);
+    pauseController.toggle('topbar');
+  });
+  document.getElementById('uiRestartBtn').addEventListener('click', restartGame);
+  document.getElementById('resumeBtn').addEventListener('click', () => {
+    softVibrate(12);
+    pauseController.resume('overlay');
+  });
+  document.getElementById('hintOkBtn').addEventListener('click', () => {
+    softVibrate(12);
+    localStorage.setItem(hintKey, '1');
+    hintOverlay.classList.add('ui-hidden');
+    hintOverlay.setAttribute('aria-hidden', 'true');
+  });
 
   // start
   reset();
+  showHintIfNeeded();
   requestAnimationFrame(loop);
 })();
 </script>
