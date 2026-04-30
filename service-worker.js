@@ -1,4 +1,4 @@
-const CACHE_NAME = 'alma-v3';
+const CACHE_NAME = 'alma-v5';
 const OFFLINE_URL = '/offline.html';
 const CACHE_URLS = [
   '/index.html',
@@ -9,6 +9,10 @@ const CACHE_URLS = [
   OFFLINE_URL,
   '/spill/',
   '/spill/index.html',
+  '/tur/',
+  '/tur/index.html',
+  '/tur/sykkeltur-frotvedt-kart.png',
+  '/tur/rute-illustrasjon.svg',
   '/ukelonn/',
   '/ukelonn/index.html'
 ];

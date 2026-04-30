@@ -1,0 +1,549 @@
+<!doctype html>
+<html lang="no">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tur i Sætre | Alma</title>
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+    crossorigin=""
+  />
+  <style>
+    :root {
+      --sky: #dff3ff;
+      --sea: #7bc8f6;
+      --sun: #ffd166;
+      --grass: #b7e4a3;
+      --forest: #2f7d32;
+      --berry: #d6286b;
+      --text: #17324d;
+      --card: rgba(255, 255, 255, 0.88);
+      --shadow: 0 12px 26px rgba(20, 35, 55, 0.15);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 90% 10%, #fff2b2 0, #fff2b2 12%, transparent 13%),
+        radial-gradient(circle at 10% 85%, #b7e4a3 0, #b7e4a3 18%, transparent 19%),
+        linear-gradient(180deg, var(--sky), #f4fbff 35%, #fdfdf7 100%);
+      min-height: 100vh;
+      line-height: 1.4;
+    }
+
+    .page {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 1rem 1rem 5rem;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(214, 241, 255, 0.95));
+      border-radius: 26px;
+      box-shadow: var(--shadow);
+      padding: 1rem;
+      margin-top: 0.8rem;
+      animation: rise 0.65s ease-out;
+    }
+
+    h1 {
+      margin: 0.3rem 0 0.2rem;
+      font-size: clamp(1.9rem, 5.8vw, 2.5rem);
+      line-height: 1.1;
+    }
+
+    .subtitle {
+      margin: 0;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #22577a;
+    }
+
+    .goal {
+      margin-top: 0.9rem;
+      padding: 0.85rem;
+      border-radius: 14px;
+      background: #fff7d6;
+      border: 2px dashed #f2b705;
+      font-weight: 700;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.55rem;
+      margin-top: 0.9rem;
+    }
+
+    .pill {
+      background: #ffffff;
+      border-radius: 999px;
+      padding: 0.45rem 0.75rem;
+      font-size: 0.93rem;
+      box-shadow: 0 3px 10px rgba(12, 34, 56, 0.09);
+    }
+
+    section {
+      margin-top: 1rem;
+      animation: rise 0.65s ease-out;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      padding: 1rem;
+      backdrop-filter: blur(2px);
+    }
+
+    h2 {
+      margin: 0 0 0.8rem;
+      font-size: 1.35rem;
+    }
+
+    .progress-wrap {
+      margin: 0.6rem 0 0.9rem;
+      background: #e9f2ff;
+      border-radius: 999px;
+      height: 18px;
+      overflow: hidden;
+      border: 1px solid #c7ddf7;
+    }
+
+    .progress {
+      height: 100%;
+      width: 0;
+      background: linear-gradient(90deg, #17b978, #0fa3b1);
+      transition: width 0.35s ease;
+    }
+
+    #progressText {
+      margin: 0;
+      font-weight: 700;
+      color: #255470;
+    }
+
+    .tasks {
+      display: grid;
+      gap: 0.6rem;
+    }
+
+    .task {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 0.65rem 0.75rem;
+      border: 1px solid #d6e5f7;
+      min-height: 52px;
+    }
+
+    .task input {
+      width: 1.25rem;
+      height: 1.25rem;
+      accent-color: #17b978;
+      flex: 0 0 auto;
+    }
+
+    .task label {
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .map {
+      width: 100%;
+      min-height: 280px;
+      border-radius: 16px;
+      border: 1px solid #d0e4f0;
+      background: #f5fcff;
+    }
+
+    #routeMap {
+      width: 100%;
+      min-height: 320px;
+      border-radius: 16px;
+      border: 1px solid #d0e4f0;
+      overflow: hidden;
+    }
+
+    .route-plan {
+      margin-top: 0.8rem;
+      display: grid;
+      gap: 0.55rem;
+    }
+
+    .route-stop {
+      background: #ffffff;
+      border: 1px solid #d6e5f7;
+      border-radius: 12px;
+      padding: 0.65rem 0.75rem;
+      font-size: 0.96rem;
+      font-weight: 600;
+    }
+
+    .route-note {
+      margin-top: 0.75rem;
+      font-size: 0.93rem;
+      font-weight: 600;
+      color: #2b5674;
+    }
+
+    .route-warning {
+      margin-top: 0.5rem;
+      font-size: 0.88rem;
+      color: #416179;
+    }
+
+    .route-link {
+      display: inline-block;
+      margin-top: 0.7rem;
+      background: #ffffff;
+      border: 1px solid #9ecbe2;
+      border-radius: 10px;
+      color: #0e5f8c;
+      text-decoration: none;
+      font-weight: 700;
+      padding: 0.55rem 0.75rem;
+    }
+
+    .route-figure {
+      margin: 0.85rem 0 0;
+      background: #ffffff;
+      border: 1px solid #d6e5f7;
+      border-radius: 14px;
+      overflow: hidden;
+    }
+
+    .route-figure img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .photos {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0.7rem;
+    }
+
+    figure {
+      margin: 0;
+      background: #fff;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid #d7e6f4;
+    }
+
+    figcaption {
+      padding: 0.55rem 0.7rem 0.7rem;
+      font-size: 0.92rem;
+      font-weight: 600;
+      color: #2f4d66;
+    }
+
+    .badge {
+      margin-top: 0.7rem;
+      padding: 0.8rem;
+      border-radius: 14px;
+      background: linear-gradient(120deg, #ffffff, #e4f8ff);
+      border: 1px dashed #73bcd4;
+      font-weight: 700;
+      text-align: center;
+      min-height: 54px;
+    }
+
+    .actions {
+      margin-top: 1rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.6rem;
+    }
+
+    button,
+    .home-link {
+      border: none;
+      border-radius: 14px;
+      padding: 0.85rem;
+      font-size: 1rem;
+      font-weight: 700;
+      text-decoration: none;
+      text-align: center;
+    }
+
+    #resetBtn {
+      background: #ffd6dd;
+      color: #7b1e2b;
+    }
+
+    .home-link {
+      background: #0fa3b1;
+      color: #fff;
+    }
+
+    @media (min-width: 640px) {
+      .map {
+        min-height: 350px;
+      }
+
+      #routeMap {
+        min-height: 380px;
+      }
+
+      .photos {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .page {
+        padding-top: 1.4rem;
+      }
+    }
+
+    @keyframes rise {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="hero">
+      <p class="subtitle">Morgendagens eventyr i Sætre</p>
+      <h1>🚲 Sykkeljakten: Alma + Pappa</h1>
+      <p class="goal">Mål: Bryggerhuset på Frøtvedt, med bakst og kanskje kakao før hjemturen via Åros.</p>
+      <div class="meta">
+        <span class="pill">📅 Fredag 1. mai</span>
+        <span class="pill">⏱️ Ca. 100-140 min</span>
+        <span class="pill">📍 Sætre-området</span>
+        <span class="pill">🚲 Ca. 9-12 km</span>
+        <span class="pill">🎒 Ta med vann + frukt</span>
+      </div>
+    </header>
+
+    <section class="card" aria-labelledby="oppdrag-tittel">
+      <h2 id="oppdrag-tittel">Oppdrag underveis</h2>
+      <p id="progressText">0 av 6 mål fullført</p>
+      <div class="progress-wrap" aria-hidden="true">
+        <div id="progressBar" class="progress"></div>
+      </div>
+
+      <div class="tasks">
+        <div class="task"><input id="task1" type="checkbox" data-task="1" /><label for="task1">Sikker start: Hjelm på og "sykkelsjekk" (bremser + ringeklokke).</label></div>
+        <div class="task"><input id="task2" type="checkbox" data-task="2" /><label for="task2">Skatvedtveien - "Skogsporten": Første som ser ekorn/hakkespett/blomst vinner.</label></div>
+        <div class="task"><input id="task3" type="checkbox" data-task="3" /><label for="task3">Skogstoppen: Ta 5 dype pust og tell hvor mange fuglelyder dere hører.</label></div>
+        <div class="task"><input id="task4" type="checkbox" data-task="4" /><label for="task4">Frøtvedt - kuemøte: Stå rolig ved gjerdet og tell hvite ku-flekker.</label></div>
+        <div class="task"><input id="task5" type="checkbox" data-task="5" /><label for="task5">Bryggerhuset: Spør om de kan vise vedfyrt steinovn. Ta seiersbilde.</label></div>
+        <div class="task"><input id="task6" type="checkbox" data-task="6" /><label for="task6">Åros sentrum: Sving innom kirken og finn en detalj fra 1903.</label></div>
+        <div class="task"><input id="task7" type="checkbox" data-task="7" /><label for="task7">Vervenstranda/elveutløpet: Stein-skvulp-konkurranse, flest sprett vinner.</label></div>
+        <div class="task"><input id="task8" type="checkbox" data-task="8" /><label for="task8">Hemmelig oppdrag: Ta med ett naturminne hver og lag "turminne" hjemme.</label></div>
+      </div>
+
+      <div id="badge" class="badge">Eventyrstatus: Klar for avgang 🚀</div>
+    </section>
+
+    <section class="card" aria-labelledby="kart-tittel">
+      <h2 id="kart-tittel">Oppdagelseskart</h2>
+      <div id="routeMap" class="map" role="img" aria-label="Kart med start og mål for sykkelturen"></div>
+
+      <div class="route-plan" aria-label="Planlagt sykkelrute for barn">
+        <div class="route-stop">1. Midtskogstubben 6 (start)</div>
+        <div class="route-stop">2. Skatvedtveien - Skogsporten</div>
+        <div class="route-stop">3. Skogsvei/sti i Frøtvedtåsen</div>
+        <div class="route-stop">4. Toppen av Frøtvedtveien</div>
+        <div class="route-stop">5. Frøtvedt - kuemøte</div>
+        <div class="route-stop">6. Bryggerhuset på Frøtvedt (mål)</div>
+        <div class="route-stop">7. Åros sentrum og Ivers vei</div>
+        <div class="route-stop">8. Retur til Midtskogstubben 6</div>
+      </div>
+
+      <p class="route-note">Total runde: ca. 9-12 km avhengig av stivalg. Fin langtur for 10-åring med gode pauser ved målet.</p>
+      <p class="route-warning">Trygghet først: Skogssti kan ha grus og røtter. Senk fart i nedoverbakker og trill sykkelen der det kjennes utrygt.</p>
+      <a
+        class="route-link"
+        href="https://www.openstreetmap.org/?mlat=59.7105&mlon=10.4951#map=13/59.7000/10.5070"
+        target="_blank"
+        rel="noopener noreferrer"
+      >Åpne lokalkart i fullskjerm</a>
+
+      <figure class="route-figure" aria-labelledby="illustrasjon-caption">
+        <img src="/tur/sykkeltur-frotvedt-kart.png" alt="Illustrert turkart med 8 stopp, kuer, bryggerhuset og fakta-bokser" loading="lazy" />
+        <figcaption id="illustrasjon-caption">Illustrasjon av turen: hjem -> Skatvedt -> skogen -> Frøtvedt -> Åros -> hjem.</figcaption>
+      </figure>
+    </section>
+
+    <section class="card" aria-labelledby="fakta-tittel">
+      <h2 id="fakta-tittel">Morsomme fakta og historier</h2>
+      <div class="route-plan" aria-label="Fakta fra området">
+        <div class="route-stop">Frøtvedt: Navnet betyr trolig "Freyjas rydning". Gården er nevnt i 1368, og steinaldersfunn viser bosetting i tusenvis av år.</div>
+        <div class="route-stop">Bryggerhuset: Åpnet i 2004. Her baker de i gammeldags vedfyrt steinovn.</div>
+        <div class="route-stop">Gårdsliv: På Frøtvedt beiter Charolaise-kuer. En okse kan veie 1100-1200 kg, og flokken spiser enorme mengder gress i året.</div>
+        <div class="route-stop">Åros: Navnet betyr "elve-munning". Elva het Gró i norrøn tid.</div>
+        <div class="route-stop">Historisk spor: På 1600-tallet var det perlefiske i Åroselva med elveperlemuslinger.</div>
+        <div class="route-stop">Verven: Mellom 1850-1880 lå det et skipsverft her som bygde seilskuter.</div>
+        <div class="route-stop">Krigshistorie: I skogen mellom Smedmyrhytta og Skånevann finnes fortsatt bunkere fra hjemmefronten.</div>
+        <div class="route-stop">Lokal helt: Harald Gardsson fra Åros reiste i 1442 til Lödöse i Sverige som bonde-utsending til kongevalg.</div>
+        <div class="route-stop">Åros kirke er fra 1903, og ved butikken sto tidligere et befestet steinhus fra 1696.</div>
+      </div>
+      <p class="route-warning">Historiejakt underveis: Spør ved Bryggerhuset om de kan fortelle en lokal historie Alma kan ta med seg hjem.</p>
+    </section>
+
+    <section class="card" aria-labelledby="bilder-tittel">
+      <h2 id="bilder-tittel">Turbilder (inspo)</h2>
+      <div class="photos">
+        <figure>
+          <svg viewBox="0 0 400 220" aria-hidden="true">
+            <rect width="400" height="220" fill="#cdefff"></rect>
+            <circle cx="330" cy="45" r="28" fill="#ffd166"></circle>
+            <rect x="0" y="150" width="400" height="70" fill="#9ad596"></rect>
+            <path d="M60 170 L110 120 L155 170 Z" fill="#5c8d5f"></path>
+            <path d="M130 170 L190 105 L250 170 Z" fill="#3f7843"></path>
+            <circle cx="220" cy="168" r="22" fill="#333"></circle>
+            <circle cx="285" cy="168" r="22" fill="#333"></circle>
+            <rect x="216" y="142" width="75" height="8" rx="4" fill="#f77f00"></rect>
+            <rect x="246" y="122" width="10" height="28" fill="#f77f00"></rect>
+          </svg>
+          <figcaption>Sykkelklar i frisk morgenluft.</figcaption>
+        </figure>
+        <figure>
+          <svg viewBox="0 0 400 220" aria-hidden="true">
+            <rect width="400" height="220" fill="#def8ff"></rect>
+            <rect x="0" y="145" width="400" height="75" fill="#b7e4a3"></rect>
+            <rect x="70" y="90" width="28" height="56" fill="#7a4e2d"></rect>
+            <circle cx="84" cy="70" r="34" fill="#3f8f3f"></circle>
+            <circle cx="125" cy="165" r="16" fill="#8d99ae"></circle>
+            <ellipse cx="240" cy="165" rx="70" ry="23" fill="#79b4d8"></ellipse>
+            <circle cx="285" cy="162" r="3" fill="#fff"></circle>
+            <circle cx="300" cy="170" r="3" fill="#fff"></circle>
+            <circle cx="268" cy="171" r="3" fill="#fff"></circle>
+          </svg>
+          <figcaption>Se om dere finner stein, blader og spor langs veien.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="actions">
+      <button id="resetBtn" type="button">Nullstill dagens mål</button>
+      <a class="home-link" href="/">Til startsiden</a>
+    </section>
+  </main>
+
+  <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+    crossorigin=""
+  ></script>
+  <script>
+    const STORAGE_KEY = "alma_tur_sykkel_satre";
+    const checkboxes = Array.from(document.querySelectorAll(".task input[type='checkbox']"));
+    const progressBar = document.getElementById("progressBar");
+    const progressText = document.getElementById("progressText");
+    const badge = document.getElementById("badge");
+    const resetBtn = document.getElementById("resetBtn");
+    const mapPoints = [
+      { name: "Start: Midtskogstubben 6", coords: [59.6763693, 10.5233525] },
+      { name: "Mål: Bryggerhuset på Frøtvedt", coords: [59.7104683, 10.4951129] }
+    ];
+
+    function initRouteMap() {
+      if (typeof L === "undefined") {
+        return;
+      }
+
+      const map = L.map("routeMap", {
+        zoomControl: true,
+        scrollWheelZoom: false
+      }).setView(mapPoints[0].coords, 13);
+
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 19,
+        attribution: "&copy; OpenStreetMap-bidragsytere"
+      }).addTo(map);
+
+      const bounds = [];
+      mapPoints.forEach((point, index) => {
+        L.marker(point.coords)
+          .addTo(map)
+          .bindPopup((index + 1) + ". " + point.name);
+        bounds.push(point.coords);
+      });
+
+      map.fitBounds(bounds, {
+        padding: [20, 20]
+      });
+    }
+
+    function saveState() {
+      const checked = checkboxes.map((box) => box.checked);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(checked));
+    }
+
+    function loadState() {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return;
+
+      try {
+        const values = JSON.parse(raw);
+        if (Array.isArray(values)) {
+          checkboxes.forEach((box, index) => {
+            box.checked = Boolean(values[index]);
+          });
+        }
+      } catch (error) {
+        console.warn("Kunne ikke lese lagret turstatus", error);
+      }
+    }
+
+    function updateProgress() {
+      const completed = checkboxes.filter((box) => box.checked).length;
+      const total = checkboxes.length;
+      const percent = Math.round((completed / total) * 100);
+
+      progressBar.style.width = percent + "%";
+      progressText.textContent = completed + " av " + total + " mål fullført";
+
+      if (completed === 0) {
+        badge.textContent = "Eventyrstatus: Klar for avgang 🚀";
+      } else if (completed < total / 2) {
+        badge.textContent = "Eventyrstatus: God start! Dere er i gang 🌟";
+      } else if (completed < total) {
+        badge.textContent = "Eventyrstatus: Supertråkk! Skattestopp nærmer seg 🗺️";
+      } else {
+        badge.textContent = "Eventyrstatus: Mesteroppdrag fullført! 🎉";
+      }
+    }
+
+    checkboxes.forEach((box) => {
+      box.addEventListener("change", () => {
+        saveState();
+        updateProgress();
+      });
+    });
+
+    resetBtn.addEventListener("click", () => {
+      checkboxes.forEach((box) => {
+        box.checked = false;
+      });
+      saveState();
+      updateProgress();
+    });
+
+    loadState();
+    updateProgress();
+    initRouteMap();
+  </script>
+</body>
+</html>

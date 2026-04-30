@@ -1,0 +1,98 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 760" role="img" aria-label="Illustrert rute fra hjem via Skatvedt, skogen, Frøtvedt og Åros tilbake hjem med 8 stopp">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#d7f0ff"/>
+      <stop offset="100%" stop-color="#f8fcff"/>
+    </linearGradient>
+    <linearGradient id="sea" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#9fd9ff"/>
+      <stop offset="100%" stop-color="#77c5f5"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#24516e" flood-opacity="0.25"/>
+    </filter>
+    <style>
+      .title { font: 700 36px 'Trebuchet MS', sans-serif; fill: #13354f; }
+      .route { fill: none; stroke: #0f8e98; stroke-width: 10; stroke-linecap: round; stroke-linejoin: round; }
+      .box { fill: #ffffff; stroke: #c5dff1; stroke-width: 2; rx: 16; }
+      .tiny { font: 600 20px 'Trebuchet MS', sans-serif; fill: #254e68; }
+      .label { font: 700 18px 'Trebuchet MS', sans-serif; fill: #163a57; }
+      .nr { font: 700 18px 'Trebuchet MS', sans-serif; fill: #ffffff; }
+    </style>
+  </defs>
+
+  <rect width="1200" height="760" fill="url(#sky)"/>
+  <path d="M0 520 C220 500, 340 600, 510 540 C700 470, 860 590, 1200 480 L1200 760 L0 760 Z" fill="#c7eab9"/>
+  <path d="M650 120 C860 90, 1060 160, 1200 260 L1200 620 C1080 590, 930 565, 760 590 C680 605, 620 630, 560 660 C700 560, 700 260, 650 120 Z" fill="url(#sea)" opacity="0.9"/>
+
+  <text x="36" y="52" class="title">Sykkeltur: Hjem -> Skatvedt -> Skogen -> Frøtvedt -> Åros -> Hjem</text>
+
+  <path class="route" filter="url(#shadow)"
+    d="M160 560 L300 500 L380 400 L490 300 L590 260 L660 220 L760 320 L680 470 L510 540 L360 600 L210 590 L160 560"/>
+
+  <g>
+    <circle cx="160" cy="560" r="18" fill="#e63946"/><text x="154" y="567" class="nr">1</text>
+    <text x="184" y="548" class="label">Hjem (Midtskogstubben)</text>
+
+    <circle cx="300" cy="500" r="18" fill="#e63946"/><text x="294" y="507" class="nr">2</text>
+    <text x="326" y="488" class="label">Skatvedtveien</text>
+
+    <circle cx="380" cy="400" r="18" fill="#e63946"/><text x="374" y="407" class="nr">3</text>
+    <text x="406" y="388" class="label">Skogsporten</text>
+
+    <circle cx="490" cy="300" r="18" fill="#e63946"/><text x="484" y="307" class="nr">4</text>
+    <text x="516" y="288" class="label">Skogstoppen</text>
+
+    <circle cx="590" cy="260" r="18" fill="#e63946"/><text x="584" y="267" class="nr">5</text>
+    <text x="616" y="248" class="label">Frøtvedt (kuemøte)</text>
+
+    <circle cx="660" cy="220" r="18" fill="#e63946"/><text x="654" y="227" class="nr">6</text>
+    <text x="686" y="208" class="label">Bryggerhuset</text>
+
+    <circle cx="760" cy="320" r="18" fill="#e63946"/><text x="754" y="327" class="nr">7</text>
+    <text x="786" y="308" class="label">Åros sentrum</text>
+
+    <circle cx="680" cy="470" r="18" fill="#e63946"/><text x="674" y="477" class="nr">8</text>
+    <text x="706" y="458" class="label">Ivers vei / hjemover</text>
+  </g>
+
+  <g>
+    <rect x="610" y="168" width="130" height="70" fill="#f5f0e6" stroke="#9a7548" stroke-width="3"/>
+    <polygon points="605,168 675,130 745,168" fill="#8b4b2a"/>
+    <rect x="665" y="186" width="26" height="52" fill="#7c4f29"/>
+    <rect x="620" y="186" width="18" height="22" fill="#dbe9f4"/>
+    <rect x="708" y="186" width="18" height="22" fill="#dbe9f4"/>
+    <text x="600" y="154" class="label">Bryggerhuset</text>
+    <path d="M728 124 C736 112, 744 115, 750 103" stroke="#9bb6c7" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <path d="M742 132 C750 120, 760 122, 768 108" stroke="#9bb6c7" stroke-width="4" fill="none" stroke-linecap="round"/>
+  </g>
+
+  <g>
+    <ellipse cx="560" cy="280" rx="32" ry="21" fill="#f8f8f8" stroke="#6d6d6d" stroke-width="2"/>
+    <circle cx="588" cy="274" r="12" fill="#f8f8f8" stroke="#6d6d6d" stroke-width="2"/>
+    <circle cx="598" cy="270" r="3" fill="#1f2b38"/>
+    <ellipse cx="565" cy="288" rx="7" ry="5" fill="#dbdbdb"/>
+    <ellipse cx="548" cy="275" rx="6" ry="4" fill="#dbdbdb"/>
+    <text x="520" y="320" class="tiny">Charolaise-kuer</text>
+  </g>
+
+  <g>
+    <rect x="66" y="90" width="320" height="86" class="box"/>
+    <text x="84" y="122" class="tiny">Frøtvedt: navnet kan bety</text>
+    <text x="84" y="146" class="tiny">"Freyjas rydning".</text>
+
+    <rect x="410" y="84" width="350" height="86" class="box"/>
+    <text x="428" y="116" class="tiny">Bryggerhuset baker i vedfyrt steinovn.</text>
+    <text x="428" y="140" class="tiny">Spør om å få se ovnen.</text>
+
+    <rect x="816" y="84" width="340" height="86" class="box"/>
+    <text x="834" y="116" class="tiny">Åros betyr "elve-munning".</text>
+    <text x="834" y="140" class="tiny">Her var det perlefiske på 1600-tallet.</text>
+  </g>
+
+  <g>
+    <rect x="72" y="648" width="1060" height="72" class="box"/>
+    <text x="92" y="678" class="tiny">Oppdrag: Finn et skilt ved Skatvedtveien, lytt etter fugler på skogstoppen, møt kuene ved Frøtvedt,</text>
+    <text x="92" y="702" class="tiny">og avslutt med stein-skvulp ved Åros før dere sykler hjem.</text>
+  </g>
+</svg>
