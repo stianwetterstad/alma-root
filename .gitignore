@@ -1,0 +1,10 @@
+node_modules/
+test-results/
+playwright-report/
+coverage/
+.nyc_output/
+
+# OS/editor noise
+.DS_Store
+Thumbs.db
+.vscode/settings.json

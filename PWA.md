@@ -11,7 +11,7 @@ manifest.webmanifest beskriver hvordan appen installeres og vises:
 index.html laster manifest og registrerer service worker ved load.
 
 ## Cache-strategi i service-worker.js
-CACHE_NAME er alma-v3.
+CACHE_NAME settes i service-worker.js.
 
 Precache ved install (cache.addAll):
 - /index.html, /favicon.ico, /manifest.webmanifest
