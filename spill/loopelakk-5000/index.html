@@ -1,0 +1,1095 @@
+<!doctype html>
+<html lang="no">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Loopelakk 5000 | Alma.rocks</title>
+  <style>
+    :root{
+      --bg:#061423;
+      --bg2:#0c2238;
+      --card:#102a45;
+      --text:#ebf4ff;
+      --muted:#9eb9d3;
+      --accent:#ffb703;
+      --accent2:#32d3ff;
+      --danger:#ff5d5d;
+      --ok:#71e289;
+      --border:rgba(255,255,255,.16);
+      font-family: "Trebuchet MS", "Segoe UI", Arial, sans-serif;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0}
+    body{
+      color:var(--text);
+      background:
+        radial-gradient(1100px 520px at 10% -5%, #1b4e7a66, transparent),
+        radial-gradient(800px 600px at 95% 20%, #0dc4ff2e, transparent),
+        linear-gradient(165deg, var(--bg), var(--bg2));
+      padding:0;
+    }
+
+    .topbar{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      padding:12px 14px;
+      border-bottom:1px solid var(--border);
+      background:rgba(255,255,255,.05);
+      position:sticky;
+      top:0;
+      z-index:10;
+    }
+    .topbar .left{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+    .topbar a, .topbar button{
+      text-decoration:none;
+      color:var(--text);
+      background:rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.2);
+      border-radius:999px;
+      padding:9px 12px;
+      min-height:44px;
+      cursor:pointer;
+      font-weight:700;
+    }
+    .topbar .label{font-size:13px;color:var(--muted)}
+
+    .wrap{
+      width:min(980px, 94vw);
+      margin:18px auto 22px;
+      display:grid;
+      gap:12px;
+    }
+
+    .hero{
+      background:linear-gradient(130deg, rgba(255,183,3,.22), rgba(50,211,255,.18));
+      border:1px solid rgba(255,255,255,.22);
+      border-radius:16px;
+      padding:14px;
+    }
+    h1{margin:0 0 6px 0; font-size:clamp(22px, 4vw, 34px)}
+    .sub{margin:0;color:#d8eaff}
+
+    .panel{
+      background:rgba(7,17,30,.7);
+      border:1px solid var(--border);
+      border-radius:16px;
+      padding:12px;
+      display:grid;
+      gap:12px;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns:1fr;
+      gap:12px;
+    }
+
+    .row{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+
+    .pill{
+      border:1px solid rgba(255,255,255,.18);
+      background:rgba(255,255,255,.08);
+      padding:8px 10px;
+      border-radius:999px;
+      font-size:14px;
+      min-height:40px;
+      display:flex;
+      align-items:center;
+      gap:6px;
+    }
+
+    select, button, input[type="range"]{font:inherit}
+    select, button{
+      border-radius:10px;
+      border:1px solid rgba(255,255,255,.2);
+      background:rgba(255,255,255,.08);
+      color:var(--text);
+      padding:9px 12px;
+      min-height:44px;
+    }
+    select{
+      background:#163450;
+      color:#f2f8ff;
+      font-weight:700;
+    }
+    select:focus-visible{
+      outline:2px solid var(--accent2);
+      outline-offset:2px;
+    }
+    select option{
+      background:#163450;
+      color:#f2f8ff;
+    }
+    button{cursor:pointer;font-weight:800}
+    .primary{background:var(--accent); color:#1f1600; border-color:#f7cc63}
+    .danger{background:#ff6a6a; color:#2a0000; border-color:#ffaaaa}
+
+    .speed-box{
+      display:grid;
+      gap:10px;
+      border:1px solid rgba(255,255,255,.18);
+      background:rgba(0,0,0,.2);
+      border-radius:12px;
+      padding:10px;
+    }
+    .speed-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .speed-value{font-size:22px;font-weight:900;color:var(--accent2)}
+    .speed-controls{display:flex;gap:8px;flex-wrap:wrap}
+    .speed-controls button{min-width:62px}
+
+    .status{
+      border:1px solid rgba(255,255,255,.18);
+      border-radius:12px;
+      background:rgba(255,255,255,.04);
+      padding:10px;
+      line-height:1.35;
+    }
+    .status strong{color:#fff}
+
+    canvas{
+      width:100%;
+      height:auto;
+      border:1px solid rgba(255,255,255,.2);
+      border-radius:14px;
+      background:linear-gradient(180deg, #0c1224, #131b2f);
+      display:block;
+    }
+
+    .result{
+      border:1px solid rgba(255,255,255,.2);
+      background:rgba(0,0,0,.25);
+      border-radius:12px;
+      padding:10px;
+      display:grid;
+      gap:4px;
+    }
+    .result .title{font-weight:900; color:#fff}
+    .danger-text{color:#ffd2d2}
+    .ok-text{color:#d7ffe1}
+
+    .help{font-size:13px;color:var(--muted);line-height:1.4}
+
+    @media (min-width: 860px){
+      .grid{grid-template-columns:1.2fr .8fr}
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="left">
+      <a href="/spill/">Til spillmeny</a>
+    </div>
+    <div class="label">Loopelakk 5000</div>
+  </div>
+
+  <main class="wrap">
+    <section class="hero">
+      <h1>Loopelakk 5000: Nitroknute</h1>
+      <p class="sub">Du styrer bare hastigheten. For fort i svinger: utfor. For sakte i loop: nedtur.</p>
+    </section>
+
+    <section class="panel">
+      <div class="row">
+        <label for="trackSelect">Bane:</label>
+        <select id="trackSelect" aria-label="Velg bane"></select>
+        <button id="startBtn" class="primary" type="button">Start lop</button>
+        <button id="resetBtn" class="danger" type="button">Nullstill run</button>
+      </div>
+
+      <div class="grid">
+        <div>
+          <canvas id="trackCanvas" width="900" height="250" aria-label="Baneoversikt"></canvas>
+          <div class="help">Tips: Bruk slider, +/-, eller tastene Pil opp/ned. Bare fart teller.</div>
+        </div>
+
+        <div class="speed-box">
+          <div class="speed-head">
+            <div class="pill">Malfart <strong id="targetSpeed">80</strong> km/t</div>
+            <div class="speed-value" id="liveSpeed">0 km/t</div>
+          </div>
+          <input id="speedSlider" type="range" min="20" max="260" step="1" value="80" />
+          <div class="speed-controls">
+            <button id="minusBtn" type="button">-10</button>
+            <button id="plusBtn" type="button">+10</button>
+          </div>
+
+          <div class="status" id="segmentInfo"></div>
+
+          <div class="row">
+            <div class="pill">Runder <strong id="laps">0</strong></div>
+            <div class="pill">Snittfart <strong id="avgSpeed">0</strong> km/t</div>
+            <div class="pill">Poeng <strong id="score">0</strong></div>
+          </div>
+
+          <div class="result" id="runResult">
+            <div class="title">Klar for start</div>
+            <div>Velg bane og finn riktig fart i hver del av banen.</div>
+          </div>
+
+          <div class="result" id="bestResult">
+            <div class="title">Highscore (valgt bane)</div>
+            <div>Ingen score enda.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    (() => {
+      const GAME_PATH = "/spill/loopelakk-5000/";
+      const HS_KEY = "alma_loopelakk5000_highscores";
+
+      const tracks = [
+        {
+          id: "solslyngen",
+          name: "1. Solslyngen Oval",
+          shape: "oval",
+          lapLength: 6400,
+          segments: [
+            { name: "Solstart", type: "straight", length: 1400 },
+            { name: "Mjuk bue", type: "curve", length: 520, maxSpeed: 140 },
+            { name: "Langslette", type: "straight", length: 1100 },
+            { name: "Mini-loop", type: "loop", length: 560, minSpeed: 98 },
+            { name: "Cruisefelt", type: "straight", length: 980 },
+            { name: "Snill knekk", type: "curve", length: 540, maxSpeed: 136 },
+            { name: "Solglid", type: "straight", length: 900 },
+            { name: "Mallinje", type: "straight", length: 400 }
+          ]
+        },
+        {
+          id: "karamellkvadrat",
+          name: "2. Karamellkvadrat",
+          shape: "squircle",
+          lapLength: 6200,
+          segments: [
+            { name: "Sukkerrett", type: "straight", length: 1300 },
+            { name: "Sving karamell", type: "curve", length: 620, maxSpeed: 134 },
+            { name: "Tyggepause", type: "straight", length: 900 },
+            { name: "Glitterloop", type: "loop", length: 620, minSpeed: 104 },
+            { name: "Sirupslette", type: "straight", length: 860 },
+            { name: "Knitring", type: "curve", length: 600, maxSpeed: 130 },
+            { name: "Krydderstrekk", type: "straight", length: 800 },
+            { name: "Snacksvingen", type: "curve", length: 500, maxSpeed: 126 }
+          ]
+        },
+        {
+          id: "neonrektor",
+          name: "3. Neonrektor",
+          shape: "rounded",
+          lapLength: 6100,
+          segments: [
+            { name: "Laserstrekk", type: "straight", length: 1100 },
+            { name: "Byknekk", type: "curve", length: 700, maxSpeed: 130 },
+            { name: "Refleksplate", type: "straight", length: 760 },
+            { name: "Skyloop", type: "loop", length: 680, minSpeed: 108 },
+            { name: "Neonbro", type: "straight", length: 700 },
+            { name: "TV-kurve", type: "curve", length: 680, maxSpeed: 126 },
+            { name: "Boostfelt", type: "straight", length: 760 },
+            { name: "Bakport", type: "curve", length: 720, maxSpeed: 122 }
+          ]
+        },
+        {
+          id: "fjellklypa",
+          name: "4. Fjellklypa Diamant",
+          shape: "diamond",
+          lapLength: 6000,
+          segments: [
+            { name: "Ryggstrekk", type: "straight", length: 980 },
+            { name: "Steinknekk", type: "curve", length: 760, maxSpeed: 126 },
+            { name: "Luftlinje", type: "straight", length: 620 },
+            { name: "Bergloop", type: "loop", length: 700, minSpeed: 112 },
+            { name: "Skarplate", type: "straight", length: 600 },
+            { name: "Klypetak", type: "curve", length: 760, maxSpeed: 122 },
+            { name: "Toppdrag", type: "straight", length: 620 },
+            { name: "Nedstup", type: "curve", length: 960, maxSpeed: 120 }
+          ]
+        },
+        {
+          id: "dobbeldose",
+          name: "5. Dobbeldose 8-tal",
+          shape: "figure8",
+          lapLength: 5900,
+          segments: [
+            { name: "Kryssrett", type: "straight", length: 900 },
+            { name: "Venstrebuk", type: "curve", length: 760, maxSpeed: 124 },
+            { name: "Midtbro", type: "straight", length: 500 },
+            { name: "Nordloop", type: "loop", length: 700, minSpeed: 114 },
+            { name: "Snapzone", type: "straight", length: 460 },
+            { name: "Hoyrebuk", type: "curve", length: 760, maxSpeed: 121 },
+            { name: "Krysskorridor", type: "straight", length: 480 },
+            { name: "Sydloop", type: "loop", length: 700, minSpeed: 116 },
+            { name: "Utkast", type: "straight", length: 640 }
+          ]
+        },
+        {
+          id: "tritornado",
+          name: "6. TriTornado",
+          shape: "triangle",
+          lapLength: 5700,
+          segments: [
+            { name: "Spissrett", type: "straight", length: 820 },
+            { name: "Kant 1", type: "curve", length: 760, maxSpeed: 120 },
+            { name: "Mellomrom", type: "straight", length: 420 },
+            { name: "Tri-loop", type: "loop", length: 720, minSpeed: 118 },
+            { name: "Korthvil", type: "straight", length: 380 },
+            { name: "Kant 2", type: "curve", length: 760, maxSpeed: 118 },
+            { name: "Sklirom", type: "straight", length: 400 },
+            { name: "Kant 3", type: "curve", length: 700, maxSpeed: 116 },
+            { name: "Avfyring", type: "straight", length: 740 }
+          ]
+        },
+        {
+          id: "hexahavari",
+          name: "7. Hexahavari",
+          shape: "hex",
+          lapLength: 5500,
+          segments: [
+            { name: "Boltstart", type: "straight", length: 760 },
+            { name: "Hex-knekk A", type: "curve", length: 780, maxSpeed: 118 },
+            { name: "Kort A", type: "straight", length: 320 },
+            { name: "Hex-loop A", type: "loop", length: 760, minSpeed: 120 },
+            { name: "Kort B", type: "straight", length: 300 },
+            { name: "Hex-knekk B", type: "curve", length: 780, maxSpeed: 116 },
+            { name: "Kort C", type: "straight", length: 320 },
+            { name: "Hex-loop B", type: "loop", length: 760, minSpeed: 122 },
+            { name: "Kort D", type: "straight", length: 300 },
+            { name: "Hex-knekk C", type: "curve", length: 420, maxSpeed: 114 }
+          ]
+        },
+        {
+          id: "peanuttpanikk",
+          name: "8. Peanuttpanikk",
+          shape: "peanut",
+          lapLength: 5300,
+          segments: [
+            { name: "Panikkrett", type: "straight", length: 700 },
+            { name: "Klype A", type: "curve", length: 800, maxSpeed: 116 },
+            { name: "Pust A", type: "straight", length: 260 },
+            { name: "Pea-loop A", type: "loop", length: 760, minSpeed: 122 },
+            { name: "Pust B", type: "straight", length: 220 },
+            { name: "Klype B", type: "curve", length: 800, maxSpeed: 114 },
+            { name: "Pust C", type: "straight", length: 260 },
+            { name: "Pea-loop B", type: "loop", length: 760, minSpeed: 124 },
+            { name: "Pust D", type: "straight", length: 200 },
+            { name: "Utglid", type: "curve", length: 540, maxSpeed: 112 }
+          ]
+        },
+        {
+          id: "drapedjupet",
+          name: "9. Drapedjupet",
+          shape: "drop",
+          lapLength: 5100,
+          segments: [
+            { name: "Nedfall", type: "straight", length: 620 },
+            { name: "Drapebitt", type: "curve", length: 820, maxSpeed: 114 },
+            { name: "Smal A", type: "straight", length: 180 },
+            { name: "Svimmel-loop", type: "loop", length: 780, minSpeed: 124 },
+            { name: "Smal B", type: "straight", length: 150 },
+            { name: "Klemsving", type: "curve", length: 820, maxSpeed: 112 },
+            { name: "Smal C", type: "straight", length: 180 },
+            { name: "Bakloop", type: "loop", length: 760, minSpeed: 126 },
+            { name: "Smal D", type: "straight", length: 140 },
+            { name: "Nadeloyet", type: "curve", length: 650, maxSpeed: 110 }
+          ]
+        },
+        {
+          id: "sommerfugl-singel",
+          name: "10. Sommerfugl Singel",
+          shape: "butterfly",
+          lapLength: 5000,
+          segments: [
+            { name: "Vingesprett", type: "straight", length: 560 },
+            { name: "Vingekutt A", type: "curve", length: 840, maxSpeed: 112 },
+            { name: "Smal A", type: "straight", length: 120 },
+            { name: "Apex-loop A", type: "loop", length: 780, minSpeed: 126 },
+            { name: "Smal B", type: "straight", length: 110 },
+            { name: "Vingekutt B", type: "curve", length: 840, maxSpeed: 110 },
+            { name: "Smal C", type: "straight", length: 120 },
+            { name: "Apex-loop B", type: "loop", length: 760, minSpeed: 128 },
+            { name: "Smal D", type: "straight", length: 110 },
+            { name: "Nattesving", type: "curve", length: 760, maxSpeed: 108 }
+          ]
+        }
+      ];
+
+      const el = {
+        trackSelect: document.getElementById("trackSelect"),
+        startBtn: document.getElementById("startBtn"),
+        resetBtn: document.getElementById("resetBtn"),
+        speedSlider: document.getElementById("speedSlider"),
+        targetSpeed: document.getElementById("targetSpeed"),
+        liveSpeed: document.getElementById("liveSpeed"),
+        laps: document.getElementById("laps"),
+        avgSpeed: document.getElementById("avgSpeed"),
+        score: document.getElementById("score"),
+        segmentInfo: document.getElementById("segmentInfo"),
+        runResult: document.getElementById("runResult"),
+        bestResult: document.getElementById("bestResult"),
+        canvas: document.getElementById("trackCanvas")
+      };
+
+      const ctx = el.canvas.getContext("2d");
+      const sim = {
+        running: false,
+        ended: false,
+        speed: 0,
+        target: 80,
+        position: 0,
+        laps: 0,
+        elapsed: 0,
+        distance: 0,
+        score: 0,
+        lastTs: 0,
+        wheelSpin: 0,
+        crashUntil: 0,
+        crashPower: 0,
+        selectedTrackId: tracks[0].id
+      };
+
+      function getTrack() {
+        return tracks.find((t) => t.id === sim.selectedTrackId) || tracks[0];
+      }
+
+      function clamp(n, min, max) {
+        return Math.min(max, Math.max(min, n));
+      }
+
+      function getHighscores() {
+        try {
+          return JSON.parse(localStorage.getItem(HS_KEY) || "{}");
+        } catch (_) {
+          return {};
+        }
+      }
+
+      function saveHighscore(trackId, result) {
+        const all = getHighscores();
+        const prev = all[trackId];
+        if (!prev || result.score > prev.score) {
+          all[trackId] = result;
+          localStorage.setItem(HS_KEY, JSON.stringify(all));
+          saveMenuBestScore(result.score);
+          return true;
+        }
+        return false;
+      }
+
+      function saveMenuBestScore(score) {
+        let stats = {};
+        try {
+          stats = JSON.parse(localStorage.getItem("games_stats") || "{}");
+        } catch (_) {
+          stats = {};
+        }
+
+        const now = new Date().toISOString();
+        const prev = stats[GAME_PATH] || {};
+        const bestScore = Number(prev.bestScore || 0);
+
+        stats[GAME_PATH] = {
+          ...prev,
+          bestScore: score > bestScore ? score : bestScore,
+          lastPlayedAt: now
+        };
+
+        localStorage.setItem("games_stats", JSON.stringify(stats));
+        localStorage.setItem("games_lastPlayed", GAME_PATH);
+      }
+
+      function getCurrentSegment(track, position) {
+        let progress = 0;
+        for (let i = 0; i < track.segments.length; i += 1) {
+          const seg = track.segments[i];
+          const next = progress + seg.length;
+          if (position < next) {
+            return { seg, index: i, start: progress, end: next };
+          }
+          progress = next;
+        }
+        const last = track.segments[track.segments.length - 1];
+        return { seg: last, index: track.segments.length - 1, start: progress - last.length, end: progress };
+      }
+
+      function scoreFormula(laps, avgSpeed) {
+        return Math.round(laps * 1200 + avgSpeed * 8);
+      }
+
+      function resetRun() {
+        sim.running = false;
+        sim.ended = false;
+        sim.speed = 0;
+        sim.position = 0;
+        sim.laps = 0;
+        sim.elapsed = 0;
+        sim.distance = 0;
+        sim.score = 0;
+        sim.lastTs = 0;
+        sim.wheelSpin = 0;
+        sim.crashUntil = 0;
+        sim.crashPower = 0;
+        renderRunResult("Klar for start", "Velg bane og finn riktig fart i hver del av banen.", false);
+        updateHud();
+      }
+
+      function startRun() {
+        resetRun();
+        sim.running = true;
+        sim.target = Number(el.speedSlider.value);
+        saveMenuBestScore(0);
+      }
+
+      function failRun(reason) {
+        sim.running = false;
+        sim.ended = true;
+        sim.crashUntil = performance.now() + 520;
+        sim.crashPower = 10;
+        const avg = sim.elapsed > 0 ? (sim.distance / sim.elapsed) * 3.6 : 0;
+        const finalScore = scoreFormula(sim.laps, avg);
+        sim.score = finalScore;
+        const improved = saveHighscore(sim.selectedTrackId, {
+          score: finalScore,
+          laps: sim.laps,
+          avgSpeed: Math.round(avg),
+          at: new Date().toISOString()
+        });
+
+        const statusText = improved ? "Ny highscore!" : "Run ferdig";
+        renderRunResult(statusText, reason + " Poeng: " + finalScore + ".", true);
+        renderHighscore();
+        updateHud();
+      }
+
+      function renderRunResult(title, text, isBad) {
+        el.runResult.innerHTML = "<div class=\"title\">" + title + "</div><div class=\"" + (isBad ? "danger-text" : "ok-text") + "\">" + text + "</div>";
+      }
+
+      function renderHighscore() {
+        const hs = getHighscores()[sim.selectedTrackId];
+        if (!hs) {
+          el.bestResult.innerHTML = "<div class=\"title\">Highscore (valgt bane)</div><div>Ingen score enda.</div>";
+          return;
+        }
+
+        el.bestResult.innerHTML =
+          "<div class=\"title\">Highscore (valgt bane)</div>" +
+          "<div>Poeng: <strong>" + hs.score + "</strong></div>" +
+          "<div>Runder: " + hs.laps + " | Snittfart: " + hs.avgSpeed + " km/t</div>";
+      }
+
+      function updateHud() {
+        const avg = sim.elapsed > 0 ? (sim.distance / sim.elapsed) * 3.6 : 0;
+        const track = getTrack();
+        const current = getCurrentSegment(track, sim.position);
+
+        el.targetSpeed.textContent = String(Math.round(sim.target));
+        el.liveSpeed.textContent = Math.round(sim.speed) + " km/t";
+        el.laps.textContent = String(sim.laps);
+        el.avgSpeed.textContent = String(Math.round(avg));
+        el.score.textContent = String(scoreFormula(sim.laps, avg));
+
+        let detail = "Naa: <strong>" + current.seg.name + "</strong>";
+        if (current.seg.type === "curve") {
+          detail += "<br>Sikker fart i sving: max <strong>" + current.seg.maxSpeed + " km/t</strong>.";
+        } else if (current.seg.type === "loop") {
+          detail += "<br>Loop krever min <strong>" + current.seg.minSpeed + " km/t</strong>.";
+        } else {
+          detail += "<br>Rettstrekke: bygg fart kontrollert.";
+        }
+        el.segmentInfo.innerHTML = detail;
+      }
+
+      function updateSim(ts) {
+        if (!sim.lastTs) sim.lastTs = ts;
+        const dt = clamp((ts - sim.lastTs) / 1000, 0, 0.05);
+        sim.lastTs = ts;
+        sim.wheelSpin += sim.speed * dt * 0.2;
+
+        if (sim.running) {
+          const accel = sim.target >= sim.speed ? 78 : 96;
+          const drag = 14;
+
+          if (sim.target > sim.speed) {
+            sim.speed += accel * dt;
+          } else {
+            sim.speed -= accel * dt;
+          }
+          sim.speed -= drag * dt;
+          sim.speed = clamp(sim.speed, 0, 280);
+
+          const mps = sim.speed / 3.6;
+          sim.position += mps * dt * 8;
+          sim.distance += mps * dt;
+          sim.elapsed += dt;
+
+          const track = getTrack();
+          while (sim.position >= track.lapLength) {
+            sim.position -= track.lapLength;
+            sim.laps += 1;
+          }
+
+          const current = getCurrentSegment(track, sim.position).seg;
+          if (current.type === "curve" && sim.speed > current.maxSpeed) {
+            failRun("For mye fart i svingen. Bilen sklei av banen.");
+          } else if (current.type === "loop" && sim.speed < current.minSpeed) {
+            failRun("For lav fart i loopen. Bilen falt ned.");
+          }
+        }
+
+        updateHud();
+      }
+
+      function buildTrackLayout(track, width, height) {
+        const pad = 24;
+        const cx = width * 0.5;
+        const cy = height * 0.56;
+        const rx = width * 0.33;
+        const ry = height * 0.30;
+        let progress = 0;
+        const segments = track.segments.map((seg, index) => {
+          const start = progress;
+          const end = start + seg.length;
+          progress = end;
+          return {
+            seg,
+            index,
+            start,
+            end,
+            mid: start + (end - start) * 0.5,
+            ratio: (end - start) / track.lapLength
+          };
+        });
+
+        return { pad, cx, cy, rx, ry, track, segments };
+      }
+
+      function wrap01(value) {
+        return ((value % 1) + 1) % 1;
+      }
+
+      function signedPow(value, power) {
+        if (value === 0) return 0;
+        const sign = value < 0 ? -1 : 1;
+        return sign * Math.pow(Math.abs(value), power);
+      }
+
+      function getShapePoint(layout, u) {
+        const a = 2 * Math.PI * wrap01(u) - Math.PI * 0.5;
+        const shape = layout.track.shape || "oval";
+
+        if (shape === "oval") {
+          return {
+            x: layout.cx + layout.rx * Math.cos(a),
+            y: layout.cy + layout.ry * Math.sin(a)
+          };
+        }
+
+        if (shape === "squircle") {
+          const n = 3.4;
+          return {
+            x: layout.cx + layout.rx * signedPow(Math.cos(a), 2 / n),
+            y: layout.cy + layout.ry * signedPow(Math.sin(a), 2 / n)
+          };
+        }
+
+        if (shape === "rounded") {
+          const n = 5.4;
+          return {
+            x: layout.cx + layout.rx * 1.06 * signedPow(Math.cos(a), 2 / n),
+            y: layout.cy + layout.ry * 0.9 * signedPow(Math.sin(a), 2 / n)
+          };
+        }
+
+        if (shape === "peanut") {
+          const wobble = 1 + 0.33 * Math.cos(2 * a);
+          return {
+            x: layout.cx + layout.rx * wobble * Math.cos(a),
+            y: layout.cy + layout.ry * 0.95 * Math.sin(a)
+          };
+        }
+
+        if (shape === "figure8") {
+          return {
+            x: layout.cx + layout.rx * 0.9 * Math.sin(a),
+            y: layout.cy + layout.ry * 1.12 * Math.sin(a) * Math.cos(a)
+          };
+        }
+
+        if (shape === "triangle") {
+          return {
+            x: layout.cx + layout.rx * (0.78 * Math.cos(a) + 0.22 * Math.cos(3 * a)),
+            y: layout.cy + layout.ry * (0.78 * Math.sin(a) - 0.22 * Math.sin(3 * a))
+          };
+        }
+
+        if (shape === "hex") {
+          const radial = 1 + 0.11 * Math.cos(6 * a);
+          return {
+            x: layout.cx + layout.rx * radial * Math.cos(a),
+            y: layout.cy + layout.ry * radial * Math.sin(a)
+          };
+        }
+
+        if (shape === "drop") {
+          const radial = 0.72 + 0.3 * (1 + Math.sin(a));
+          return {
+            x: layout.cx + layout.rx * radial * Math.cos(a),
+            y: layout.cy + layout.ry * (radial * Math.sin(a) * 0.95 + 0.12)
+          };
+        }
+
+        if (shape === "butterfly") {
+          const radial = 0.78 + 0.25 * Math.cos(2 * a);
+          return {
+            x: layout.cx + layout.rx * radial * Math.sin(a),
+            y: layout.cy + layout.ry * 1.08 * Math.sin(2 * a)
+          };
+        }
+
+        const n = 1.38;
+        return {
+          x: layout.cx + layout.rx * signedPow(Math.cos(a), 2 / n),
+          y: layout.cy + layout.ry * signedPow(Math.sin(a), 2 / n)
+        };
+      }
+
+      function getTrackFrame(layout, u) {
+        const eps = 0.0012;
+        const p1 = getShapePoint(layout, wrap01(u - eps));
+        const p2 = getShapePoint(layout, wrap01(u + eps));
+        const dx = p2.x - p1.x;
+        const dy = p2.y - p1.y;
+        const len = Math.hypot(dx, dy) || 1;
+        return {
+          tx: dx / len,
+          ty: dy / len,
+          nx: -dy / len,
+          ny: dx / len
+        };
+      }
+
+      function sampleTrackPoint(layout, distance) {
+        const lap = layout.track.lapLength;
+        const d = ((distance % lap) + lap) % lap;
+        let info = layout.segments[layout.segments.length - 1];
+
+        for (const candidate of layout.segments) {
+          if (d < candidate.end) {
+            info = candidate;
+            break;
+          }
+        }
+
+        const segLength = info.end - info.start;
+        const t = segLength > 0 ? (d - info.start) / segLength : 0;
+        const u = d / lap;
+        const point = getShapePoint(layout, u);
+        const frame = getTrackFrame(layout, u);
+        let x = point.x;
+        let y = point.y;
+
+        if (info.seg.type === "curve") {
+          const direction = info.index % 2 === 0 ? -1 : 1;
+          const bend = direction * 7 * Math.sin(Math.PI * t);
+          x += frame.nx * bend;
+          y += frame.ny * bend;
+        } else if (info.seg.type === "loop") {
+          const lift = 10 * Math.sin(Math.PI * t);
+          x += frame.nx * lift;
+          y += frame.ny * lift;
+        }
+
+        return { x, y, seg: info.seg, index: info.index, u, nx: frame.nx, ny: frame.ny };
+      }
+
+      function strokeDistanceRange(layout, start, end, color, width) {
+        const span = Math.max(1, end - start);
+        const steps = Math.max(18, Math.round((span / layout.track.lapLength) * 280));
+        ctx.strokeStyle = color;
+        ctx.lineWidth = width;
+        ctx.lineJoin = "round";
+        ctx.lineCap = "round";
+        ctx.beginPath();
+        for (let i = 0; i <= steps; i += 1) {
+          const d = start + (span * i) / steps;
+          const p = sampleTrackPoint(layout, d);
+          if (i === 0) ctx.moveTo(p.x, p.y);
+          else ctx.lineTo(p.x, p.y);
+        }
+        ctx.stroke();
+      }
+
+      function drawWheel(x, y, r, spin) {
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.rotate(spin);
+
+        ctx.fillStyle = "#111827";
+        ctx.beginPath();
+        ctx.arc(0, 0, r, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.strokeStyle = "#9ca3af";
+        ctx.lineWidth = 1.8;
+        ctx.beginPath();
+        ctx.arc(0, 0, r * 0.58, 0, Math.PI * 2);
+        ctx.stroke();
+
+        ctx.strokeStyle = "#d1d5db";
+        ctx.lineWidth = 1.4;
+        ctx.beginPath();
+        ctx.moveTo(-r * 0.5, 0);
+        ctx.lineTo(r * 0.5, 0);
+        ctx.moveTo(0, -r * 0.5);
+        ctx.lineTo(0, r * 0.5);
+        ctx.stroke();
+
+        ctx.restore();
+      }
+
+      function drawCarSprite(x, y, angle, speed, running, wheelSpin) {
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.rotate(angle);
+
+        ctx.fillStyle = "rgba(0,0,0,.35)";
+        ctx.beginPath();
+        ctx.ellipse(0, 12, 20, 6, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        drawWheel(-12, -10, 4.6, wheelSpin);
+        drawWheel(12, -10, 4.6, wheelSpin);
+        drawWheel(-12, 10, 4.6, wheelSpin);
+        drawWheel(12, 10, 4.6, wheelSpin);
+
+        ctx.fillStyle = "#ffcf5d";
+        ctx.fillRect(-17, -9, 34, 18);
+
+        ctx.fillStyle = "#ff9f1c";
+        ctx.beginPath();
+        ctx.moveTo(-4, -8);
+        ctx.lineTo(15, -5);
+        ctx.lineTo(15, 5);
+        ctx.lineTo(-4, 8);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.fillStyle = "#0b132b";
+        ctx.fillRect(-16, -4, 5, 8);
+
+        ctx.fillStyle = "#9ad1f5";
+        ctx.fillRect(-1, -5, 11, 10);
+
+        ctx.fillStyle = "#ff595e";
+        ctx.fillRect(11, -3, 5, 6);
+
+        if (running && speed > 120) {
+          ctx.fillStyle = "rgba(50,211,255,.85)";
+          ctx.beginPath();
+          ctx.moveTo(-16, -2);
+          ctx.lineTo(-28, 0);
+          ctx.lineTo(-16, 2);
+          ctx.closePath();
+          ctx.fill();
+        }
+
+        ctx.restore();
+      }
+
+      function drawTrack() {
+        const track = getTrack();
+        const w = el.canvas.width;
+        const h = el.canvas.height;
+        const layout = buildTrackLayout(track, w, h);
+        const now = performance.now();
+
+        ctx.clearRect(0, 0, w, h);
+
+        const speedZoom = sim.running ? 1 + (sim.speed / 280) * 0.08 : 1;
+        let shakeX = 0;
+        let shakeY = 0;
+        if (now < sim.crashUntil) {
+          const rem = (sim.crashUntil - now) / 520;
+          const amp = sim.crashPower * rem;
+          shakeX = (Math.random() * 2 - 1) * amp;
+          shakeY = (Math.random() * 2 - 1) * amp;
+        }
+
+        ctx.save();
+        ctx.translate(w / 2 + shakeX, h / 2 + shakeY);
+        ctx.scale(speedZoom, speedZoom);
+        ctx.translate(-w / 2, -h / 2);
+
+        const bg = ctx.createLinearGradient(0, 0, 0, h);
+        bg.addColorStop(0, "#13294b");
+        bg.addColorStop(1, "#0f1d35");
+        ctx.fillStyle = bg;
+        ctx.fillRect(0, 0, w, h);
+
+        ctx.fillStyle = "rgba(40,120,72,.34)";
+        ctx.fillRect(0, h * 0.58, w, h * 0.42);
+
+        strokeDistanceRange(layout, 0, track.lapLength, "#30456f", 36);
+
+        for (const item of layout.segments) {
+          const color = item.seg.type === "curve" ? "#ff9f43" : (item.seg.type === "loop" ? "#4ecdc4" : "#7aa2ff");
+          strokeDistanceRange(layout, item.start, item.end, color, 28);
+        }
+
+        ctx.strokeStyle = "rgba(255,255,255,.66)";
+        ctx.lineWidth = 3;
+        ctx.lineJoin = "round";
+        ctx.lineCap = "round";
+        ctx.beginPath();
+        for (let d = 0; d <= track.lapLength; d += track.lapLength / 240) {
+          const p = sampleTrackPoint(layout, d);
+          if (d === 0) ctx.moveTo(p.x, p.y);
+          else ctx.lineTo(p.x, p.y);
+        }
+        ctx.stroke();
+
+        ctx.setLineDash([]);
+
+        const startA = sampleTrackPoint(layout, 0);
+        const startB = sampleTrackPoint(layout, 28);
+        const startAngle = Math.atan2(startB.y - startA.y, startB.x - startA.x);
+        ctx.save();
+        ctx.translate(startA.x, startA.y);
+        ctx.rotate(startAngle + Math.PI / 2);
+        ctx.fillStyle = "rgba(255,255,255,.92)";
+        ctx.fillRect(-14, -3, 28, 6);
+        ctx.fillStyle = "#111827";
+        ctx.fillRect(-14, -1, 7, 2);
+        ctx.fillRect(0, -1, 7, 2);
+        ctx.restore();
+
+        for (const item of layout.segments) {
+          const markerPoint = sampleTrackPoint(layout, item.mid);
+          const markerFrame = getTrackFrame(layout, item.mid / layout.track.lapLength);
+          const markerX = markerPoint.x + markerFrame.nx * 26;
+          const markerY = markerPoint.y + markerFrame.ny * 26;
+
+          ctx.fillStyle = "rgba(255,255,255,.88)";
+          ctx.font = "12px Trebuchet MS, Segoe UI, Arial";
+          ctx.fillText(item.seg.name, markerX - 18, markerY - 4);
+
+          if (item.seg.type === "loop") {
+            const centerX = markerPoint.x + markerFrame.nx * 44;
+            const centerY = markerPoint.y + markerFrame.ny * 44;
+            const radius = 18;
+
+            ctx.strokeStyle = "rgba(78,205,196,.95)";
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+            ctx.stroke();
+
+            ctx.strokeStyle = "rgba(200,252,245,.95)";
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius - 6, 0, Math.PI * 2);
+            ctx.stroke();
+
+            ctx.strokeStyle = "rgba(78,205,196,.55)";
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(centerX - markerFrame.tx * 6, centerY - markerFrame.ty * 6);
+            ctx.lineTo(markerPoint.x - markerFrame.tx * 6, markerPoint.y - markerFrame.ty * 6);
+            ctx.moveTo(centerX + markerFrame.tx * 6, centerY + markerFrame.ty * 6);
+            ctx.lineTo(markerPoint.x + markerFrame.tx * 6, markerPoint.y + markerFrame.ty * 6);
+            ctx.stroke();
+          }
+        }
+
+        const carPos = sampleTrackPoint(layout, sim.position);
+        const frontPos = sampleTrackPoint(layout, sim.position + 18);
+        const angle = Math.atan2(frontPos.y - carPos.y, frontPos.x - carPos.x);
+        drawCarSprite(carPos.x, carPos.y, angle, sim.speed, sim.running, sim.wheelSpin);
+
+        ctx.fillStyle = "#d7ecff";
+        ctx.font = "bold 14px Trebuchet MS, Segoe UI, Arial";
+        ctx.fillText("Bane: " + track.name, layout.pad, h - 32);
+        ctx.fillText("Lukket runde: sving = oransje | loop = cyan", layout.pad, h - 14);
+
+        ctx.restore();
+      }
+
+      function frame(ts) {
+        updateSim(ts);
+        drawTrack();
+        requestAnimationFrame(frame);
+      }
+
+      function setupTrackOptions() {
+        el.trackSelect.innerHTML = "";
+        for (const track of tracks) {
+          const option = document.createElement("option");
+          option.value = track.id;
+          option.textContent = track.name;
+          el.trackSelect.appendChild(option);
+        }
+        el.trackSelect.value = sim.selectedTrackId;
+      }
+
+      function setTargetSpeed(next) {
+        sim.target = clamp(next, 20, 260);
+        el.speedSlider.value = String(sim.target);
+        el.targetSpeed.textContent = String(Math.round(sim.target));
+      }
+
+      function bindEvents() {
+        el.startBtn.addEventListener("click", startRun);
+        el.resetBtn.addEventListener("click", resetRun);
+
+        el.trackSelect.addEventListener("change", () => {
+          sim.selectedTrackId = el.trackSelect.value;
+          resetRun();
+          renderHighscore();
+        });
+
+        el.speedSlider.addEventListener("input", () => {
+          setTargetSpeed(Number(el.speedSlider.value));
+        });
+
+        document.getElementById("minusBtn").addEventListener("click", () => {
+          setTargetSpeed(sim.target - 10);
+        });
+
+        document.getElementById("plusBtn").addEventListener("click", () => {
+          setTargetSpeed(sim.target + 10);
+        });
+
+        window.addEventListener("keydown", (event) => {
+          if (event.key === "ArrowUp") {
+            setTargetSpeed(sim.target + 6);
+            event.preventDefault();
+          } else if (event.key === "ArrowDown") {
+            setTargetSpeed(sim.target - 6);
+            event.preventDefault();
+          }
+        });
+      }
+
+      setupTrackOptions();
+      bindEvents();
+      renderHighscore();
+      updateHud();
+      requestAnimationFrame(frame);
+    })();
+  </script>
+</body>
+</html>
