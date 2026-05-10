@@ -1,0 +1,23 @@
+{
+  "name": "alma-root",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Local test tooling for Alma games",
+  "scripts": {
+    "serve:test": "npx --yes serve . -l 4173 --no-clipboard",
+    "serve": "npx --yes serve . -l 4173 --no-clipboard",
+    "test:e2e": "playwright test",
+    "test:e2e:headed": "playwright test --headed",
+    "test:unit": "vitest run",
+    "test:unit:watch": "vitest",
+    "test": "npm run test:unit && npm run test:e2e",
+    "prod:check": "npm run test",
+    "playwright:install": "playwright install"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.53.2",
+    "@testing-library/dom": "^10.4.0",
+    "jsdom": "^24.1.0",
+    "vitest": "^2.1.9"
+  }
+}
