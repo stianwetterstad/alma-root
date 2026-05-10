@@ -86,6 +86,9 @@
       grid-template-columns:1fr;
       gap:12px;
     }
+    .track-stage{
+      width:100%;
+    }
 
     .row{
       display:flex;
@@ -150,6 +153,22 @@
     .speed-value{font-size:22px;font-weight:900;color:var(--accent2)}
     .speed-controls{display:flex;gap:8px;flex-wrap:wrap}
     .speed-controls button{min-width:62px}
+    .control-btn{
+      flex:1;
+      min-width:120px;
+      min-height:52px;
+      font-size:16px;
+      font-weight:900;
+      touch-action:none;
+      user-select:none;
+    }
+    .gas-btn{background:#46d47a;color:#062d13;border-color:#84ecaa}
+    .brake-btn{background:#ff7a7a;color:#310000;border-color:#ffb1b1}
+    .control-btn.active{
+      transform:translateY(1px);
+      filter:brightness(.92);
+      box-shadow:inset 0 0 0 2px rgba(0,0,0,.22);
+    }
 
     .status{
       border:1px solid rgba(255,255,255,.18);
@@ -183,9 +202,6 @@
 
     .help{font-size:13px;color:var(--muted);line-height:1.4}
 
-    @media (min-width: 860px){
-      .grid{grid-template-columns:1.2fr .8fr}
-    }
   </style>
 </head>
 <body>
@@ -211,9 +227,9 @@
       </div>
 
       <div class="grid">
-        <div>
+        <div class="track-stage" id="trackStage">
           <canvas id="trackCanvas" width="900" height="250" aria-label="Baneoversikt"></canvas>
-          <div class="help">Tips: Bruk slider, +/-, eller tastene Pil opp/ned. Bare fart teller.</div>
+          <div class="help">Tips: Hold inne Gass/Brems pa touch, eller bruk W/S pa tastatur. Bare fart teller.</div>
         </div>
 
         <div class="speed-box">
@@ -223,8 +239,8 @@
           </div>
           <input id="speedSlider" type="range" min="20" max="260" step="1" value="80" />
           <div class="speed-controls">
-            <button id="minusBtn" type="button">-10</button>
-            <button id="plusBtn" type="button">+10</button>
+            <button id="gasBtn" class="control-btn gas-btn" type="button">Gass (W)</button>
+            <button id="brakeBtn" class="control-btn brake-btn" type="button">Brems (S)</button>
           </div>
 
           <div class="status" id="segmentInfo"></div>
@@ -420,7 +436,7 @@
             { name: "Smal B", type: "straight", length: 110 },
             { name: "Vingekutt B", type: "curve", length: 840, maxSpeed: 110 },
             { name: "Smal C", type: "straight", length: 120 },
-            { name: "Apex-loop B", type: "loop", length: 760, minSpeed: 128 },
+            { name: "Apex-bro B", type: "straight", length: 760 },
             { name: "Smal D", type: "straight", length: 110 },
             { name: "Nattesving", type: "curve", length: 760, maxSpeed: 108 }
           ]
@@ -431,6 +447,8 @@
         trackSelect: document.getElementById("trackSelect"),
         startBtn: document.getElementById("startBtn"),
         resetBtn: document.getElementById("resetBtn"),
+        gasBtn: document.getElementById("gasBtn"),
+        brakeBtn: document.getElementById("brakeBtn"),
         speedSlider: document.getElementById("speedSlider"),
         targetSpeed: document.getElementById("targetSpeed"),
         liveSpeed: document.getElementById("liveSpeed"),
@@ -440,6 +458,7 @@
         segmentInfo: document.getElementById("segmentInfo"),
         runResult: document.getElementById("runResult"),
         bestResult: document.getElementById("bestResult"),
+        trackStage: document.getElementById("trackStage"),
         canvas: document.getElementById("trackCanvas")
       };
 
@@ -459,6 +478,12 @@
         crashUntil: 0,
         crashPower: 0,
         selectedTrackId: tracks[0].id
+      };
+      const trackPhaseCache = new Map();
+      let activeLayout = null;
+      const controlState = {
+        gas: false,
+        brake: false
       };
 
       function getTrack() {
@@ -591,10 +616,12 @@
           "<div>Runder: " + hs.laps + " | Snittfart: " + hs.avgSpeed + " km/t</div>";
       }
 
-      function updateHud() {
+      function updateHud(layout = ensureLayout()) {
         const avg = sim.elapsed > 0 ? (sim.distance / sim.elapsed) * 3.6 : 0;
         const track = getTrack();
-        const current = getCurrentSegment(track, sim.position);
+        const currentRaw = getCurrentSegment(track, sim.position);
+        const hazard = getHazardAtPosition(layout, sim.position);
+        const currentName = hazard ? hazard.seg.name : currentRaw.seg.name;
 
         el.targetSpeed.textContent = String(Math.round(sim.target));
         el.liveSpeed.textContent = Math.round(sim.speed) + " km/t";
@@ -602,24 +629,31 @@
         el.avgSpeed.textContent = String(Math.round(avg));
         el.score.textContent = String(scoreFormula(sim.laps, avg));
 
-        let detail = "Naa: <strong>" + current.seg.name + "</strong>";
-        if (current.seg.type === "curve") {
-          detail += "<br>Sikker fart i sving: max <strong>" + current.seg.maxSpeed + " km/t</strong>.";
-        } else if (current.seg.type === "loop") {
-          detail += "<br>Loop krever min <strong>" + current.seg.minSpeed + " km/t</strong>.";
+        let detail = "Naa: <strong>" + currentName + "</strong>";
+        if (hazard && hazard.type === "curve") {
+          detail += "<br>Sikker fart i sving: max <strong>" + hazard.seg.maxSpeed + " km/t</strong>.";
+        } else if (hazard && hazard.type === "loop") {
+          detail += "<br>Loop krever min <strong>" + hazard.seg.minSpeed + " km/t</strong>.";
         } else {
           detail += "<br>Rettstrekke: bygg fart kontrollert.";
         }
         el.segmentInfo.innerHTML = detail;
       }
 
-      function updateSim(ts) {
+      function updateSim(ts, layout) {
         if (!sim.lastTs) sim.lastTs = ts;
         const dt = clamp((ts - sim.lastTs) / 1000, 0, 0.05);
         sim.lastTs = ts;
         sim.wheelSpin += sim.speed * dt * 0.2;
 
         if (sim.running) {
+          if (controlState.gas) {
+            setTargetSpeed(sim.target + 120 * dt);
+          }
+          if (controlState.brake) {
+            setTargetSpeed(sim.target - 140 * dt);
+          }
+
           const accel = sim.target >= sim.speed ? 78 : 96;
           const drag = 14;
 
@@ -642,23 +676,29 @@
             sim.laps += 1;
           }
 
-          const current = getCurrentSegment(track, sim.position).seg;
-          if (current.type === "curve" && sim.speed > current.maxSpeed) {
+          const hazard = getHazardAtPosition(layout, sim.position);
+          if (hazard && hazard.type === "curve" && sim.speed > hazard.seg.maxSpeed) {
             failRun("For mye fart i svingen. Bilen sklei av banen.");
-          } else if (current.type === "loop" && sim.speed < current.minSpeed) {
+          } else if (hazard && hazard.type === "loop" && sim.speed < hazard.seg.minSpeed) {
             failRun("For lav fart i loopen. Bilen falt ned.");
           }
         }
 
-        updateHud();
+        updateHud(layout);
       }
 
       function buildTrackLayout(track, width, height) {
         const pad = 24;
         const cx = width * 0.5;
         const cy = height * 0.56;
-        const rx = width * 0.33;
-        const ry = height * 0.30;
+        let rx = width * 0.33;
+        let ry = height * 0.30;
+        const shape = track.shape || "oval";
+
+        if (shape === "butterfly") {
+          rx = width * 0.39;
+          ry = height * 0.24;
+        }
         let progress = 0;
         const segments = track.segments.map((seg, index) => {
           const start = progress;
@@ -674,7 +714,9 @@
           };
         });
 
-        return { pad, cx, cy, rx, ry, track, segments };
+        const phase = getTrackPhase(track, rx, ry);
+        const hazards = buildHazardZones(track, segments, phase, rx, ry);
+        return { pad, cx, cy, rx, ry, track, segments, phase, hazards };
       }
 
       function wrap01(value) {
@@ -687,84 +729,329 @@
         return sign * Math.pow(Math.abs(value), power);
       }
 
-      function getShapePoint(layout, u) {
+      function sampleLoopPolyline(points, t) {
+        const count = points.length;
+        const wrapped = wrap01(t) * count;
+        const index = Math.floor(wrapped) % count;
+        const next = (index + 1) % count;
+        const local = wrapped - Math.floor(wrapped);
+        const eased = local * local * (3 - 2 * local);
+        const a = points[index];
+        const b = points[next];
+        return {
+          x: a.x + (b.x - a.x) * eased,
+          y: a.y + (b.y - a.y) * eased
+        };
+      }
+
+      function getShapePointRaw(shape, cx, cy, rx, ry, u) {
         const a = 2 * Math.PI * wrap01(u) - Math.PI * 0.5;
-        const shape = layout.track.shape || "oval";
 
         if (shape === "oval") {
           return {
-            x: layout.cx + layout.rx * Math.cos(a),
-            y: layout.cy + layout.ry * Math.sin(a)
+            x: cx + rx * Math.cos(a),
+            y: cy + ry * Math.sin(a)
           };
         }
 
         if (shape === "squircle") {
           const n = 3.4;
           return {
-            x: layout.cx + layout.rx * signedPow(Math.cos(a), 2 / n),
-            y: layout.cy + layout.ry * signedPow(Math.sin(a), 2 / n)
+            x: cx + rx * signedPow(Math.cos(a), 2 / n),
+            y: cy + ry * signedPow(Math.sin(a), 2 / n)
           };
         }
 
         if (shape === "rounded") {
           const n = 5.4;
           return {
-            x: layout.cx + layout.rx * 1.06 * signedPow(Math.cos(a), 2 / n),
-            y: layout.cy + layout.ry * 0.9 * signedPow(Math.sin(a), 2 / n)
+            x: cx + rx * 1.06 * signedPow(Math.cos(a), 2 / n),
+            y: cy + ry * 0.9 * signedPow(Math.sin(a), 2 / n)
           };
         }
 
         if (shape === "peanut") {
           const wobble = 1 + 0.33 * Math.cos(2 * a);
           return {
-            x: layout.cx + layout.rx * wobble * Math.cos(a),
-            y: layout.cy + layout.ry * 0.95 * Math.sin(a)
+            x: cx + rx * wobble * Math.cos(a),
+            y: cy + ry * 0.95 * Math.sin(a)
           };
         }
 
         if (shape === "figure8") {
           return {
-            x: layout.cx + layout.rx * 0.9 * Math.sin(a),
-            y: layout.cy + layout.ry * 1.12 * Math.sin(a) * Math.cos(a)
+            x: cx + rx * 0.9 * Math.sin(a),
+            y: cy + ry * 1.12 * Math.sin(a) * Math.cos(a)
           };
         }
 
         if (shape === "triangle") {
           return {
-            x: layout.cx + layout.rx * (0.78 * Math.cos(a) + 0.22 * Math.cos(3 * a)),
-            y: layout.cy + layout.ry * (0.78 * Math.sin(a) - 0.22 * Math.sin(3 * a))
+            x: cx + rx * (0.78 * Math.cos(a) + 0.22 * Math.cos(3 * a)),
+            y: cy + ry * (0.78 * Math.sin(a) - 0.22 * Math.sin(3 * a))
           };
         }
 
         if (shape === "hex") {
           const radial = 1 + 0.11 * Math.cos(6 * a);
           return {
-            x: layout.cx + layout.rx * radial * Math.cos(a),
-            y: layout.cy + layout.ry * radial * Math.sin(a)
+            x: cx + rx * radial * Math.cos(a),
+            y: cy + ry * radial * Math.sin(a)
           };
         }
 
         if (shape === "drop") {
           const radial = 0.72 + 0.3 * (1 + Math.sin(a));
           return {
-            x: layout.cx + layout.rx * radial * Math.cos(a),
-            y: layout.cy + layout.ry * (radial * Math.sin(a) * 0.95 + 0.12)
+            x: cx + rx * radial * Math.cos(a),
+            y: cy + ry * (radial * Math.sin(a) * 0.95 + 0.12)
           };
         }
 
         if (shape === "butterfly") {
-          const radial = 0.78 + 0.25 * Math.cos(2 * a);
+          const p = sampleLoopPolyline([
+            { x: -1.30, y: 0.00 },
+            { x: -1.05, y: -0.42 },
+            { x: -0.60, y: -0.94 },
+            { x: -0.18, y: -0.28 },
+            { x: 0.18, y: -0.28 },
+            { x: 0.60, y: -0.94 },
+            { x: 1.05, y: -0.42 },
+            { x: 1.30, y: 0.00 },
+            { x: 1.05, y: 0.42 },
+            { x: 0.60, y: 0.94 },
+            { x: 0.18, y: 0.28 },
+            { x: -0.18, y: 0.28 },
+            { x: -0.60, y: 0.94 },
+            { x: -1.05, y: 0.42 }
+          ], u);
           return {
-            x: layout.cx + layout.rx * radial * Math.sin(a),
-            y: layout.cy + layout.ry * 1.08 * Math.sin(2 * a)
+            x: cx + rx * p.x,
+            y: cy + ry * p.y
           };
         }
 
         const n = 1.38;
         return {
-          x: layout.cx + layout.rx * signedPow(Math.cos(a), 2 / n),
-          y: layout.cy + layout.ry * signedPow(Math.sin(a), 2 / n)
+          x: cx + rx * signedPow(Math.cos(a), 2 / n),
+          y: cy + ry * signedPow(Math.sin(a), 2 / n)
         };
+      }
+
+      function getShapeCurvature(shape, rx, ry, u) {
+        const eps = 0.0018;
+        const p0 = getShapePointRaw(shape, 0, 0, rx, ry, wrap01(u - eps));
+        const p1 = getShapePointRaw(shape, 0, 0, rx, ry, u);
+        const p2 = getShapePointRaw(shape, 0, 0, rx, ry, wrap01(u + eps));
+
+        const v1x = p1.x - p0.x;
+        const v1y = p1.y - p0.y;
+        const v2x = p2.x - p1.x;
+        const v2y = p2.y - p1.y;
+
+        const l1 = Math.hypot(v1x, v1y) || 1;
+        const l2 = Math.hypot(v2x, v2y) || 1;
+        const dot = (v1x * v2x + v1y * v2y) / (l1 * l2);
+        return Math.acos(clamp(dot, -1, 1));
+      }
+
+      function getTrackPhase(track, rx, ry) {
+        if (trackPhaseCache.has(track.id)) {
+          return trackPhaseCache.get(track.id);
+        }
+
+        const sampleCount = 96;
+        let bestPhase = 0;
+        let bestScore = -Infinity;
+        const shape = track.shape || "oval";
+        let progress = 0;
+        const ratioSegments = track.segments.map((seg) => {
+          const start = progress / track.lapLength;
+          progress += seg.length;
+          const end = progress / track.lapLength;
+          return { type: seg.type, start, end };
+        });
+
+        for (let i = 0; i < sampleCount; i += 1) {
+          const phase = i / sampleCount;
+          let score = 0;
+
+          for (const seg of ratioSegments) {
+            const startRatio = seg.start;
+            const endRatio = seg.end;
+            const midRatio = startRatio + (endRatio - startRatio) * 0.5;
+            const c = getShapeCurvature(shape, rx, ry, wrap01(midRatio + phase));
+
+            if (seg.type === "curve") {
+              score += c * 2.4;
+            } else if (seg.type === "loop") {
+              score += c * 0.6;
+            } else {
+              score -= c * 1.2;
+            }
+          }
+
+          if (score > bestScore) {
+            bestScore = score;
+            bestPhase = phase;
+          }
+        }
+
+        trackPhaseCache.set(track.id, bestPhase);
+        return bestPhase;
+      }
+
+      function getCurvatureForTrackAtDistance(track, phase, rx, ry, distance) {
+        const lap = track.lapLength;
+        const u = wrap01(distance / lap + phase);
+        return getShapeCurvature(track.shape || "oval", rx, ry, u);
+      }
+
+      function getLoopForbiddenRanges(shape) {
+        if (shape === "figure8") {
+          return [
+            [0.20, 0.31],
+            [0.69, 0.80]
+          ];
+        }
+
+        if (shape === "butterfly") {
+          return [
+            [0.16, 0.50],
+            [0.66, 0.99]
+          ];
+        }
+
+        return [];
+      }
+
+      function isUInRanges(u, ranges) {
+        for (const range of ranges) {
+          if (u >= range[0] && u <= range[1]) {
+            return true;
+          }
+        }
+        return false;
+      }
+
+      function buildHazardZones(track, segments, phase, rx, ry) {
+        const lap = track.lapLength;
+        const hazards = [];
+        const minGap = Math.max(16, lap * 0.0038);
+        const scanStep = Math.max(8, lap / 320);
+        let cursor = 0;
+        let lastCurveEnd = -Infinity;
+        const loopForbiddenRanges = getLoopForbiddenRanges(track.shape || "oval");
+        const nextCurveStartByIndex = new Map();
+        let nextCurveStart = Infinity;
+        for (let i = segments.length - 1; i >= 0; i -= 1) {
+          nextCurveStartByIndex.set(i, nextCurveStart);
+          if (segments[i].seg.type === "curve") {
+            nextCurveStart = segments[i].start;
+          }
+        }
+        const straightCurvatureRef = (() => {
+          const straightMids = segments.filter((item) => item.seg.type === "straight").map((item) => item.mid);
+          if (straightMids.length === 0) {
+            return 0.01;
+          }
+          const total = straightMids.reduce((acc, mid) => acc + getCurvatureForTrackAtDistance(track, phase, rx, ry, mid), 0);
+          return total / straightMids.length;
+        })();
+
+        for (const item of segments) {
+          const type = item.seg.type;
+          if (type === "straight") {
+            continue;
+          }
+
+          const baseLen = item.end - item.start;
+          const nominalMid = item.mid;
+          const targetLen = type === "curve"
+            ? Math.min(baseLen * 1.24, baseLen + lap * 0.05)
+            : clamp(baseLen * 0.86, baseLen * 0.62, baseLen);
+          const half = targetLen / 2;
+
+          let searchStart = nominalMid - lap * 0.18;
+          let searchEnd = nominalMid + lap * 0.18;
+
+          if (type === "loop") {
+            searchStart = Math.max(searchStart, lastCurveEnd + minGap + half);
+            const nextCurveNominalStart = nextCurveStartByIndex.get(item.index);
+            if (Number.isFinite(nextCurveNominalStart)) {
+              searchEnd = Math.min(searchEnd, nextCurveNominalStart - minGap - half);
+            }
+          }
+
+          searchStart = clamp(searchStart, half + 2, lap - half - 2);
+          searchEnd = clamp(searchEnd, searchStart, lap - half - 2);
+
+          let bestMid = clamp(nominalMid, searchStart, searchEnd);
+          let bestScore = type === "curve" ? -Infinity : Infinity;
+
+          for (let d = searchStart; d <= searchEnd; d += scanStep) {
+            const c = getCurvatureForTrackAtDistance(track, phase, rx, ry, d);
+            const proximity = Math.abs(d - nominalMid) / lap;
+
+            if (type === "curve") {
+              const score = c - proximity * 0.24;
+              if (score > bestScore) {
+                bestScore = score;
+                bestMid = d;
+              }
+            } else {
+              const u = wrap01(d / lap + phase);
+              const highCurvePenalty = Math.max(0, c - straightCurvatureRef * 1.28) * 8;
+              const crossingPenalty = isUInRanges(u, loopForbiddenRanges) ? 20 : 0;
+              const score = c + proximity * 0.16 + highCurvePenalty + crossingPenalty;
+              if (score < bestScore) {
+                bestScore = score;
+                bestMid = d;
+              }
+            }
+          }
+
+          let start = bestMid - half;
+          let end = bestMid + half;
+
+          const minStart = cursor + 2;
+          if (start < minStart) {
+            end += minStart - start;
+            start = minStart;
+          }
+
+          if (end > lap - 2) {
+            const shift = end - (lap - 2);
+            start -= shift;
+            end -= shift;
+          }
+
+          start = clamp(start, 2, lap - 20);
+          end = clamp(end, start + 12, lap - 2);
+
+          hazards.push({
+            type,
+            start,
+            end,
+            mid: start + (end - start) * 0.5,
+            seg: item.seg,
+            sourceIndex: item.index
+          });
+
+          if (type === "curve") {
+            lastCurveEnd = end;
+          }
+
+          cursor = Math.max(cursor, end + minGap * 0.35);
+        }
+
+        return hazards;
+      }
+
+      function getShapePoint(layout, u) {
+        const shape = layout.track.shape || "oval";
+        const shifted = wrap01(u + (layout.phase || 0));
+        return getShapePointRaw(shape, layout.cx, layout.cy, layout.rx, layout.ry, shifted);
       }
 
       function getTrackFrame(layout, u) {
@@ -814,6 +1101,58 @@
         }
 
         return { x, y, seg: info.seg, index: info.index, u, nx: frame.nx, ny: frame.ny };
+      }
+
+      function getTrackCurvatureAtDistance(layout, distance) {
+        const lap = layout.track.lapLength;
+        const u = wrap01(distance / lap + (layout.phase || 0));
+        const shape = layout.track.shape || "oval";
+        return getShapeCurvature(shape, layout.rx, layout.ry, u);
+      }
+
+      function getHazardAtPosition(layout, position) {
+        const lap = layout.track.lapLength;
+        const d = ((position % lap) + lap) % lap;
+        for (const hazard of layout.hazards) {
+          if (d >= hazard.start && d < hazard.end) {
+            return hazard;
+          }
+        }
+        return null;
+      }
+
+      function strokeDistanceRangeFiltered(layout, start, end, color, width, predicate) {
+        const span = Math.max(1, end - start);
+        const steps = Math.max(18, Math.round((span / layout.track.lapLength) * 320));
+        let drawing = false;
+
+        ctx.strokeStyle = color;
+        ctx.lineWidth = width;
+        ctx.lineJoin = "round";
+        ctx.lineCap = "round";
+
+        for (let i = 0; i <= steps; i += 1) {
+          const d = start + (span * i) / steps;
+          const keep = predicate(d, i / steps);
+          const p = sampleTrackPoint(layout, d);
+
+          if (keep) {
+            if (!drawing) {
+              ctx.beginPath();
+              ctx.moveTo(p.x, p.y);
+              drawing = true;
+            } else {
+              ctx.lineTo(p.x, p.y);
+            }
+          } else if (drawing) {
+            ctx.stroke();
+            drawing = false;
+          }
+        }
+
+        if (drawing) {
+          ctx.stroke();
+        }
       }
 
       function strokeDistanceRange(layout, start, end, color, width) {
@@ -945,9 +1284,14 @@
 
         strokeDistanceRange(layout, 0, track.lapLength, "#30456f", 36);
 
-        for (const item of layout.segments) {
-          const color = item.seg.type === "curve" ? "#ff9f43" : (item.seg.type === "loop" ? "#4ecdc4" : "#7aa2ff");
-          strokeDistanceRange(layout, item.start, item.end, color, 28);
+        strokeDistanceRange(layout, 0, track.lapLength, "#7aa2ff", 28);
+        for (const hazard of layout.hazards) {
+          if (hazard.type === "curve") {
+            // Curves intentionally start slightly before and end slightly after the apex.
+            strokeDistanceRange(layout, hazard.start, hazard.end, "#ff9f43", 28);
+          } else if (hazard.type === "loop") {
+            strokeDistanceRange(layout, hazard.start, hazard.end, "#4ecdc4", 28);
+          }
         }
 
         ctx.strokeStyle = "rgba(255,255,255,.66)";
@@ -977,9 +1321,13 @@
         ctx.fillRect(0, -1, 7, 2);
         ctx.restore();
 
+        const hazardBySourceIndex = new Map(layout.hazards.map((hazard) => [hazard.sourceIndex, hazard]));
+
         for (const item of layout.segments) {
-          const markerPoint = sampleTrackPoint(layout, item.mid);
-          const markerFrame = getTrackFrame(layout, item.mid / layout.track.lapLength);
+          const hazard = hazardBySourceIndex.get(item.index);
+          const markerDistance = hazard ? hazard.mid : item.mid;
+          const markerPoint = sampleTrackPoint(layout, markerDistance);
+          const markerFrame = getTrackFrame(layout, markerDistance / layout.track.lapLength);
           const markerX = markerPoint.x + markerFrame.nx * 26;
           const markerY = markerPoint.y + markerFrame.ny * 26;
 
@@ -987,7 +1335,7 @@
           ctx.font = "12px Trebuchet MS, Segoe UI, Arial";
           ctx.fillText(item.seg.name, markerX - 18, markerY - 4);
 
-          if (item.seg.type === "loop") {
+          if (item.seg.type === "loop" && hazard) {
             const centerX = markerPoint.x + markerFrame.nx * 44;
             const centerY = markerPoint.y + markerFrame.ny * 44;
             const radius = 18;
@@ -1028,8 +1376,44 @@
         ctx.restore();
       }
 
+      function resizeTrackCanvas() {
+        const stageWidth = Math.max(320, Math.floor(el.trackStage.clientWidth));
+        const viewportHeight = Math.max(420, window.innerHeight || 800);
+        const viewportWidth = Math.max(320, window.innerWidth || stageWidth);
+
+        const targetHeight = Math.floor(
+          clamp(
+            Math.min(viewportHeight * 0.62, stageWidth * 1.05, viewportWidth * 0.95),
+            220,
+            620
+          )
+        );
+
+        if (el.canvas.width !== stageWidth || el.canvas.height !== targetHeight) {
+          el.canvas.width = stageWidth;
+          el.canvas.height = targetHeight;
+          el.canvas.style.height = targetHeight + "px";
+          activeLayout = null;
+        }
+      }
+
+      function ensureLayout() {
+        const track = getTrack();
+        const w = el.canvas.width;
+        const h = el.canvas.height;
+
+        if (!activeLayout || activeLayout.track.id !== track.id || activeLayout.canvasW !== w || activeLayout.canvasH !== h) {
+          activeLayout = buildTrackLayout(track, w, h);
+          activeLayout.canvasW = w;
+          activeLayout.canvasH = h;
+        }
+
+        return activeLayout;
+      }
+
       function frame(ts) {
-        updateSim(ts);
+        const layout = ensureLayout();
+        updateSim(ts, layout);
         drawTrack();
         requestAnimationFrame(frame);
       }
@@ -1052,11 +1436,34 @@
       }
 
       function bindEvents() {
+        function setControl(control, active) {
+          controlState[control] = active;
+          if (control === "gas") {
+            el.gasBtn.classList.toggle("active", active);
+          } else if (control === "brake") {
+            el.brakeBtn.classList.toggle("active", active);
+          }
+        }
+
+        function bindHoldButton(button, control) {
+          button.addEventListener("pointerdown", (event) => {
+            event.preventDefault();
+            setControl(control, true);
+          });
+
+          ["pointerup", "pointercancel", "pointerleave"].forEach((type) => {
+            button.addEventListener(type, () => setControl(control, false));
+          });
+        }
+
         el.startBtn.addEventListener("click", startRun);
         el.resetBtn.addEventListener("click", resetRun);
+        bindHoldButton(el.gasBtn, "gas");
+        bindHoldButton(el.brakeBtn, "brake");
 
         el.trackSelect.addEventListener("change", () => {
           sim.selectedTrackId = el.trackSelect.value;
+          activeLayout = null;
           resetRun();
           renderHighscore();
         });
@@ -1065,27 +1472,37 @@
           setTargetSpeed(Number(el.speedSlider.value));
         });
 
-        document.getElementById("minusBtn").addEventListener("click", () => {
-          setTargetSpeed(sim.target - 10);
-        });
-
-        document.getElementById("plusBtn").addEventListener("click", () => {
-          setTargetSpeed(sim.target + 10);
-        });
-
         window.addEventListener("keydown", (event) => {
-          if (event.key === "ArrowUp") {
-            setTargetSpeed(sim.target + 6);
+          const key = event.key.toLowerCase();
+          if (key === "w") {
+            setControl("gas", true);
             event.preventDefault();
-          } else if (event.key === "ArrowDown") {
-            setTargetSpeed(sim.target - 6);
+          } else if (key === "s") {
+            setControl("brake", true);
             event.preventDefault();
           }
         });
+
+        window.addEventListener("keyup", (event) => {
+          const key = event.key.toLowerCase();
+          if (key === "w") {
+            setControl("gas", false);
+          } else if (key === "s") {
+            setControl("brake", false);
+          }
+        });
+
+        window.addEventListener("blur", () => {
+          setControl("gas", false);
+          setControl("brake", false);
+        });
+
+        window.addEventListener("resize", resizeTrackCanvas);
       }
 
       setupTrackOptions();
       bindEvents();
+      resizeTrackCanvas();
       renderHighscore();
       updateHud();
       requestAnimationFrame(frame);
