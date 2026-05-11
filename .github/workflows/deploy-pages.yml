@@ -46,8 +46,7 @@ jobs:
             echo "Missing ALMA_FIREBASE_CONFIG_JS secret" >&2
             exit 1
           fi
-          printf '%s
-' "$ALMA_FIREBASE_CONFIG_JS" > site/laering/gangetrappen/firebase-config.js
+          printf '%s\n' "$ALMA_FIREBASE_CONFIG_JS" > site/laering/gangetrappen/firebase-config.js
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
