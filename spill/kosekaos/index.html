@@ -1444,6 +1444,7 @@
   <div class="toast-stack" id="toastStack" data-testid="toast-stack" aria-live="polite"></div>
   <div class="onboarding-card" id="onboardingCard" data-testid="onboarding-card" hidden></div>
 
+  <script src="/spill/kosekaos/firebase-config.js"></script>
   <script>
     var state = {
       screen: "startScreen",
@@ -1485,6 +1486,13 @@
       bonusGiven: {
         furniture: false,
         decor: false
+      },
+      firebase: {
+        enabled: false,
+        db: null,
+        addDoc: null,
+        collection: null,
+        serverTimestamp: null
       }
     };
 
@@ -1580,6 +1588,65 @@
         // Ignore storage access errors.
       }
       renderContinueButton();
+    }
+
+    async function initFirebaseIfConfigured() {
+      const config = window.ALMA_FIREBASE_CONFIG;
+      if (!config || !config.apiKey || !config.projectId) {
+        return;
+      }
+
+      try {
+        const [appModule, firestoreModule] = await Promise.all([
+          import("https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js"),
+          import("https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js")
+        ]);
+
+        const app = appModule.initializeApp(config);
+        const db = firestoreModule.getFirestore(app);
+
+        state.firebase.enabled = true;
+        state.firebase.db = db;
+        state.firebase.addDoc = firestoreModule.addDoc;
+        state.firebase.collection = firestoreModule.collection;
+        state.firebase.serverTimestamp = firestoreModule.serverTimestamp;
+
+        console.log("Firebase Firestore aktivert for Kosekaos");
+      } catch (error) {
+        console.error("Firebase init feilet:", error);
+      }
+    }
+
+    async function saveGameStateToFirestore() {
+      if (!state.firebase.enabled || !state.firebase.db) {
+        return;
+      }
+
+      try {
+        const gameData = {
+          avatarName: state.avatar.name || "Anonym",
+          score: state.score,
+          stars: state.stars,
+          level: getCurrentLevel().level.label,
+          completedMissions: state.completedMissionIds.length,
+          totalMissions: missionDefs.length,
+          trophiesCount: Object.values(state.roomTrophies).reduce((acc, slot) => {
+            return acc + (slot.cozy ? 1 : 0) + (slot.stylish ? 1 : 0) + (slot.alive ? 1 : 0);
+          }, 0),
+          unlockedRewards: state.unlockedRewardIds.length,
+          houseId: state.houseId,
+          createdAt: state.firebase.serverTimestamp()
+        };
+
+        await state.firebase.addDoc(
+          state.firebase.collection(state.firebase.db, "kosekaos_games"),
+          gameData
+        );
+        
+        console.log("Kosekaos-spill lagret til Firestore");
+      } catch (error) {
+        console.error("Firestore save feilet:", error);
+      }
     }
 
     function normalizeLoadedState() {
@@ -3704,8 +3771,9 @@
         });
       }
 
-      document.getElementById("finishBtn").addEventListener("click", () => {
+      document.getElementById("finishBtn").addEventListener("click", async () => {
         summary();
+        await saveGameStateToFirestore();
         setScreen("summaryScreen");
       });
 
@@ -3747,6 +3815,7 @@
     initOnboarding();
     initEvents();
     renderOnboardingCard();
+    initFirebaseIfConfigured();
 
     window.__kosekaosTestHooks = {
       getState: function() {

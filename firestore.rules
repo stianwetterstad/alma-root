@@ -1,7 +1,13 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+    // Gangetrappen highscores
     match /gangetrappen_highscores/{document=**} {
+      allow read, write: if true;
+    }
+    
+    // Kosekaos game results
+    match /kosekaos_games/{document=**} {
       allow read, write: if true;
     }
   }

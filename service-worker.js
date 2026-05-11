@@ -11,6 +11,7 @@ const CACHE_URLS = [
   '/spill/index.html',
   '/spill/kosekaos/',
   '/spill/kosekaos/index.html',
+  '/spill/kosekaos/firebase-config.js',
   '/spill/loopelakk-5000/',
   '/spill/loopelakk-5000/index.html',
   '/tur/',
