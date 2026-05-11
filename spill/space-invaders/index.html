@@ -627,7 +627,11 @@
   document.getElementById('uiRestartBtn').addEventListener('click', restartGame);
   document.getElementById('resumeBtn').addEventListener('click', () => {
     softVibrate(12);
-    if (!gameOver) pauseController.resume('overlay');
+    if (gameOver) {
+      reset();
+    } else {
+      pauseController.resume('overlay');
+    }
   });
   document.getElementById('hintOkBtn').addEventListener('click', () => {
     softVibrate(12);
