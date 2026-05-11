@@ -4,55 +4,342 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Breakout | Alma.rocks</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
   <style>
-    :root{--bg:#0b1020;--text:#e9ecff;--muted:#a9b1d6;--border:rgba(255,255,255,.10);--border2:rgba(255,255,255,.12);--btnbg:rgba(255,255,255,.06);--accent:#7aa2f7;--ok:#9ece6a;--danger:#f7768e;}
-    body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;}
-    .ui-topbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:flex-start;padding:calc(10px + env(safe-area-inset-top)) calc(12px + env(safe-area-inset-right)) 10px calc(12px + env(safe-area-inset-left));border-bottom:1px solid var(--border);background:rgba(255,255,255,.04);position:sticky;top:0;z-index:40}
-    .ui-btn{border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.08);color:var(--text);padding:10px 14px;border-radius:12px;font-weight:800;cursor:pointer;user-select:none;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;min-height:44px;min-width:44px;touch-action:manipulation}
-    .ui-btn:focus-visible,button:focus-visible,.topbar a:focus-visible{outline:3px solid var(--ok);outline-offset:2px}
-    .ui-overlay{position:fixed;inset:0;background:rgba(6,9,21,.6);display:flex;align-items:center;justify-content:center;z-index:30;padding:16px}
-    .ui-card{background:rgba(11,16,32,.96);border:1px solid var(--border2);border-radius:16px;padding:16px;max-width:340px;width:100%;text-align:center}
-    .ui-card h2{margin:0 0 10px 0;font-size:28px}
-    .ui-card p{margin:0 0 12px 0;color:var(--muted)}
-    .ui-hidden{display:none}
-    .topbar{display:flex;gap:10px;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid var(--border);background:rgba(255,255,255,.03);position:sticky;top:0;z-index:10}
-    .topbar .left{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-    .topbar a{text-decoration:none;color:var(--text);background:var(--btnbg);border:1px solid var(--border2);padding:8px 12px;border-radius:999px;user-select:none}
-    .topbar .label{color:var(--muted);font-size:13px}
-    .wrap{display:grid;grid-template-columns: 1fr minmax(220px,260px);gap:14px;padding:14px;width:min(980px,96vw);margin:0 auto;align-items:start}
-    .panel{background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));border:1px solid var(--border);border-radius:16px;padding:12px}
-    canvas{width:100%;height:auto;display:block;background:#060915;border-radius:16px;border:1px solid var(--border2);touch-action:none}
-    h1{margin:0 0 8px 0;font-size:20px}
-    .stat{display:flex;justify-content:space-between;color:var(--muted);padding:6px 0;border-bottom:1px dashed rgba(255,255,255,.12)}
-    .stat:last-child{border-bottom:none}
-    .big{font-weight:800;color:var(--text)}
-    .controls{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px}
-    button{border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06);color:var(--text);padding:12px 10px;border-radius:14px;font-weight:700;cursor:pointer;user-select:none;touch-action:manipulation;min-height:44px;min-width:44px}
-    button:active{transform:translateY(1px)}
-    .primary{background:var(--accent);color:#0b1020;border-color:transparent}
-    .danger{background:rgba(247,118,142,.16);border-color:rgba(247,118,142,.35)}
-    .hint{color:var(--muted);font-size:13px;line-height:1.35;margin-top:10px}
-    @media (max-width: 820px){.wrap{grid-template-columns:1fr}}
+    @keyframes neonGlow {
+      0%, 100% { box-shadow: 0 0 15px rgba(0, 245, 255, 0.6); }
+      50% { box-shadow: 0 0 30px rgba(0, 245, 255, 0.9), inset 0 0 15px rgba(0, 245, 255, 0.2); }
+    }
+    @keyframes pulsePink {
+      0%, 100% { box-shadow: 0 0 20px rgba(255, 0, 110, 0.5); }
+      50% { box-shadow: 0 0 40px rgba(255, 0, 110, 0.8), inset 0 0 15px rgba(255, 0, 110, 0.2); }
+    }
+    @keyframes scanlines {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(10px); }
+    }
+
+    :root{
+      --neon-pink: #ff006e;
+      --neon-cyan: #00f5ff;
+      --neon-yellow: #ffff00;
+      --neon-purple: #b537f2;
+      --neon-green: #39ff14;
+      --bg: #0a0e27;
+      --text: #ffffff;
+      --muted: #a0aec0;
+      --border: rgba(0, 245, 255, 0.3);
+      --btnbg: rgba(0, 245, 255, 0.1);
+    }
+
+    body{
+      margin: 0;
+      background: linear-gradient(45deg, rgba(255, 0, 110, 0.05) 1px, transparent 1px),
+                  linear-gradient(-45deg, rgba(0, 245, 255, 0.05) 1px, transparent 1px),
+                  #0a0e27;
+      background-size: 30px 30px;
+      color: var(--text);
+      font-family: 'Orbitron', 'Courier New', monospace;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: repeating-linear-gradient(
+        0deg,
+        rgba(0, 0, 0, 0.15),
+        rgba(0, 0, 0, 0.15) 1px,
+        transparent 1px,
+        transparent 2px
+      );
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .ui-topbar{
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+      justify-content: flex-start;
+      padding: calc(12px + env(safe-area-inset-top)) calc(14px + env(safe-area-inset-right)) 12px calc(14px + env(safe-area-inset-left));
+      border-bottom: 3px solid var(--neon-cyan);
+      background: rgba(0, 245, 255, 0.05);
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      box-shadow: 0 0 20px rgba(0, 245, 255, 0.3);
+    }
+
+    .ui-btn{
+      border: 2px solid var(--neon-cyan);
+      background: rgba(0, 245, 255, 0.1);
+      color: #000;
+      padding: 10px 14px;
+      border-radius: 0;
+      font-weight: 900;
+      cursor: pointer;
+      user-select: none;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
+      min-width: 44px;
+      touch-action: manipulation;
+      background: var(--neon-cyan);
+      transition: all 0.15s ease;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-size: 13px;
+    }
+
+    .ui-btn:hover{
+      box-shadow: 0 0 25px rgba(0, 245, 255, 0.8);
+      transform: scale(1.05);
+    }
+
+    .ui-btn:active{
+      transform: scale(0.95);
+    }
+
+    .ui-btn:focus-visible{
+      outline: 3px solid var(--neon-yellow);
+      outline-offset: 2px;
+    }
+
+    .ui-overlay{
+      position: fixed;
+      inset: 0;
+      background: rgba(10, 14, 39, 0.95);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 30;
+      padding: 16px;
+      backdrop-filter: blur(4px);
+    }
+
+    .ui-card{
+      background: rgba(10, 14, 39, 0.98);
+      border: 3px solid var(--neon-pink);
+      border-radius: 0;
+      padding: 24px;
+      max-width: 340px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 0 40px rgba(255, 0, 110, 0.5);
+    }
+
+    .ui-card h2{
+      margin: 0 0 14px 0;
+      font-size: 32px;
+      color: var(--neon-pink);
+      text-shadow: 0 0 20px var(--neon-pink);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    .ui-card p{
+      margin: 0 0 16px 0;
+      color: var(--neon-cyan);
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .ui-card button{
+      border: 2px solid var(--neon-green);
+      background: var(--neon-green);
+      color: #000;
+      padding: 12px 18px;
+      border-radius: 0;
+      font-weight: 900;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      transition: all 0.15s ease;
+      box-shadow: 0 0 20px rgba(57, 255, 20, 0.6);
+    }
+
+    .ui-card button:hover{
+      box-shadow: 0 0 40px rgba(57, 255, 20, 0.9);
+      transform: scale(1.05);
+    }
+
+    .ui-hidden{ display: none; }
+
+    .wrap{
+      display: grid;
+      grid-template-columns: 1fr minmax(240px, 280px);
+      gap: 18px;
+      padding: 16px;
+      width: min(1000px, 96vw);
+      margin: 0 auto;
+      align-items: start;
+      position: relative;
+      z-index: 2;
+    }
+
+    .panel{
+      background: linear-gradient(135deg, rgba(255, 0, 110, 0.1), rgba(0, 245, 255, 0.08));
+      border: 3px solid var(--neon-cyan);
+      border-radius: 0;
+      padding: 16px;
+      box-shadow: 0 0 30px rgba(0, 245, 255, 0.3), inset 0 0 15px rgba(0, 245, 255, 0.05);
+    }
+
+    .panel:last-child{
+      border-color: var(--neon-pink);
+      box-shadow: 0 0 30px rgba(255, 0, 110, 0.3), inset 0 0 15px rgba(255, 0, 110, 0.05);
+    }
+
+    canvas{
+      width: 100%;
+      height: auto;
+      display: block;
+      background: linear-gradient(135deg, rgba(255, 0, 110, 0.05), rgba(0, 245, 255, 0.05)) #060915;
+      border-radius: 0;
+      border: 3px solid var(--neon-green);
+      touch-action: none;
+      box-shadow: 0 0 40px rgba(57, 255, 20, 0.4), inset 0 0 20px rgba(57, 255, 20, 0.1);
+    }
+
+    h1{
+      margin: 0 0 12px 0;
+      font-size: 26px;
+      color: var(--neon-pink);
+      text-shadow: 0 0 15px var(--neon-pink);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      font-weight: 900;
+    }
+
+    .stat{
+      display: flex;
+      justify-content: space-between;
+      color: var(--neon-cyan);
+      padding: 8px 0;
+      border-bottom: 2px solid rgba(0, 245, 255, 0.2);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: 700;
+      font-size: 13px;
+    }
+
+    .stat:last-child{ border-bottom: none; }
+
+    .big{
+      font-weight: 900;
+      color: var(--neon-yellow);
+      text-shadow: 0 0 10px var(--neon-yellow);
+      font-size: 20px;
+    }
+
+    .controls{
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    button{
+      border: 2px solid rgba(0, 245, 255, 0.4);
+      background: rgba(0, 245, 255, 0.08);
+      color: var(--text);
+      padding: 12px 10px;
+      border-radius: 0;
+      font-weight: 900;
+      cursor: pointer;
+      user-select: none;
+      touch-action: manipulation;
+      min-height: 44px;
+      min-width: 44px;
+      transition: all 0.15s ease;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-size: 12px;
+      font-family: 'Orbitron', monospace;
+    }
+
+    button:hover{
+      border-color: var(--neon-cyan);
+      box-shadow: 0 0 20px rgba(0, 245, 255, 0.5);
+      transform: translateY(-2px);
+    }
+
+    button:active{
+      transform: translateY(1px);
+    }
+
+    button:focus-visible{
+      outline: 2px solid var(--neon-yellow);
+      outline-offset: 1px;
+    }
+
+    .primary{
+      background: var(--neon-green);
+      color: #000;
+      border-color: var(--neon-green);
+      box-shadow: 0 0 15px rgba(57, 255, 20, 0.5);
+      font-weight: 900;
+    }
+
+    .primary:hover{
+      box-shadow: 0 0 30px rgba(57, 255, 20, 0.8);
+    }
+
+    .danger{
+      background: rgba(255, 0, 110, 0.15);
+      border-color: var(--neon-pink);
+      color: var(--neon-pink);
+      box-shadow: 0 0 15px rgba(255, 0, 110, 0.4);
+    }
+
+    .danger:hover{
+      background: rgba(255, 0, 110, 0.25);
+      box-shadow: 0 0 30px rgba(255, 0, 110, 0.6);
+    }
+
+    .hint{
+      color: var(--neon-cyan);
+      font-size: 12px;
+      line-height: 1.5;
+      margin-top: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-top: 2px solid rgba(0, 245, 255, 0.2);
+      padding-top: 12px;
+    }
+
+    @media (max-width: 820px){
+      .wrap{ grid-template-columns: 1fr; }
+    }
   </style>
 </head>
-<body>
   <div class="ui-topbar" role="navigation" aria-label="Spillkontroller">
-    <a class="ui-btn" href="/spill/">⬅️ Spillmeny</a>
+    <a class="ui-btn" href="/spill/">← Spillmeny</a>
     <button class="ui-btn" id="uiRestartBtn" type="button">🔄 Start på nytt</button>
-    <button class="ui-btn" id="uiPauseBtn" type="button">⏸️ Pause</button>
+    <button class="ui-btn" id="uiPauseBtn" type="button">⏸ Pause</button>
   </div>
 
   <div class="ui-overlay ui-hidden" id="pauseOverlay" aria-hidden="true">
     <div class="ui-card">
       <h2>Pauset</h2>
-      <button class="ui-btn" id="resumeBtn" type="button">Fortsett</button>
+      <p>Klar til å fortsette?</p>
+      <button id="resumeBtn" type="button">▶ Fortsett</button>
     </div>
   </div>
 
   <div class="ui-overlay ui-hidden" id="hintOverlay" aria-hidden="true">
     <div class="ui-card">
-      <p>Tips: Hold inne venstre/hoyre for a flytte.</p>
-      <button class="ui-btn" id="hintOkBtn" type="button">OK</button>
+      <p>Tips: Hold inne venstre/høyre for å flytte.</p>
+      <button id="hintOkBtn" type="button">OK</button>
     </div>
   </div>
 
@@ -62,7 +349,7 @@
     </div>
 
     <div class="panel">
-      <h1>🧱 Breakout</h1>
+      <h1>🏓 BREAKOUT</h1>
       <div class="stat"><span>Score</span><span class="big" id="score">0</span></div>
       <div class="stat"><span>Beste</span><span class="big" id="best">0</span></div>
       <div class="stat"><span>Liv</span><span class="big" id="lives">3</span></div>
@@ -70,16 +357,16 @@
 
       <div class="controls">
         <button id="left">←</button>
-        <button id="start" class="primary">Start</button>
+        <button id="start" class="primary">▶ START</button>
         <button id="right">→</button>
-        <button id="restart" class="danger">Restart</button>
-        <button id="pause">Pause</button>
-        <button id="speed" class="primary">Tempo: Normal</button>
+        <button id="restart" class="danger">⟳ Restart</button>
+        <button id="pause">⏸ Pause</button>
+        <button id="speed" class="primary">⚡ Normal</button>
       </div>
 
       <div class="hint">
-        iPad: Dra fingeren på brettet for å flytte plata (paddle).<br/>
-        Alternativt: Bruk ←/→-knappene. Mål: knus alle klossene!
+        📱 iPad: Dra fingeren på brettet.<br/>
+        ⌨️ PC: Bruk pil-knappene eller dra.
       </div>
     </div>
   </div>
@@ -198,45 +485,101 @@
 
   function draw(){
     ctx.clearRect(0,0,canvas.width,canvas.height);
-    ctx.fillStyle = '#060915';
+    
+    // Background med gradient
+    const grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+    grad.addColorStop(0, '#0a0e27');
+    grad.addColorStop(1, '#0f1535');
+    ctx.fillStyle = grad;
     ctx.fillRect(0,0,canvas.width,canvas.height);
 
-    // bricks
+    // bricks - neon farger
     for (const b of bricks){
       if (!b.alive) continue;
-      ctx.fillStyle = b.hp === 2 ? '#7aa2f7' : '#9ece6a';
-      roundRect(b.x,b.y,b.w,b.h,6);
-      ctx.fillStyle = 'rgba(11,16,32,.28)';
-      ctx.fillRect(b.x+6,b.y+5,b.w-12,3);
+      
+      // Alternating neon colors
+      const colorIdx = (Math.floor((b.x + b.y) / 70)) % 3;
+      if (colorIdx === 0) {
+        ctx.fillStyle = '#ff006e'; // Neon pink
+        ctx.shadowColor = 'rgba(255, 0, 110, 0.8)';
+      } else if (colorIdx === 1) {
+        ctx.fillStyle = '#00f5ff'; // Neon cyan
+        ctx.shadowColor = 'rgba(0, 245, 255, 0.8)';
+      } else {
+        ctx.fillStyle = '#b537f2'; // Neon purple
+        ctx.shadowColor = 'rgba(181, 55, 242, 0.8)';
+      }
+      
+      ctx.shadowBlur = 15;
+      ctx.shadowOffsetX = 0;
+      ctx.shadowOffsetY = 0;
+      
+      roundRect(b.x,b.y,b.w,b.h,4);
+      
+      ctx.shadowColor = 'transparent';
+      ctx.shadowBlur = 0;
+      
+      ctx.fillStyle = 'rgba(255,255,255,.15)';
+      ctx.fillRect(b.x+4,b.y+3,b.w-8,2);
     }
 
-    // paddle
-    ctx.fillStyle = '#e0af68';
-    roundRect(paddle.x, paddle.y, paddle.w, paddle.h, 8);
+    // paddle - neon yellow
+    ctx.fillStyle = '#ffff00';
+    ctx.shadowColor = 'rgba(255, 255, 0, 0.9)';
+    ctx.shadowBlur = 20;
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 0;
+    roundRect(paddle.x, paddle.y, paddle.w, paddle.h, 6);
+    ctx.shadowColor = 'transparent';
+    ctx.shadowBlur = 0;
+    
+    ctx.fillStyle = 'rgba(255,255,255,.2)';
+    ctx.fillRect(paddle.x+8, paddle.y+4, paddle.w-16, 4);
 
-    // ball
-    ctx.fillStyle = '#e9ecff';
+    // ball - neon green
+    ctx.fillStyle = '#39ff14';
+    ctx.shadowColor = 'rgba(57, 255, 20, 0.9)';
+    ctx.shadowBlur = 25;
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 0;
     ctx.beginPath();
     ctx.arc(ball.x, ball.y, ball.r, 0, Math.PI*2);
     ctx.fill();
+    ctx.shadowColor = 'transparent';
+    ctx.shadowBlur = 0;
 
     if (!state.running){
-      ctx.fillStyle = 'rgba(0,0,0,.35)';
+      ctx.fillStyle = 'rgba(0,0,0,.45)';
       ctx.fillRect(0,0,canvas.width,canvas.height);
-      ctx.fillStyle = '#e9ecff';
+      
+      ctx.fillStyle = '#39ff14';
       ctx.textAlign = 'center';
-      ctx.font = '700 24px system-ui,Segoe UI,Arial';
-      ctx.fillText('Trykk Start', canvas.width/2, canvas.height/2 - 10);
-      ctx.font = '14px system-ui,Segoe UI,Arial';
-      ctx.fillStyle = 'rgba(233,236,255,.85)';
-      ctx.fillText('Dra fingeren for å styre plata', canvas.width/2, canvas.height/2 + 18);
+      ctx.font = '700 32px Orbitron, Arial';
+      ctx.shadowColor = 'rgba(57, 255, 20, 0.9)';
+      ctx.shadowBlur = 15;
+      ctx.fillText('TRYKK START', canvas.width/2, canvas.height/2 - 20);
+      
+      ctx.font = '14px Orbitron, Arial';
+      ctx.fillStyle = '#00f5ff';
+      ctx.shadowColor = 'rgba(0, 245, 255, 0.6)';
+      ctx.shadowBlur = 10;
+      ctx.fillText('Dra fingeren for å styre plata', canvas.width/2, canvas.height/2 + 20);
+      
+      ctx.shadowColor = 'transparent';
+      ctx.shadowBlur = 0;
     } else if (state.paused){
-      ctx.fillStyle = 'rgba(0,0,0,.35)';
+      ctx.fillStyle = 'rgba(0,0,0,.45)';
       ctx.fillRect(0,0,canvas.width,canvas.height);
-      ctx.fillStyle = '#e9ecff';
+      
+      ctx.fillStyle = '#ff006e';
       ctx.textAlign = 'center';
-      ctx.font = '700 24px system-ui,Segoe UI,Arial';
-      ctx.fillText('Pause', canvas.width/2, canvas.height/2);
+      ctx.font = '700 40px Orbitron, Arial';
+      ctx.shadowColor = 'rgba(255, 0, 110, 0.9)';
+      ctx.shadowBlur = 20;
+      ctx.fillText('PAUSE', canvas.width/2, canvas.height/2);
+      
+      ctx.shadowColor = 'transparent';
+      ctx.shadowBlur = 0;
     }
   }
 
@@ -385,7 +728,7 @@
   const speedBtn = document.getElementById('speed');
   speedBtn.addEventListener('click', () => {
     state.speedMode = (state.speedMode + 1) % 2;
-    speedBtn.textContent = state.speedMode === 1 ? 'Tempo: Rask' : 'Tempo: Normal';
+    speedBtn.textContent = state.speedMode === 1 ? '⚡ Rask' : '⚡ Normal';
   });
 
   // Touch: drag on canvas to set paddle position

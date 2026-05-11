@@ -5,21 +5,30 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Space Invaders | Alma.rocks</title>
   <style>
-    :root{ --bg:#0b1020; --panel:#121a33; --text:#e9ecff; --muted:#a9b1d6; --accent:#7aa2f7; --ok:#9ece6a; --danger:#f7768e; }
-    body{ margin:0; background: var(--bg); color:var(--text); font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
+    :root{ 
+      --neon-pink: #ff006e;
+      --neon-cyan: #00f5ff;
+      --neon-yellow: #ffff00;
+      --neon-purple: #b537f2;
+      --neon-green: #39ff14;
+      --dark-bg: #0a0e27;
+      --bg:#0b1020; --panel:#121a33; --text:#e9ecff; --muted:#a9b1d6; --accent:#7aa2f7; --ok:#9ece6a; --danger:#f7768e; 
+    }
+    body{ margin:0; background: var(--dark-bg); color:var(--text); font-family: 'Orbitron', monospace, system-ui; }
     .ui-topbar{
       display:flex; gap:10px; align-items:center; flex-wrap:wrap; justify-content:flex-start;
       padding:calc(10px + env(safe-area-inset-top)) calc(12px + env(safe-area-inset-right)) 10px calc(12px + env(safe-area-inset-left));
-      border-bottom:1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.04);
+      border-bottom:3px solid var(--neon-cyan);
+      background: rgba(0, 245, 255, 0.08);
+      box-shadow: 0 0 30px rgba(0, 245, 255, 0.4);
       position: sticky; top:0; z-index:40;
     }
     .ui-btn{
-      border:1px solid rgba(255,255,255,.18);
-      background: rgba(255,255,255,.08);
-      color: var(--text);
+      border:2px solid var(--neon-cyan);
+      background: var(--neon-cyan);
+      color: #000;
       padding:10px 14px;
-      border-radius:12px;
+      border-radius:0;
       font-weight:800;
       cursor:pointer;
       user-select:none;
@@ -30,23 +39,32 @@
       min-height:44px;
       min-width:44px;
       touch-action:manipulation;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      box-shadow: 0 0 25px rgba(0, 245, 255, 0.8);
+      font-family: 'Orbitron', monospace;
     }
-    .ui-overlay{position:fixed;inset:0;background:rgba(6,9,21,.6);display:flex;align-items:center;justify-content:center;z-index:30;padding:16px}
-    .ui-card{background:rgba(11,16,32,.96);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:16px;max-width:340px;width:100%;text-align:center}
-    .ui-card h2{margin:0 0 10px 0;font-size:28px}
-    .ui-card p{margin:0 0 12px 0;color:var(--muted)}
+    .ui-overlay{position:fixed;inset:0;background:rgba(6,9,21,.8);display:flex;align-items:center;justify-content:center;z-index:30;padding:16px}
+    .ui-card{background:rgba(11,16,32,.96);border:2px solid var(--neon-pink);border-radius:0;padding:16px;max-width:340px;width:100%;text-align:center;box-shadow:0 0 40px rgba(255,0,110,0.5)}
+    .ui-card h2{margin:0 0 10px 0;font-size:28px;color:var(--neon-pink);text-shadow: 0 0 20px var(--neon-pink)}
+    .ui-card p{margin:0 0 12px 0;color:var(--neon-cyan);text-transform:uppercase;letter-spacing:1px}
     .ui-hidden{display:none}
     .topbar{
       display:flex; gap:10px; align-items:center; justify-content:space-between;
-      padding:12px 14px; border-bottom:1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.03);
+      padding:12px 14px; border-bottom:3px solid var(--neon-cyan);
+      background: rgba(0, 245, 255, 0.08);
+      box-shadow: 0 0 30px rgba(0, 245, 255, 0.3);
       position: sticky; top:0;
     }
     .topbar a{
-      text-decoration:none; color:var(--text);
-      background: rgba(255,255,255,.06);
-      border:1px solid rgba(255,255,255,.12);
-      padding:8px 12px; border-radius:999px;
+      text-decoration:none; color:#000;
+      background: var(--neon-cyan);
+      border:2px solid var(--neon-cyan);
+      padding:8px 12px; border-radius:0;
+      font-weight:800;
+      text-transform:uppercase;
+      letter-spacing:1px;
+      box-shadow: 0 0 20px rgba(0, 245, 255, 0.6);
     }
     .wrap{
       display:grid;
@@ -58,52 +76,58 @@
       align-items:start;
     }
     .panel{
-      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
-      border:1px solid rgba(255,255,255,.10);
-      border-radius:16px;
+      background: rgba(255,0,110, 0.06);
+      border:2px solid var(--neon-pink);
+      border-radius:0;
       padding:12px;
+      box-shadow: 0 0 30px rgba(255,0,110, 0.3);
     }
     canvas{
       width:100%;
       height:auto;
       display:block;
       background: #060915;
-      border-radius: 16px;
-      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 0;
+      border: 3px solid var(--neon-green);
+      box-shadow: 0 0 30px rgba(57, 255, 20, 0.6);
     }
-    h1{ margin:0 0 8px 0; font-size: 20px; }
-    .stat{ display:flex; justify-content:space-between; color:var(--muted); padding:6px 0; border-bottom:1px dashed rgba(255,255,255,.12); }
+    h1{ margin:0 0 8px 0; font-size: 20px; color: var(--neon-pink); text-shadow: 0 0 20px var(--neon-pink); text-transform: uppercase; letter-spacing: 2px; }
+    .stat{ display:flex; justify-content:space-between; color:var(--neon-cyan); padding:6px 0; border-bottom:1px dashed rgba(0, 245, 255, 0.3); }
     .stat:last-child{ border-bottom:none; }
-    .big{ font-weight:800; color:var(--text); }
-    .hint{ color:var(--muted); font-size: 13px; line-height:1.35; margin-top:10px;}
+    .big{ font-weight:800; color:var(--neon-yellow); font-size:1.2em; }
+    .hint{ color:var(--neon-cyan); font-size: 13px; line-height:1.35; margin-top:10px;text-transform:uppercase;letter-spacing:0.5px;}
     .controls{
       display:grid; grid-template-columns: repeat(3, 1fr);
       gap:10px; margin-top: 10px;
     }
     button{
-      border:1px solid rgba(255,255,255,.14);
-      background: rgba(255,255,255,.06);
-      color: var(--text);
+      border:2px solid var(--neon-cyan);
+      background: rgba(0, 245, 255, 0.1);
+      color: var(--neon-cyan);
       padding:12px 10px;
-      border-radius: 14px;
+      border-radius: 0;
       font-weight:700;
       cursor:pointer;
       user-select:none;
       min-height:44px;
       min-width:44px;
       touch-action:manipulation;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      box-shadow: 0 0 15px rgba(0, 245, 255, 0.5);
+      font-family: 'Orbitron', monospace;
     }
-    .ui-btn:focus-visible,button:focus-visible,.topbar a:focus-visible{outline:3px solid var(--ok);outline-offset:2px}
+    .ui-btn:focus-visible,button:focus-visible,.topbar a:focus-visible{outline:3px solid var(--neon-yellow);outline-offset:2px}
     button:active{ transform: translateY(1px); }
-    .primary{ background: var(--accent); color:#0b1020; border-color: transparent; }
-    .danger{ background: rgba(247,118,142,.16); border-color: rgba(247,118,142,.35); }
+    .primary{ background: var(--neon-green); color:#000; border-color: var(--neon-green); box-shadow: 0 0 25px rgba(57, 255, 20, 0.8); }
+    .danger{ background: rgba(255,0,110,.16); border-color: var(--neon-pink); box-shadow: 0 0 15px rgba(255,0,110, 0.5); }
     kbd{
       font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
       font-size: 12px; padding:2px 6px;
-      border:1px solid rgba(255,255,255,.18);
+      border:1px solid var(--neon-cyan);
       border-bottom-width:2px;
-      border-radius:8px; background: rgba(255,255,255,.06);
-      color:var(--text);
+      border-radius:0; background: rgba(0, 245, 255, 0.1);
+      color:var(--neon-cyan);
     }
     @media (max-width: 820px){
       .wrap{ grid-template-columns: 1fr; }
@@ -445,35 +469,61 @@
 
   function draw(){
     // background
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-    ctx.fillStyle = '#060915';
+    const grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+    grad.addColorStop(0, '#0a0e27');
+    grad.addColorStop(1, '#0f1535');
+    ctx.fillStyle = grad;
     ctx.fillRect(0,0,canvas.width,canvas.height);
 
-    // stars
-    ctx.fillStyle = 'rgba(255,255,255,.12)';
+    // stars with glow
+    ctx.fillStyle = 'rgba(255,255,255,.15)';
+    ctx.shadowColor = 'rgba(0, 245, 255, 0.3)';
+    ctx.shadowBlur = 4;
     for (let i=0; i<40; i++){
       const x = (i*97) % canvas.width;
       const y = (i*173 + (Date.now()/30)) % canvas.height;
       ctx.fillRect(x, y, 2, 2);
     }
+    ctx.shadowColor = 'transparent';
+    ctx.shadowBlur = 0;
 
-    // player
-    ctx.fillStyle = '#7aa2f7';
+    // player (cyan green)
+    ctx.fillStyle = '#39ff14';
+    ctx.shadowColor = '#39ff14';
+    ctx.shadowBlur = 12;
     roundRect(player.x, player.y, player.w, player.h, 6, true);
+    ctx.shadowColor = 'transparent';
+    ctx.shadowBlur = 0;
 
-    // bullets
-    ctx.fillStyle = '#e9ecff';
-    bullets.forEach(b => ctx.fillRect(b.x, b.y, b.w, b.h));
+    // bullets (yellow)
+    ctx.fillStyle = '#ffff00';
+    ctx.shadowColor = '#ffff00';
+    ctx.shadowBlur = 8;
+    bullets.forEach(b => {
+      ctx.fillRect(b.x, b.y, b.w, b.h);
+    });
+    ctx.shadowColor = 'transparent';
+    ctx.shadowBlur = 0;
 
-    // enemy bullets
-    ctx.fillStyle = '#f7768e';
-    enemyBullets.forEach(b => ctx.fillRect(b.x, b.y, b.w, b.h));
+    // enemy bullets (pink)
+    ctx.fillStyle = '#ff006e';
+    ctx.shadowColor = '#ff006e';
+    ctx.shadowBlur = 8;
+    enemyBullets.forEach(b => {
+      ctx.fillRect(b.x, b.y, b.w, b.h);
+    });
+    ctx.shadowColor = 'transparent';
+    ctx.shadowBlur = 0;
 
-    // invaders
+    // invaders (cyan)
     for (const inv of invaders){
       if (!inv.alive) continue;
-      ctx.fillStyle = '#9ece6a';
+      ctx.fillStyle = '#00f5ff';
+      ctx.shadowColor = '#00f5ff';
+      ctx.shadowBlur = 12;
       roundRect(inv.x, inv.y, inv.w, inv.h, 6, true);
+      ctx.shadowColor = 'transparent';
+      ctx.shadowBlur = 0;
       ctx.fillStyle = 'rgba(11,16,32,.35)';
       ctx.fillRect(inv.x+6, inv.y+5, inv.w-12, 3);
     }
@@ -482,12 +532,12 @@
     if (paused){
       ctx.fillStyle = 'rgba(0,0,0,.35)';
       ctx.fillRect(0,0,canvas.width,canvas.height);
-      ctx.fillStyle = '#e9ecff';
-      ctx.font = '700 26px system-ui,Segoe UI,Arial';
+      ctx.fillStyle = '#ffff00';
+      ctx.font = '700 26px Orbitron, monospace';
       ctx.textAlign = 'center';
-      ctx.fillText(gameOver ? 'Game Over' : 'Pause', canvas.width/2, canvas.height/2 - 8);
-      ctx.font = '14px system-ui,Segoe UI,Arial';
-      ctx.fillStyle = 'rgba(233,236,255,.85)';
+      ctx.fillText(gameOver ? 'GAME OVER' : 'PAUSE', canvas.width/2, canvas.height/2 - 8);
+      ctx.font = '14px Orbitron, monospace';
+      ctx.fillStyle = 'rgba(0, 245, 255, 0.85)';
       ctx.fillText('Trykk P for å fortsette • R for restart', canvas.width/2, canvas.height/2 + 20);
     }
   }
