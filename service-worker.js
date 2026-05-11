@@ -1,4 +1,4 @@
-const CACHE_NAME = 'alma-v7';
+const CACHE_NAME = 'alma-v10';
 const OFFLINE_URL = '/offline.html';
 const CACHE_URLS = [
   '/index.html',
@@ -18,7 +18,13 @@ const CACHE_URLS = [
   '/tur/sykkeltur-frotvedt-kart.png',
   '/tur/rute-illustrasjon.svg',
   '/ukelonn/',
-  '/ukelonn/index.html'
+  '/ukelonn/index.html',
+  '/laering/',
+  '/laering/index.html',
+  '/laering/assets/gangetrappen-preview.png',
+  '/laering/gangetrappen/',
+  '/laering/gangetrappen/index.html',
+  '/laering/gangetrappen/firebase-config.js'
 ];
 
 // Install event - cache required resources
