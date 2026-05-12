@@ -1,4 +1,4 @@
-const CACHE_NAME = 'alma-v10';
+const CACHE_NAME = 'alma-v11';
 const OFFLINE_URL = '/offline.html';
 const CACHE_URLS = [
   '/index.html',
@@ -22,7 +22,13 @@ const CACHE_URLS = [
   '/ukelonn/index.html',
   '/laering/',
   '/laering/index.html',
+  '/laering/ki/',
+  '/laering/ki/index.html',
   '/laering/assets/gangetrappen-preview.png',
+  '/laering/assets/KIfilm.MP4',
+  '/laering/assets/kiforklaring.png',
+  '/laering/assets/lagetavki.png',
+  '/laering/assets/lagetavkimedfork.png',
   '/laering/gangetrappen/',
   '/laering/gangetrappen/index.html',
   '/laering/gangetrappen/firebase-config.js'

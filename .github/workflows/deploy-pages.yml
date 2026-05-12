@@ -36,18 +36,18 @@ jobs:
           mkdir -p site/laering/gangetrappen site/spill/kosekaos
           git archive --format=tar HEAD | tar -xf - -C site
 
-      - name: Inject Firebase config
+      - name: Inject optional runtime config
         shell: bash
         env:
           ALMA_FIREBASE_CONFIG_JS: ${{ secrets.ALMA_FIREBASE_CONFIG_JS }}
         run: |
           set -euo pipefail
           if [ -z "${ALMA_FIREBASE_CONFIG_JS}" ]; then
-            echo "⚠ Warning: ALMA_FIREBASE_CONFIG_JS secret not set, Firebase will be disabled" >&2
+            echo "⚠ Warning: ALMA_FIREBASE_CONFIG_JS secret not set, optional runtime config will be skipped" >&2
           else
             printf '%s\n' "$ALMA_FIREBASE_CONFIG_JS" > site/laering/gangetrappen/firebase-config.js
             printf '%s\n' "$ALMA_FIREBASE_CONFIG_JS" > site/spill/kosekaos/firebase-config.js
-            echo "✓ Firebase config injected for gangetrappen and kosekaos"
+            echo "✓ Optional runtime config injected for gangetrappen and kosekaos"
           fi
 
       - name: Upload artifact

@@ -128,4 +128,4 @@ Hvis du har endret filer i precache-listen i service-worker.js, oppdater CACHE_N
 
 ### 3) Publiser
 
-Publiser innholdet fra repo-roten (statisk deploy). Ingen build-step er nodvendig.
+Publiser innholdet via GitHub Pages fra repo-roten (statisk deploy). Ingen build-step er nodvendig.
