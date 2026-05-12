@@ -172,6 +172,33 @@
       width: fit-content;
     }
 
+    .game-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-decoration: none;
+      color: inherit;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 16px;
+      transition: transform 0.2s;
+    }
+
+    .game-card:hover {
+      transform: scale(1.05);
+    }
+
+    .game-image {
+      width: 100%;
+      max-width: 200px;
+      border-radius: 8px;
+    }
+
+    .game-info {
+      text-align: center;
+      margin-top: 8px;
+    }
+
     @media (max-width: 640px) {
       .title { line-height: 1.05; }
     }
@@ -213,6 +240,18 @@
           Møt den digitale mønster-detektiven! Lær hvordan kunstig intelligens fungerer – og hvorfor hjernen din alltid er den viktigste superkraften.
         </p>
         <a class="play" href="/laering/ki/">Lær mer her</a>
+      </article>
+
+      <article class="card">
+        <div class="card-image">
+          <img src="/laering/assets/delingsduellen.png" alt="Delingsduellen - Division Challenge Game" />
+        </div>
+        <span class="badge">Ny modul</span>
+        <h2>Delingsduellen</h2>
+        <p class="meta">
+          Delingsspill med fart og nerve. 3 oppgaver per nivå, 4 svaralternativer – svar raskt og klatre i tårnet mot nye utfordringer.
+        </p>
+        <a class="play" href="/laering/delingsduellen/">Start Delingsduellen</a>
       </article>
     </section>
   </div>

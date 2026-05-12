@@ -1,0 +1,30 @@
+{
+  "firestore": {
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  },
+  "hosting": {
+    "public": ".",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**",
+      ".git/**",
+      ".github/**",
+      "package.json",
+      "package-lock.json",
+      "README.md",
+      "TROUBLESHOOTING.md",
+      "PWA.md",
+      "playwright.config.js",
+      "vitest.config.js",
+      "generate-title.js"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  }
+}

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'alma-v11';
+const CACHE_NAME = 'alma-v15';
 const OFFLINE_URL = '/offline.html';
 const CACHE_URLS = [
   '/index.html',
@@ -29,9 +29,16 @@ const CACHE_URLS = [
   '/laering/assets/kiforklaring.png',
   '/laering/assets/lagetavki.png',
   '/laering/assets/lagetavkimedfork.png',
+  '/laering/assets/delingsduellen.png',
   '/laering/gangetrappen/',
   '/laering/gangetrappen/index.html',
-  '/laering/gangetrappen/firebase-config.js'
+  '/laering/gangetrappen/firebase-config.js',
+  '/laering/delingsduellen/',
+  '/laering/delingsduellen/index.html',
+  '/laering/delingsduellen/styles.css',
+  '/laering/delingsduellen/app.js',
+  '/laering/delingsduellen/assets/delingsduellen.png',
+  '/laering/delingsduellen/assets/delingsduellen-title.png'
 ];
 
 // Install event - cache required resources

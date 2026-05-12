@@ -10,5 +10,10 @@ service cloud.firestore {
     match /kosekaos_games/{document=**} {
       allow read, write: if true;
     }
+    
+    // Delingsduellen highscores
+    match /delingsduellen_highscores/{document=**} {
+      allow read, write: if true;
+    }
   }
 }

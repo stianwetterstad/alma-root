@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Delingsduellen | Alma</title>
+  <meta name="description" content="Delingsduellen: et fartsfylt delingsspill med nivaer, streak og highscore.">
+  <link rel="stylesheet" href="styles.css">
+  <script src="/laering/gangetrappen/firebase-config.js"></script>
+  <script type="module" src="app.js" defer></script>
+</head>
+<body>
+  <div class="bg-orb orb-a" aria-hidden="true"></div>
+  <div class="bg-orb orb-b" aria-hidden="true"></div>
+
+  <div class="wrap">
+    <header class="topbar">
+      <a class="pill" href="/laering/">Til laering</a>
+      <span class="title-pill">Delingsduellen</span>
+      <button class="pill" id="restartBtn" type="button">Ny runde</button>
+    </header>
+
+    <section class="hero" aria-label="Spillintro">
+      <div class="hero-text">
+        <img src="assets/delingsduellen-title.png" alt="Delingsduellen" class="hero-title">
+        <p>3 oppgaver per niva. 4 svarvalg. Svar raskt, hold streaken levende, og klatre i tarnet.</p>
+        <div class="tag-row">
+          <span class="tag">Tempo + mestring</span>
+          <span class="tag">Boss hver 3. level</span>
+          <span class="tag">Highscore-jakt</span>
+        </div>
+      </div>
+    </section>
+
+    <main class="layout">
+      <section class="panel game-panel" aria-label="Spill">
+        <div class="stats-grid">
+          <article class="stat-box"><span>Poeng</span><strong id="scoreValue">0</strong></article>
+          <article class="stat-box"><span>Niva</span><strong id="levelValue">1</strong></article>
+          <article class="stat-box"><span>Streak</span><strong id="streakValue">0</strong></article>
+          <article class="stat-box"><span>Tid</span><strong id="timerValue">0.0s</strong></article>
+        </div>
+
+        <div class="tower-wrap">
+          <div class="tower" id="tower" aria-label="Delingstarn"></div>
+          <div class="tower-meta">
+            <strong id="progressLabel">Oppgave 1 av 3</strong>
+            <div class="progress-track" aria-hidden="true">
+              <div class="progress-fill" id="progressFill"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="question-card" id="questionCard">
+          <p class="question-topline" id="modeLabel">Vanlig runde</p>
+          <h2 id="questionLabel">Trykk start for a spille</h2>
+          <p id="statusLine" class="status-line">Velkommen til duellen.</p>
+
+          <div id="answers" class="answers" aria-label="Svaralternativer"></div>
+          <button id="startBtn" class="start-btn" type="button">Start runde</button>
+        </div>
+      </section>
+
+      <aside class="panel side-panel" aria-label="Resultater">
+        <section class="mini-panel">
+          <h3>Duellstatus</h3>
+          <p>Feil pa niva: <strong id="levelMistakesValue">0</strong> / 2</p>
+          <p>Fall: <strong id="fallsValue">0</strong> / 3</p>
+          <p>Beste niva denne runden: <strong id="bestLevelValue">1</strong></p>
+        </section>
+
+        <section class="mini-panel">
+          <h3>Highscore</h3>
+          <p class="note" id="highscoreSource">Laster...</p>
+          <ol id="highscoreList" class="highscore-list"></ol>
+        </section>
+      </aside>
+    </main>
+  </div>
+
+  <div class="overlay hidden" id="gameOverOverlay" role="dialog" aria-modal="true" aria-labelledby="overlayTitle">
+    <div class="overlay-card">
+      <h2 id="overlayTitle">Game over</h2>
+      <p id="overlaySummary"></p>
+
+      <div id="saveArea" class="save-area hidden">
+        <label for="nameInput">Ny highscore! Navn/kallenavn:</label>
+        <div class="save-row">
+          <input id="nameInput" type="text" maxlength="18" placeholder="Spiller">
+          <button id="saveScoreBtn" type="button">Lagre</button>
+        </div>
+      </div>
+
+      <div class="overlay-actions">
+        <button id="playAgainBtn" type="button">Spill igjen</button>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
