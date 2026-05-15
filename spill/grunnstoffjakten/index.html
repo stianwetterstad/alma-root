@@ -9,17 +9,19 @@
   <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@400;700;800&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --bg-top: #f7f2d9;
-      --bg-mid: #cfeec8;
-      --bg-bottom: #9bd3dd;
-      --ink: #203247;
-      --card: #ffffffee;
-      --accent: #e4582e;
-      --accent-2: #0b7d5b;
-      --accent-3: #f0b429;
+      --bg-top: #fff0c9;
+      --bg-mid: #ccf1d9;
+      --bg-bottom: #8ed5ff;
+      --ink: #123451;
+      --card: #fffffff0;
+      --accent: #ff7b2f;
+      --accent-2: #1f8f68;
+      --accent-3: #ffd33d;
+      --deep: #0b4f7e;
+      --line: #1d668c;
       --danger: #bb2f2f;
-      --shadow: 0 16px 36px rgba(25, 54, 76, 0.18);
-      --radius: 18px;
+      --shadow: 0 16px 30px rgba(12, 64, 88, 0.22);
+      --radius: 22px;
     }
 
     * {
@@ -31,40 +33,41 @@
       color: var(--ink);
       font-family: "Nunito", sans-serif;
       background:
-        radial-gradient(circle at 18% 14%, #fff6cf 0, #fff6cf55 22%, transparent 45%),
-        radial-gradient(circle at 90% 18%, #ffd4ba 0, #ffd4ba44 20%, transparent 42%),
-        linear-gradient(165deg, var(--bg-top), var(--bg-mid) 40%, var(--bg-bottom));
+        radial-gradient(circle at 12% 10%, #fff7bf 0, #fff7bf66 18%, transparent 42%),
+        radial-gradient(circle at 88% 16%, #ffd2ef 0, #ffd2ef77 18%, transparent 44%),
+        radial-gradient(circle at 70% 82%, #cbf4ff 0, #cbf4ff80 20%, transparent 48%),
+        linear-gradient(165deg, var(--bg-top), var(--bg-mid) 42%, var(--bg-bottom));
       min-height: 100vh;
     }
 
     .wrap {
-      width: min(1220px, 94vw);
+      width: min(1240px, 94vw);
       margin: 0 auto;
-      padding: 14px 0 30px;
+      padding: 14px 0 34px;
     }
 
     .topbar {
       display: flex;
       gap: 10px;
       flex-wrap: wrap;
-      margin: 4px 0 16px;
+      margin: 6px 0 16px;
     }
 
     .pill {
       text-decoration: none;
       color: var(--ink);
-      background: #fff9;
-      border: 2px solid #ffffffcc;
+      background: #ffffffde;
+      border: 2px solid #ffffff;
       border-radius: 999px;
-      padding: 7px 14px;
+      padding: 8px 15px;
       font-weight: 800;
-      box-shadow: 0 4px 10px rgba(23, 49, 66, 0.12);
+      box-shadow: 0 6px 12px rgba(23, 49, 66, 0.15);
     }
 
     .pill.current {
-      background: var(--accent-2);
-      color: #f7fffb;
-      border-color: transparent;
+      background: linear-gradient(140deg, #25a776, #1d7fd8);
+      color: #fff;
+      border-color: #ffffffaa;
     }
 
     .hero {
@@ -84,25 +87,27 @@
     }
 
     .hero-main {
-      padding: 20px;
+      padding: 22px;
       background-image:
-        linear-gradient(140deg, rgba(255, 255, 255, 0.96), rgba(253, 244, 224, 0.9)),
+        linear-gradient(140deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.55)),
         url('/laering/assets/grunnstoffjakten.png');
       background-size: cover;
       background-position: center;
       overflow: hidden;
       position: relative;
+      border: 2px solid #ffffffcc;
+      box-shadow: inset 0 0 0 2px #2f8bb733, var(--shadow);
     }
 
     .hero-main::after {
       content: "";
       position: absolute;
-      right: -80px;
-      top: -80px;
-      width: 220px;
-      height: 220px;
+      right: -60px;
+      top: -60px;
+      width: 190px;
+      height: 190px;
       border-radius: 50%;
-      background: radial-gradient(circle, #f8cb5f99, #f8cb5f00 72%);
+      background: radial-gradient(circle, #ffe982cc, #ffe98200 72%);
       pointer-events: none;
       animation: pulse 4.2s ease-in-out infinite;
     }
@@ -122,14 +127,25 @@
 
     h1 {
       font-size: clamp(34px, 5vw, 54px);
-      color: #0d3e57;
+      letter-spacing: 0.02em;
+      background: linear-gradient(90deg, #ff5f55 0%, #ffbf3f 20%, #6dd44d 40%, #3eb6ff 60%, #597dff 80%, #ff66bb 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      -webkit-text-stroke: 2px #0b4f7e;
+      text-shadow: 0 6px 0 #0b4f7e33;
     }
 
     .subtitle {
-      margin: 10px 0 14px;
+      margin: 12px 0 14px;
       font-size: clamp(17px, 2.3vw, 22px);
       max-width: 62ch;
       font-weight: 700;
+      background: #ffffffd4;
+      border: 2px solid #ffffff;
+      border-radius: 14px;
+      padding: 8px 12px;
+      display: inline-block;
     }
 
     .badges {
@@ -139,13 +155,57 @@
     }
 
     .badge {
-      background: #103f57;
+      background: linear-gradient(150deg, #1964a0, #11456e);
       color: #fff;
       padding: 6px 12px;
       border-radius: 999px;
       font-size: 14px;
       font-weight: 800;
       letter-spacing: 0.02em;
+      border: 2px solid #ffffffc2;
+      box-shadow: 0 6px 10px rgba(17, 69, 110, 0.24);
+    }
+
+    .badge:nth-child(2) {
+      background: linear-gradient(150deg, #2d9f68, #1f7d52);
+    }
+
+    .badge:nth-child(3) {
+      background: linear-gradient(150deg, #f6902c, #e15b2f);
+    }
+
+    .hero-trail {
+      margin-top: 12px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      flex-wrap: wrap;
+    }
+
+    .trail-dot {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 900;
+      border: 2px solid #ffffff;
+      box-shadow: 0 4px 10px rgba(16, 75, 110, 0.25);
+    }
+
+    .trail-dot.one { background: linear-gradient(145deg, #ff7f57, #ec5d43); }
+    .trail-dot.two { background: linear-gradient(145deg, #ffc241, #ea992b); }
+    .trail-dot.three { background: linear-gradient(145deg, #52c96f, #2d9e53); }
+    .trail-dot.four { background: linear-gradient(145deg, #42b7ff, #2c8ee1); }
+    .trail-dot.five { background: linear-gradient(145deg, #8e79ff, #6a58da); }
+
+    .trail-link {
+      width: 16px;
+      height: 6px;
+      border-radius: 999px;
+      background: #0f628e33;
     }
 
     .hero-stats {
@@ -154,13 +214,16 @@
       grid-template-columns: repeat(2, 1fr);
       gap: 10px;
       align-content: start;
+      border: 2px solid #ffffffc4;
+      background: linear-gradient(160deg, #0e5f92ea, #174b73db);
     }
 
     .stat {
-      background: linear-gradient(150deg, #f7f2ff, #f9fdfb);
-      border: 1px solid #00000010;
+      background: linear-gradient(150deg, #ffffffef, #f0fbffea);
+      border: 2px solid #ffffff;
       border-radius: 14px;
       padding: 12px;
+      box-shadow: inset 0 -4px 0 #d7f2ff;
     }
 
     .stat-label {
@@ -186,6 +249,18 @@
 
     .panel {
       padding: 16px;
+      border: 2px solid #ffffffc4;
+      position: relative;
+      background: linear-gradient(180deg, #ffffffef, #f1fbffef);
+    }
+
+    .panel::before {
+      content: "";
+      position: absolute;
+      inset: 8px;
+      border: 1px dashed #50a7d955;
+      border-radius: calc(var(--radius) - 6px);
+      pointer-events: none;
     }
 
     .level-head {
@@ -200,22 +275,25 @@
     .level-tag {
       border-radius: 999px;
       padding: 5px 11px;
-      background: #083c5a;
+      background: linear-gradient(150deg, #ffd54f, #f8a535);
+      border: 2px solid #ffffffd0;
       color: #fff;
       font-size: 12px;
       font-weight: 800;
       letter-spacing: 0.06em;
       text-transform: uppercase;
+      box-shadow: 0 6px 10px rgba(248, 165, 53, 0.36);
     }
 
     .mission {
       margin-bottom: 12px;
-      background: #f9fbff;
-      border: 1px solid #00000010;
+      background: linear-gradient(160deg, #eaf8ff, #ffffff);
+      border: 2px solid #99d9ff;
       border-radius: 14px;
-      padding: 10px 12px;
+      padding: 11px 13px;
       min-height: 64px;
       font-weight: 700;
+      box-shadow: 0 8px 14px rgba(50, 120, 160, 0.14);
     }
 
     .tasks {
@@ -225,57 +303,84 @@
     }
 
     .task {
-      border-radius: 10px;
-      border: 1px dashed #0e486522;
-      background: #fcffff;
+      border-radius: 12px;
+      border: 1px solid #9ad6ff;
+      background: linear-gradient(150deg, #ffffff, #f3fcff);
       padding: 8px 10px;
       font-size: 15px;
       display: flex;
       align-items: center;
       gap: 8px;
+      box-shadow: 0 5px 10px rgba(34, 111, 150, 0.14);
     }
 
     .task.done {
       color: #27654f;
-      border-style: solid;
-      border-color: #5dc29a66;
-      background: #ecfff6;
+      border-color: #5dc29aaa;
+      background: linear-gradient(160deg, #ecfff6, #f9fffc);
       text-decoration: line-through;
     }
 
     .scene-grid {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 10px;
-      margin-bottom: 12px;
+      gap: 12px;
+      margin-bottom: 14px;
+      background: linear-gradient(160deg, #e1f6ff, #f8fffd);
+      border-radius: 18px;
+      border: 2px solid #9edfff;
+      padding: 12px;
     }
 
     .object-btn {
-      border: 0;
-      border-radius: 14px;
-      min-height: 108px;
+      border: 2px solid #ffffff;
+      border-radius: 20px;
+      min-height: 112px;
       padding: 10px 8px;
       color: #123;
       cursor: pointer;
-      background: linear-gradient(170deg, #ffffff, #dff8f0);
-      box-shadow: 0 8px 16px rgba(17, 53, 66, 0.16);
+      background: linear-gradient(165deg, #ffffff, #e8fbff);
+      box-shadow: 0 10px 16px rgba(17, 77, 106, 0.2);
       transition: transform .15s ease, box-shadow .15s ease;
       display: grid;
       place-items: center;
       text-align: center;
       gap: 2px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .object-btn::after {
+      content: "";
+      position: absolute;
+      top: -50%;
+      left: -35%;
+      width: 65%;
+      height: 190%;
+      background: linear-gradient(90deg, #ffffff00, #ffffffbb, #ffffff00);
+      transform: rotate(18deg);
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity .2s ease;
     }
 
     .object-btn:hover,
     .object-btn:focus-visible {
-      transform: translateY(-2px);
-      box-shadow: 0 14px 22px rgba(17, 53, 66, 0.2);
-      outline: 3px solid #44a0d044;
+      transform: translateY(-4px) scale(1.01);
+      box-shadow: 0 16px 24px rgba(17, 77, 106, 0.28);
+      outline: 3px solid #44a0d066;
+    }
+
+    .object-btn:hover::after,
+    .object-btn:focus-visible::after {
+      opacity: 1;
     }
 
     .object-icon {
-      font-size: 35px;
+      font-size: 37px;
       line-height: 1;
+      filter: drop-shadow(0 4px 2px #0d4f7433);
+      animation: bob 2.4s ease-in-out infinite;
     }
 
     .object-name {
@@ -283,13 +388,19 @@
       font-weight: 800;
     }
 
+    .object-btn:nth-child(4n+1) { background: linear-gradient(165deg, #ffffff, #dff6ff); }
+    .object-btn:nth-child(4n+2) { background: linear-gradient(165deg, #ffffff, #ecffe5); }
+    .object-btn:nth-child(4n+3) { background: linear-gradient(165deg, #ffffff, #fff4df); }
+    .object-btn:nth-child(4n) { background: linear-gradient(165deg, #ffffff, #f3ebff); }
+
     .status {
       border-radius: 12px;
-      background: #083e5a;
+      background: linear-gradient(150deg, #185e91, #0e4d78);
       color: #fff;
       padding: 10px 12px;
       min-height: 46px;
       font-weight: 700;
+      border: 2px solid #ffffff75;
     }
 
     .actions {
@@ -300,7 +411,7 @@
     }
 
     .btn {
-      border: 0;
+      border: 2px solid #ffffffcc;
       border-radius: 999px;
       cursor: pointer;
       padding: 10px 15px;
@@ -308,18 +419,25 @@
       font-weight: 900;
       letter-spacing: .01em;
       color: #fff;
-      background: var(--accent);
-      box-shadow: 0 8px 16px rgba(210, 90, 43, 0.35);
+      background: linear-gradient(160deg, #ff9937, #f16a27);
+      box-shadow: 0 10px 18px rgba(210, 90, 43, 0.35);
+      transition: transform .14s ease, box-shadow .14s ease;
     }
 
     .btn.secondary {
-      background: var(--accent-2);
-      box-shadow: 0 8px 16px rgba(11, 125, 91, 0.3);
+      background: linear-gradient(160deg, #31b67f, #178e60);
+      box-shadow: 0 10px 18px rgba(11, 125, 91, 0.3);
     }
 
     .btn.ghost {
-      background: #6d7f8f;
-      box-shadow: 0 8px 16px rgba(33, 55, 72, 0.28);
+      background: linear-gradient(160deg, #7387a0, #5f728b);
+      box-shadow: 0 10px 18px rgba(33, 55, 72, 0.28);
+    }
+
+    .btn:hover:not(:disabled),
+    .btn:focus-visible:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 22px rgba(17, 55, 74, 0.3);
     }
 
     .btn:disabled {
@@ -332,14 +450,18 @@
       padding: 14px;
       display: grid;
       gap: 12px;
+      border: 2px solid #ffffffc2;
+      background: linear-gradient(180deg, #0f5f93f0, #0a4b74ef);
+      color: #fff;
     }
 
     .elements-book {
       border-radius: 12px;
-      border: 1px solid #00000018;
-      background: #fffcf4;
+      border: 2px solid #ffffff88;
+      background: linear-gradient(170deg, #fffdf0, #ffffff);
       padding: 10px;
       min-height: 128px;
+      color: var(--ink);
     }
 
     .elements-book h3 {
@@ -355,11 +477,12 @@
 
     .chip {
       border-radius: 12px;
-      border: 1px solid #00000018;
-      background: #fff;
+      border: 2px solid #ffffff;
+      background: linear-gradient(160deg, #f0f9ff, #ffffff);
       padding: 5px 8px;
       font-size: 12px;
       font-weight: 800;
+      box-shadow: 0 4px 8px rgba(12, 60, 90, 0.15);
     }
 
     .chip b {
@@ -370,8 +493,9 @@
     .source {
       font-size: 12px;
       font-weight: 800;
-      opacity: .75;
+      opacity: .9;
       margin-top: -4px;
+      color: #cfefff;
     }
 
     #highscoreList {
@@ -379,6 +503,7 @@
       padding-left: 22px;
       min-height: 158px;
       font-weight: 700;
+      text-shadow: 0 1px 0 #0a4063;
     }
 
     #highscoreList li {
@@ -428,14 +553,15 @@
     .dialog {
       width: min(700px, 96vw);
       border-radius: 18px;
-      background: #fff;
+      background: linear-gradient(170deg, #ffffff, #eef8ff);
       box-shadow: 0 20px 40px rgba(9, 21, 33, 0.35);
       padding: 16px;
+      border: 2px solid #8fd2ff;
     }
 
     .dialog h3 {
       font-size: 32px;
-      color: #0b4666;
+      color: #0b4f7e;
       margin-bottom: 8px;
     }
 
@@ -456,11 +582,11 @@
       text-align: left;
       padding: 11px 12px;
       border-radius: 10px;
-      border: 2px solid #0b3f5d20;
+      border: 2px solid #0b3f5d2e;
       font: inherit;
       font-weight: 800;
       cursor: pointer;
-      background: #f7fcff;
+      background: linear-gradient(160deg, #f7fcff, #ffffff);
     }
 
     .opt:hover,
@@ -496,11 +622,17 @@
       bottom: 24px;
       text-align: center;
       pointer-events: none;
-      font-size: 34px;
+      font-size: 36px;
       opacity: 0;
       transform: translateY(10px);
       transition: all .35s ease;
       z-index: 21;
+      text-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+    }
+
+    @keyframes bob {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-4px); }
     }
 
     .confetti.show {
@@ -517,6 +649,16 @@
       .scene-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }
+
+      .hero-trail {
+        gap: 6px;
+      }
+
+      .trail-dot {
+        width: 24px;
+        height: 24px;
+        font-size: 11px;
+      }
     }
   </style>
   <script src="/analytics-config.js"></script>
@@ -527,7 +669,7 @@
   <div class="wrap">
     <nav class="topbar" aria-label="Toppmeny">
       <a class="pill" href="/">Hjem</a>
-      <a class="pill" href="/laering/">Laring</a>
+      <a class="pill" href="/laering/">Læring</a>
       <a class="pill" href="/spill/">Spill</a>
       <span class="pill current" aria-current="page">Grunnstoffjakten</span>
     </nav>
@@ -535,15 +677,22 @@
     <section class="hero">
       <div class="hero-main">
         <h1>Grunnstoffjakten</h1>
-        <p class="subtitle">Utforsk rom, park, laboratorium og stue for a finne grunnstoff i ting du kjenner fra hverdagen.</p>
+        <p class="subtitle">Utforsk rom, park, laboratorium og stue for å finne grunnstoff i ting du kjenner fra hverdagen.</p>
         <div class="badges">
-          <span class="badge">5 miljoer</span>
+          <span class="badge">5 miljøer</span>
           <span class="badge">12 grunnstoff</span>
           <span class="badge">Utforsking + quiz</span>
         </div>
+        <div class="hero-trail" aria-hidden="true">
+          <span class="trail-dot one">1</span><span class="trail-link"></span>
+          <span class="trail-dot two">2</span><span class="trail-link"></span>
+          <span class="trail-dot three">3</span><span class="trail-link"></span>
+          <span class="trail-dot four">4</span><span class="trail-link"></span>
+          <span class="trail-dot five">5</span>
+        </div>
       </div>
       <div class="hero-stats" aria-label="Spillstatus">
-        <div class="stat"><div class="stat-label">Niva</div><div class="stat-value" id="levelValue">1/5</div></div>
+        <div class="stat"><div class="stat-label">Nivå</div><div class="stat-value" id="levelValue">1/5</div></div>
         <div class="stat"><div class="stat-label">Poeng</div><div class="stat-value" id="scoreValue">0</div></div>
         <div class="stat"><div class="stat-label">Streak</div><div class="stat-value" id="streakValue">0</div></div>
         <div class="stat"><div class="stat-label">Hint brukt</div><div class="stat-value" id="hintValue">0</div></div>
@@ -553,10 +702,10 @@
     <section class="layout">
       <section class="panel" aria-label="Spillpanel">
         <div class="level-head">
-          <h2 id="levelName">Niva 1: Kjokkenet</h2>
+          <h2 id="levelName">Nivå 1: Kjøkkenet</h2>
           <span class="level-tag" id="levelTag">Utforsk</span>
         </div>
-        <div class="mission" id="missionText">Trykk Start for a fa forste oppdrag.</div>
+        <div class="mission" id="missionText">Trykk Start for å få første oppdrag.</div>
 
         <div class="tasks" id="taskList"></div>
         <div class="scene-grid" id="sceneGrid"></div>
@@ -564,8 +713,8 @@
 
         <div class="actions">
           <button class="btn" id="startBtn">Start jakt</button>
-          <button class="btn secondary" id="nextBtn" disabled>Neste miljo</button>
-          <button class="btn ghost" id="restartBtn">Start pa nytt</button>
+          <button class="btn secondary" id="nextBtn" disabled>Neste miljø</button>
+          <button class="btn ghost" id="restartBtn">Start på nytt</button>
         </div>
       </section>
 
@@ -610,8 +759,8 @@
 
     const LEVELS = [
       {
-        name: "Kjokkenet",
-        intro: "Finn grunnstoff i mat og kjokkenutstyr.",
+        name: "Kjøkkenet",
+        intro: "Finn grunnstoff i mat og kjøkkenutstyr.",
         objects: [
           { id: "water", label: "Vannglass", icon: "💧" },
           { id: "pan", label: "Stekepanne", icon: "🍳" },
@@ -635,7 +784,7 @@
           },
           {
             objectId: "pan",
-            prompt: "Finn noe av metall i kjokkenet.",
+            prompt: "Finn noe av metall i kjøkkenet.",
             question: "Hvilket grunnstoff finner vi ofte i jernpanne?",
             options: ["He", "Fe", "Ne"],
             answer: 1,
@@ -689,7 +838,7 @@
             question: "Hvilket grunnstoff puster vi mest av i lufta?",
             options: ["Oksygen (O)", "Gull (Au)", "Kobber (Cu)"],
             answer: 0,
-            hint: "Det hjelper oss med a puste.",
+            hint: "Det hjelper oss med å puste.",
             fact: "Riktig! Oksygen trengs i hver eneste pust.",
             symbol: "O",
             element: "Oksygen",
@@ -711,7 +860,7 @@
       },
       {
         name: "Skolelaboratoriet",
-        intro: "Na blir oppdragene litt mer avanserte.",
+        intro: "Nå blir oppdragene litt mer avanserte.",
         objects: [
           { id: "balloon", label: "Ballong", icon: "🎈" },
           { id: "pencil", label: "Blyant", icon: "✏️" },
@@ -723,7 +872,7 @@
         tasks: [
           {
             objectId: "balloon",
-            prompt: "Finn grunnstoffet som far ballonger til a stige.",
+            prompt: "Finn grunnstoffet som får ballonger til å stige.",
             question: "Helium tilhorer hvilken gruppe?",
             options: ["Metall", "Gass", "Vaeske"],
             answer: 1,
@@ -740,7 +889,7 @@
             options: ["C", "Cl", "Cr"],
             answer: 0,
             hint: "En enkel bokstav.",
-            fact: "Riktig! Kull er rikt pa karbon.",
+            fact: "Riktig! Kull er rikt på karbon.",
             symbol: "C",
             element: "Karbon",
             group: "Ikke-metall"
@@ -761,7 +910,7 @@
       },
       {
         name: "Fjell og steinbrudd",
-        intro: "Na jakter vi pa sjeldne og verdifulle metaller.",
+        intro: "Nå jakter vi på sjeldne og verdifulle metaller.",
         objects: [
           { id: "gold", label: "Gullnugget", icon: "🥇" },
           { id: "ore", label: "Kobbermalm", icon: "⛏️" },
@@ -789,7 +938,7 @@
             question: "Kobber har symbolet ...",
             options: ["Co", "Cu", "Cb"],
             answer: 1,
-            hint: "Samme symbol som i forrige miljo.",
+            hint: "Samme symbol som i forrige miljø.",
             fact: "Supert! Cu er kobber.",
             symbol: "Cu",
             element: "Kobber",
@@ -823,12 +972,12 @@
         tasks: [
           {
             objectId: "candle",
-            prompt: "Finn hva et stearinlys trenger for a brenne.",
+            prompt: "Finn hva et stearinlys trenger for å brenne.",
             question: "Hvilket grunnstoff er viktig i forbrenning?",
             options: ["Oksygen (O)", "Gull (Au)", "Jern (Fe)"],
             answer: 0,
             hint: "Det samme grunnstoffet du puster inn.",
-            fact: "Nydelig! Oksygen gjor at flammen kan fortsette.",
+            fact: "Nydelig! Oksygen gjør at flammen kan fortsette.",
             symbol: "O",
             element: "Oksygen",
             group: "Ikke-metall"
@@ -839,8 +988,8 @@
             question: "Karbondioksid inneholder hvilket grunnstoff?",
             options: ["Karbon (C)", "Kalium (K)", "Kobolt (Co)"],
             answer: 0,
-            hint: "Det samme grunnstoffet finnes i trar.",
-            fact: "Riktig! C star for karbon.",
+            hint: "Det samme grunnstoffet finnes i trær.",
+            fact: "Riktig! C står for karbon.",
             symbol: "C",
             element: "Karbon",
             group: "Ikke-metall"
@@ -848,11 +997,11 @@
           {
             objectId: "lego",
             prompt: "Master-oppdrag: velg riktig symbol for metall i byggesett.",
-            question: "Hvilket symbol horer til jern?",
+            question: "Hvilket symbol hører til jern?",
             options: ["Ir", "Fe", "Fn"],
             answer: 1,
-            hint: "Tenk pa stekepannen fra niva 1.",
-            fact: "Fantastisk! Du har fullfort Grunnstoffjakten.",
+            hint: "Tenk på stekepannen fra nivå 1.",
+            fact: "Fantastisk! Du har fullført Grunnstoffjakten.",
             symbol: "Fe",
             element: "Jern",
             group: "Metall"
@@ -1067,8 +1216,8 @@
       el.scoreValue.textContent = String(state.score);
       el.streakValue.textContent = String(state.streak);
       el.hintValue.textContent = String(state.hintsUsed);
-      el.levelName.textContent = `Niva ${state.levelIndex + 1}: ${level.name}`;
-      el.levelTag.textContent = pendingTasks().length ? "Utforsk" : "Fullfort";
+      el.levelName.textContent = `Nivå ${state.levelIndex + 1}: ${level.name}`;
+      el.levelTag.textContent = pendingTasks().length ? "Utforsk" : "Fullført";
 
       renderTasks();
       renderScene();
@@ -1122,7 +1271,7 @@
 
     function onObjectClick(objectId) {
       if (!state.started) {
-        el.statusText.textContent = "Trykk Start jakt for a begynne.";
+        el.statusText.textContent = "Trykk Start jakt for å begynne.";
         return;
       }
 
@@ -1136,7 +1285,7 @@
         if (randomPending) {
           el.statusText.textContent = `Pro tip: Prøv ${level.objects.find(o => o.id === randomPending.task.objectId).label}.`;
         } else {
-          el.statusText.textContent = "Miljoet er fullfort. Klar for neste!";
+          el.statusText.textContent = "Miljøet er fullført. Klar for neste!";
         }
         return;
       }
@@ -1215,7 +1364,7 @@
         renderUI();
         if (!pendingTasks().length) {
           if (state.levelIndex < LEVELS.length - 1) {
-            el.statusText.textContent = "Miljo fullfort! Trykk Neste miljo.";
+            el.statusText.textContent = "Miljø fullført! Trykk Neste miljø.";
             el.nextBtn.disabled = false;
           } else {
             finishGame();
@@ -1232,8 +1381,8 @@
         state.streak = 0;
         state.wrongAnswers += 1;
         el.quizFeedback.className = "dialog-feedback err";
-        el.quizFeedback.textContent = "Ikke helt. Tenk pa hintet eller prov igjen.";
-        el.statusText.textContent = "Feil svar, men du er naermere losningen na.";
+        el.quizFeedback.textContent = "Ikke helt. Tenk på hintet eller prøv igjen.";
+        el.statusText.textContent = "Feil svar, men du er nærmere løsningen nå.";
         trackEvent("grunnstoffjakten_wrong", { level: state.levelIndex + 1 });
         renderUI();
       }
@@ -1262,8 +1411,8 @@
       state.started = true;
       state.scoreSaved = false;
       const first = pendingTasks()[0];
-      el.missionText.textContent = first ? first.task.prompt : "Miljoet er allerede fullfort.";
-      el.statusText.textContent = "Jakten er i gang. Trykk pa objekter for a finne grunnstoff.";
+      el.missionText.textContent = first ? first.task.prompt : "Miljøet er allerede fullført.";
+      el.statusText.textContent = "Jakten er i gang. Trykk på objekter for å finne grunnstoff.";
       el.startBtn.disabled = true;
       trackEvent("grunnstoffjakten_start", { level: 1 });
     }
@@ -1275,7 +1424,7 @@
       state.levelIndex += 1;
       const next = pendingTasks()[0];
       el.missionText.textContent = next ? next.task.prompt : getCurrentLevel().intro;
-      el.statusText.textContent = `Nytt miljo: ${getCurrentLevel().name}.`;
+      el.statusText.textContent = `Nytt miljø: ${getCurrentLevel().name}.`;
       renderUI();
       trackEvent("grunnstoffjakten_next_level", { level: state.levelIndex + 1 });
     }
@@ -1284,7 +1433,7 @@
       state.started = false;
       el.startBtn.disabled = false;
       el.nextBtn.disabled = true;
-      el.missionText.textContent = "Du fullforte alle miljoene!";
+      el.missionText.textContent = "Du fullførte alle miljøene!";
       el.statusText.textContent = `Totalscore: ${state.score}. Samlingen din har ${state.discovered.size} elementkort.`;
       trackEvent("grunnstoffjakten_complete", { score: state.score, hintsUsed: state.hintsUsed });
 
@@ -1315,7 +1464,7 @@
       el.saveArea.classList.add("hidden");
       el.startBtn.disabled = false;
       el.nameInput.value = "";
-      el.missionText.textContent = "Trykk Start for a fa forste oppdrag.";
+      el.missionText.textContent = "Trykk Start for å få første oppdrag.";
       el.statusText.textContent = "Klar for oppdrag.";
       renderUI();
     }
@@ -1347,7 +1496,7 @@
       await initFirebaseHighscores();
       await loadHighscores();
       el.missionText.textContent = getCurrentLevel().intro;
-      el.statusText.textContent = "Trykk Start jakt for a begynne.";
+      el.statusText.textContent = "Trykk Start jakt for å begynne.";
     }
 
     init();
