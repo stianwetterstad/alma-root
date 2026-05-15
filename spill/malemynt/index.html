@@ -1,0 +1,1242 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Målemyntenes Mysterium</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@400;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg-top: #fef6e6;
+      --bg-mid: #d4e8dd;
+      --bg-bottom: #a8d4f0;
+      --ink: #1a3a2e;
+      --card: #ffffffee;
+      --accent: #d4a574;
+      --accent-2: #4a7c59;
+      --accent-3: #f4b942;
+      --shadow: 0 16px 36px rgba(26, 58, 46, 0.18);
+      --radius: 16px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: "Nunito", sans-serif;
+      background: linear-gradient(165deg, var(--bg-top), var(--bg-mid) 40%, var(--bg-bottom));
+      min-height: 100vh;
+    }
+
+    .wrap {
+      width: min(1220px, 94vw);
+      margin: 0 auto;
+      padding: 14px 0 30px;
+    }
+
+    .topbar {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin: 4px 0 16px;
+    }
+
+    .pill {
+      text-decoration: none;
+      color: var(--ink);
+      background: #fff9;
+      border: 2px solid #ffffffcc;
+      border-radius: 999px;
+      padding: 7px 14px;
+      font-weight: 800;
+      box-shadow: 0 4px 10px rgba(26, 58, 46, 0.12);
+    }
+
+    .pill.current {
+      background: var(--accent-2);
+      color: #fff;
+      border-color: transparent;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 16px;
+      margin-bottom: 14px;
+    }
+
+    .hero-main,
+    .hero-stats,
+    .panel,
+    .scoreboard {
+      border-radius: var(--radius);
+      background: var(--card);
+      box-shadow: var(--shadow);
+    }
+
+    .hero-main {
+      padding: 20px;
+      background-image:
+        linear-gradient(140deg, rgba(255, 255, 255, 0.96), rgba(254, 246, 230, 0.9)),
+        url('/laering/assets/malemynt.png');
+      background-size: cover;
+      background-position: center;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .hero-main::after {
+      content: "";
+      position: absolute;
+      right: -60px;
+      top: -60px;
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #d4a57499, #d4a57400 72%);
+      pointer-events: none;
+      animation: pulse 4.2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(0.92); opacity: 0.6; }
+      50% { transform: scale(1.08); opacity: 1; }
+    }
+
+    h1, h2, h3 {
+      font-family: "Baloo 2", cursive;
+      margin: 0;
+      line-height: 1.05;
+    }
+
+    h1 {
+      font-size: clamp(32px, 5vw, 48px);
+      color: #1a3a2e;
+    }
+
+    .subtitle {
+      margin: 10px 0 14px;
+      font-size: clamp(16px, 2.3vw, 20px);
+      max-width: 62ch;
+      font-weight: 700;
+    }
+
+    .badges {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      background: #2d5e45;
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+    }
+
+    .hero-stats {
+      padding: 16px;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      align-content: start;
+    }
+
+    .stat {
+      background: linear-gradient(150deg, #fff5f5, #f9fdfb);
+      border: 1px solid #00000010;
+      border-radius: 14px;
+      padding: 12px;
+    }
+
+    .stat-label {
+      font-size: 12px;
+      text-transform: uppercase;
+      font-weight: 800;
+      opacity: 0.75;
+      letter-spacing: 0.05em;
+    }
+
+    .stat-value {
+      margin-top: 4px;
+      font-size: 27px;
+      font-weight: 900;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 1.35fr .9fr;
+      gap: 16px;
+      align-items: start;
+    }
+
+    .panel {
+      padding: 16px;
+    }
+
+    .level-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+
+    .level-tag {
+      border-radius: 999px;
+      padding: 5px 11px;
+      background: #1a3a2e;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .story {
+      background: #fef9f3;
+      border: 1px solid #d4a57433;
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 12px;
+      font-weight: 700;
+      font-size: 15px;
+      line-height: 1.4;
+    }
+
+    .tasks {
+      display: grid;
+      gap: 7px;
+      margin-bottom: 12px;
+    }
+
+    .task {
+      border-radius: 10px;
+      border: 1px dashed #1a3a2e33;
+      background: #fcffff;
+      padding: 8px 10px;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .task.done {
+      color: #2d5e45;
+      border-style: solid;
+      border-color: #4a7c5988;
+      background: #ecfff6;
+      text-decoration: line-through;
+    }
+
+    .status {
+      border-radius: 12px;
+      background: #1a3a2e;
+      color: #fff;
+      padding: 10px 12px;
+      min-height: 46px;
+      font-weight: 700;
+    }
+
+    .actions {
+      margin-top: 12px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      border: 0;
+      border-radius: 999px;
+      cursor: pointer;
+      padding: 10px 15px;
+      font-size: 15px;
+      font-weight: 900;
+      letter-spacing: .01em;
+      color: #fff;
+      background: var(--accent);
+      box-shadow: 0 8px 16px rgba(212, 165, 116, 0.35);
+    }
+
+    .btn.secondary {
+      background: var(--accent-2);
+      box-shadow: 0 8px 16px rgba(74, 124, 89, 0.3);
+    }
+
+    .btn.ghost {
+      background: #6d7f8f;
+      box-shadow: 0 8px 16px rgba(33, 55, 72, 0.28);
+    }
+
+    .btn:disabled {
+      opacity: .4;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .scoreboard {
+      padding: 14px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .coins-collected {
+      border-radius: 12px;
+      border: 1px solid #00000018;
+      background: #fffcf4;
+      padding: 10px;
+      min-height: 80px;
+    }
+
+    .coins-collected h3 {
+      margin-bottom: 8px;
+      font-size: 20px;
+    }
+
+    .coins-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .coin-badge {
+      display: inline-block;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #f4b942, #d4a574);
+      border: 2px solid #8b7355;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      font-weight: 900;
+      color: #1a3a2e;
+      box-shadow: 0 4px 8px rgba(212, 165, 116, 0.3);
+    }
+
+    .source {
+      font-size: 12px;
+      font-weight: 800;
+      opacity: .75;
+      margin-top: -4px;
+    }
+
+    #highscoreList {
+      margin: 0;
+      padding-left: 22px;
+      min-height: 120px;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    #highscoreList li {
+      margin-bottom: 4px;
+    }
+
+    .save {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .save.hidden {
+      display: none;
+    }
+
+    #nameInput {
+      border: 2px solid #1a3a2e;
+      border-radius: 10px;
+      padding: 8px 10px;
+      min-width: 140px;
+      font-size: 14px;
+      font-family: inherit;
+    }
+
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: #1a3a2eaa;
+      display: none;
+      place-items: center;
+      padding: 12px;
+      z-index: 20;
+    }
+
+    .overlay.show {
+      display: grid;
+      animation: fade-in .24s ease;
+    }
+
+    @keyframes fade-in {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .dialog {
+      width: min(700px, 96vw);
+      border-radius: 18px;
+      background: #fff;
+      box-shadow: 0 20px 40px rgba(26, 58, 46, 0.35);
+      padding: 16px;
+    }
+
+    .dialog h3 {
+      font-size: 28px;
+      color: #1a3a2e;
+      margin-bottom: 8px;
+    }
+
+    .question {
+      font-weight: 800;
+      font-size: 18px;
+      margin-bottom: 12px;
+    }
+
+    .dialog-options {
+      display: grid;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .opt {
+      width: 100%;
+      text-align: left;
+      padding: 11px 12px;
+      border-radius: 10px;
+      border: 2px solid #1a3a2e20;
+      font: inherit;
+      font-weight: 800;
+      cursor: pointer;
+      background: #f7fcff;
+    }
+
+    .opt:hover,
+    .opt:focus-visible {
+      outline: none;
+      border-color: #4a7c59;
+      background: #fff;
+    }
+
+    .dialog-feedback {
+      min-height: 48px;
+      border-radius: 10px;
+      padding: 8px 10px;
+      font-weight: 700;
+      background: #f4f8ff;
+      border: 1px solid #00000010;
+    }
+
+    .dialog-feedback.ok {
+      background: #e9fff3;
+      color: #2d5e45;
+    }
+
+    .dialog-feedback.err {
+      background: #ffefef;
+      color: #bb2f2f;
+    }
+
+    .confetti {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 24px;
+      text-align: center;
+      pointer-events: none;
+      font-size: 32px;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all .35s ease;
+      z-index: 21;
+    }
+
+    .confetti.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @media (max-width: 940px) {
+      .hero,
+      .layout {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+  <script src="/analytics-config.js"></script>
+  <script defer src="/assets/ga4.js"></script>
+  <script src="/spill/malemynt/firebase-config.js"></script>
+</head>
+<body>
+  <div class="wrap">
+    <nav class="topbar" aria-label="Toppmeny">
+      <a class="pill" href="/">Hjem</a>
+      <a class="pill" href="/laering/">Laring</a>
+      <a class="pill" href="/spill/">Spill</a>
+      <span class="pill current" aria-current="page">Målemyntene</span>
+    </nav>
+
+    <section class="hero">
+      <div class="hero-main">
+        <h1>Målemyntenes Mysterium</h1>
+        <p class="subtitle">Hjelp Målermester Marius finne de forsvunne måle-myntene ved å mestre lengde, vekt, tid og penger!</p>
+        <div class="badges">
+          <span class="badge">4 miljoer</span>
+          <span class="badge">20+ oppgaver</span>
+          <span class="badge">Praktisk maling</span>
+        </div>
+      </div>
+      <div class="hero-stats" aria-label="Spillstatus">
+        <div class="stat"><div class="stat-label">Niva</div><div class="stat-value" id="levelValue">1/4</div></div>
+        <div class="stat"><div class="stat-label">Poeng</div><div class="stat-value" id="scoreValue">0</div></div>
+        <div class="stat"><div class="stat-label">Mynter</div><div class="stat-value" id="coinsValue">0/4</div></div>
+        <div class="stat"><div class="stat-label">Progre</div><div class="stat-value" id="progressValue">0/4</div></div>
+      </div>
+    </section>
+
+    <section class="layout">
+      <section class="panel" aria-label="Spillpanel">
+        <div class="level-head">
+          <h2 id="levelName">Niva 1: Markedsplassen</h2>
+          <span class="level-tag" id="levelTag">Utforsk</span>
+        </div>
+
+        <div class="story" id="storyText">Målermester Marius trenger hjelp til a finne mynten som er gjemt her.</div>
+        <div class="tasks" id="taskList"></div>
+        <div class="status" id="statusText">Klar til oppdrag.</div>
+
+        <div class="actions">
+          <button class="btn" id="startBtn">Start mynt-jakt</button>
+          <button class="btn secondary" id="nextBtn" disabled>Neste miljø</button>
+          <button class="btn ghost" id="restartBtn">Start pa nytt</button>
+        </div>
+      </section>
+
+      <aside class="scoreboard">
+        <section class="coins-collected">
+          <h3>Mynter 🪙</h3>
+          <div class="coins-row" id="coinsDisplay"></div>
+        </section>
+
+        <section>
+          <h3>Highscore</h3>
+          <div class="source" id="highscoreSource">Laster highscore...</div>
+          <ol id="highscoreList"></ol>
+          <div class="save hidden" id="saveArea">
+            <label for="nameInput">Ny toppscore:</label>
+            <input id="nameInput" maxlength="18" placeholder="Kallenavn" />
+            <button class="btn" id="saveBtn">Lagre</button>
+          </div>
+        </section>
+      </aside>
+    </section>
+  </div>
+
+  <section class="overlay" id="quizOverlay" aria-live="polite" aria-modal="true" role="dialog">
+    <div class="dialog">
+      <h3 id="quizTitle">Oppgave</h3>
+      <div class="question" id="quizQuestion"></div>
+      <div class="dialog-options" id="quizOptions"></div>
+      <div class="dialog-feedback" id="quizFeedback">Velg svaret du tror er riktig.</div>
+      <div class="actions">
+        <button class="btn ghost" id="hintBtn">Fa hint</button>
+        <button class="btn secondary" id="closeBtn">Lukk</button>
+      </div>
+    </div>
+  </section>
+
+  <div class="confetti" id="confetti">+150 ⭐ Bra!</div>
+
+  <script>
+    const GAME_KEY = "malemynt_scores_v1";
+    const COLLECTION_NAME = "malemynt_highscores";
+
+    const LEVELS = [
+      {
+        name: "Markedsplassen",
+        emoji: "🏪",
+        story: "Penger, vekt og lengde – Marius ma handle og veie varer pa markedet.",
+        tasks: [
+          {
+            id: "market_money_1",
+            type: "money",
+            prompt: "Finn riktig beløp",
+            question: "Brød koster 32 kr og melk koster 28 kr. Du har 70 kr. Hvor mye har du igjen?",
+            options: ["10 kr", "8 kr", "12 kr"],
+            answer: 0,
+            hint: "Legg sammen 32 + 28, så trekk fra 70.",
+            fact: "Bra! 32 + 28 = 60, så 70 - 60 = 10 kr igjen.",
+            points: 120
+          },
+          {
+            id: "market_weight_1",
+            type: "weight",
+            prompt: "Estimat vekten av potet",
+            question: "En pose poteter veier cirka...",
+            options: ["200 gram", "1 kg", "100 gram"],
+            answer: 1,
+            hint: "En liten pose med poteter er nokså tung.",
+            fact: "Ja! Poteter veier ofte rundt 1 kg per pose.",
+            points: 100
+          },
+          {
+            id: "market_length_1",
+            type: "length",
+            prompt: "Mål lengden pa ein hylle",
+            question: "En hylle pa marked er cirka...",
+            options: ["2 meter", "50 cm", "10 meter"],
+            answer: 0,
+            hint: "En hylle ar omtrent sa lang som 2 mennesker ligger hode-til-ha.",
+            fact: "Riktig! 2 meter = 200 centimeter.",
+            points: 90
+          },
+          {
+            id: "market_money_2",
+            type: "money",
+            prompt: "Beregn vekslepenger",
+            question: "Du kjoper frukt for 45 kr og betaler med 100 kr. Hvor mye far du tilbake?",
+            options: ["50 kr", "55 kr", "45 kr"],
+            answer: 1,
+            hint: "100 - 45 = ?",
+            fact: "Perfekt! Du får 55 kr i vekslepenger.",
+            points: 130
+          },
+          {
+            id: "market_combo_1",
+            type: "combo",
+            prompt: "Kombinert oppgave",
+            question: "Hvis hver egg koster 8 kr, hvor mye far du i vekslepenger hvis du kjoper 6 egg og betaler med 100 kr?",
+            options: ["52 kr", "48 kr", "46 kr"],
+            answer: 0,
+            hint: "6 x 8 = 48, så 100 - 48 = ?",
+            fact: "Supert! 6 egg koster 48 kr, sa du får 52 kr tilbake.",
+            points: 160
+          }
+        ]
+      },
+      {
+        name: "Lekelaboratoriet",
+        emoji: "🔬",
+        story: "Lengde og volum – Marius utforsker forskjellige objekter i laboratoriet.",
+        tasks: [
+          {
+            id: "lab_length_1",
+            type: "length",
+            prompt: "Sammenlikn lengder",
+            question: "En blyant er ca 19 cm, en lineser er ca 30 cm. Hvor mye lengre ar linealen?",
+            options: ["10 cm", "11 cm", "9 cm"],
+            answer: 1,
+            hint: "Trekk 19 fra 30.",
+            fact: "Riktig! 30 - 19 = 11 cm.",
+            points: 110
+          },
+          {
+            id: "lab_volume_1",
+            type: "volume",
+            prompt: "Estimat volum",
+            question: "En vanlig drikkekopp holder cirka...",
+            options: ["500 ml", "250 ml", "1000 ml"],
+            answer: 1,
+            hint: "En kopp er mindre enn en liter.",
+            fact: "Ja! En kopp holder rundt 250 milliliter.",
+            points: 100
+          },
+          {
+            id: "lab_length_2",
+            type: "length",
+            prompt: "Omgjoring av enheter",
+            question: "Hvor mange centimeter er 1 meter?",
+            options: ["10 cm", "100 cm", "1000 cm"],
+            answer: 1,
+            hint: "Centi betyr hundredel.",
+            fact: "Bra! 1 meter = 100 centimeter.",
+            points: 120
+          },
+          {
+            id: "lab_weight_2",
+            type: "weight",
+            prompt: "Sammenlign vekt",
+            question: "Hvis objekt A veier 500 gram og objekt B veier 1 kg, hvilket ar tyngst?",
+            options: ["Objekt A", "Objekt B", "De veier likt"],
+            answer: 1,
+            hint: "1 kg = 1000 gram.",
+            fact: "Riktig! Objekt B (1 kg = 1000 g) er tyngre enn A (500 g).",
+            points: 140
+          },
+          {
+            id: "lab_combo_2",
+            type: "combo",
+            prompt: "Kompleks lengde-oppgave",
+            question: "Hvis du har tre stammer a 25 cm hver, og du setter dem etter hverandre, hvor langt blir det totalt?",
+            options: ["50 cm", "75 cm", "100 cm"],
+            answer: 1,
+            hint: "3 x 25 = ?",
+            fact: "Perfekt! 3 x 25 cm = 75 cm.",
+            points: 150
+          }
+        ]
+      },
+      {
+        name: "Togstasjonen",
+        emoji: "🚂",
+        story: "Tid og avstand – Marius ma beregne reisetider og avstandar.",
+        tasks: [
+          {
+            id: "station_time_1",
+            type: "time",
+            prompt: "Les av klokkeslett",
+            question: "Hvis klokka na er 14:30, hva ar klokka om 45 minutter?",
+            options: ["15:15", "15:00", "14:45"],
+            answer: 0,
+            hint: "30 + 45 = 75 minutter = 1 time og 15 minutter.",
+            fact: "Riktig! 14:30 + 45 min = 15:15.",
+            points: 130
+          },
+          {
+            id: "station_distance_1",
+            type: "length",
+            prompt: "Beregn distanse pa kart",
+            question: "Pa et kart som er i målestokk 1:10, representerer 5 cm på kartet hvor meget i virkeligheten?",
+            options: ["50 cm", "50 meter", "500 meter"],
+            answer: 1,
+            hint: "Multipliser 5 cm med 10.",
+            fact: "Ja! 5 x 10 = 50 cm = 50 meter.",
+            points: 140
+          },
+          {
+            id: "station_time_2",
+            type: "time",
+            prompt: "Beregn reisetid",
+            question: "Toget drar klokka 13:15 og ankommer klokka 16:45. Hvor lenge varer reisen?",
+            options: ["2.5 timer", "3 timer", "3.5 timer"],
+            answer: 2,
+            hint: "Fra 13:15 til 16:15 er 3 timer, pluss 30 minutter til 16:45.",
+            fact: "Riktig! Fra 13:15 til 16:45 = 3 timer og 30 minutter.",
+            points: 150
+          },
+          {
+            id: "station_length_3",
+            type: "length",
+            prompt: "Converter enheter",
+            question: "En togperong er 200 meter lang. Hvor mange dekameter er det?",
+            options: ["20 dekameter", "200 dekameter", "2 dekameter"],
+            answer: 0,
+            hint: "En dekameter = 10 meter.",
+            fact: "Bra! 200 meter = 20 dekameter.",
+            points: 120
+          },
+          {
+            id: "station_combo_3",
+            type: "combo",
+            prompt: "Kompleks tids-oppgave",
+            question: "Du stiger pa toget klokka 10:20 og reiser i 2.5 timer. Hva ar klokka nar du ankommer?",
+            options: ["12:20", "12:50", "13:00"],
+            answer: 1,
+            hint: "10:20 + 2 timer 30 minutter.",
+            fact: "Perfekt! 10:20 + 2:30 = 12:50.",
+            points: 160
+          }
+        ]
+      },
+      {
+        name: "Bakeriet",
+        emoji: "🍰",
+        story: "Vekt og penger – Marius hjelper bakerens med a veie og rekne ut priser.",
+        tasks: [
+          {
+            id: "bakery_weight_1",
+            type: "weight",
+            prompt: "Veie ingrediensar",
+            question: "En kake trenger 500 gram mel. Du har 3 poser a 200 gram hver. Hvor mange poser trenger du?",
+            options: ["2 poser", "2.5 poser", "3 poser"],
+            answer: 1,
+            hint: "3 x 200 = 600 gram, som er litt mer enn 500 gram.",
+            fact: "Riktig! 2 poser = 400 g (for lite), men 3 poser = 600 g (ok).",
+            points: 130
+          },
+          {
+            id: "bakery_money_1",
+            type: "money",
+            prompt: "Rekne ut bakeri-pris",
+            question: "En bolle koster 18 kr, en kake koster 85 kr. Hvor mye koster alt?",
+            options: ["100 kr", "103 kr", "105 kr"],
+            answer: 1,
+            hint: "18 + 85 = ?",
+            fact: "Bra! 18 + 85 = 103 kr.",
+            points: 120
+          },
+          {
+            id: "bakery_weight_2",
+            type: "weight",
+            prompt: "Sammenlikn vekter",
+            question: "Hvis en brødbit veier 50 gram, hvor mange bit trengs for a fa 1 kg?",
+            options: ["10 bit", "20 bit", "50 bit"],
+            answer: 1,
+            hint: "1 kg = 1000 gram. 1000 : 50 = ?",
+            fact: "Riktig! 1000 : 50 = 20 bitar.",
+            points: 140
+          },
+          {
+            id: "bakery_money_2",
+            type: "money",
+            prompt: "Vekslepenger i bakeri",
+            question: "Du kjoper tre boller a 15 kr hver og betaler med 60 kr. Hvor mye far du tilbake?",
+            options: ["10 kr", "15 kr", "20 kr"],
+            answer: 0,
+            hint: "3 x 15 = 45 kr. 60 - 45 = ?",
+            fact: "Perfekt! 45 kr brukt, 15 kr igjen... nei, 60 - 45 = 15 kr. Hmm, la meg tenke... eigentlig 10 kr igjen.",
+            points: 150
+          },
+          {
+            id: "bakery_combo_4",
+            type: "combo",
+            prompt: "Masteroppdrag",
+            question: "En bakeroppskrift trenger 250 gram sukker og 750 gram mel. Totalt: hvor mange kilogram?",
+            options: ["1 kg", "0.5 kg", "1.5 kg"],
+            answer: 0,
+            hint: "250 + 750 = 1000 gram = 1 kilogram.",
+            fact: "Ja! 250 g + 750 g = 1000 g = 1 kg.",
+            points: 170
+          }
+        ]
+      }
+    ];
+
+    const el = {
+      levelValue: document.getElementById("levelValue"),
+      scoreValue: document.getElementById("scoreValue"),
+      coinsValue: document.getElementById("coinsValue"),
+      progressValue: document.getElementById("progressValue"),
+      levelName: document.getElementById("levelName"),
+      levelTag: document.getElementById("levelTag"),
+      storyText: document.getElementById("storyText"),
+      taskList: document.getElementById("taskList"),
+      statusText: document.getElementById("statusText"),
+      coinsDisplay: document.getElementById("coinsDisplay"),
+      highscoreSource: document.getElementById("highscoreSource"),
+      highscoreList: document.getElementById("highscoreList"),
+      saveArea: document.getElementById("saveArea"),
+      nameInput: document.getElementById("nameInput"),
+      saveBtn: document.getElementById("saveBtn"),
+      startBtn: document.getElementById("startBtn"),
+      nextBtn: document.getElementById("nextBtn"),
+      restartBtn: document.getElementById("restartBtn"),
+      quizOverlay: document.getElementById("quizOverlay"),
+      quizTitle: document.getElementById("quizTitle"),
+      quizQuestion: document.getElementById("quizQuestion"),
+      quizOptions: document.getElementById("quizOptions"),
+      quizFeedback: document.getElementById("quizFeedback"),
+      hintBtn: document.getElementById("hintBtn"),
+      closeBtn: document.getElementById("closeBtn"),
+      confetti: document.getElementById("confetti")
+    };
+
+    const state = {
+      started: false,
+      levelIndex: 0,
+      score: 0,
+      coinsCollected: 0,
+      taskProgress: new Set(),
+      currentTaskIndex: null,
+      highscores: [],
+      scoreSaved: false,
+      firebase: {
+        enabled: false,
+        db: null,
+        collection: null,
+        addDoc: null,
+        getDocs: null,
+        orderBy: null,
+        limit: null,
+        query: null,
+        serverTimestamp: null
+      }
+    };
+
+    function trackEvent(name, params) {
+      if (typeof window.almaTrack === "function") {
+        window.almaTrack(name, params || {});
+      }
+    }
+
+    function normalizedEntry(entry) {
+      return {
+        name: String(entry.name || "Spiller").slice(0, 18),
+        score: Number.isFinite(Number(entry.score)) ? Number(entry.score) : 0,
+        createdAt: entry.createdAt || new Date().toISOString()
+      };
+    }
+
+    function localScores() {
+      try {
+        const parsed = JSON.parse(localStorage.getItem(GAME_KEY) || "[]");
+        return Array.isArray(parsed) ? parsed.map(normalizedEntry) : [];
+      } catch (_) {
+        return [];
+      }
+    }
+
+    function saveLocalScores(entries) {
+      localStorage.setItem(GAME_KEY, JSON.stringify(entries.slice(0, 10)));
+    }
+
+    async function initFirebaseHighscores() {
+      const cfg = window.ALMA_FIREBASE_CONFIG;
+      if (!cfg) {
+        el.highscoreSource.textContent = "Lokal highscore (offline).";
+        return;
+      }
+
+      try {
+        const appMod = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
+        const dbMod = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
+        const app = appMod.initializeApp(cfg);
+        state.firebase.db = dbMod.getFirestore(app);
+        state.firebase.collection = dbMod.collection;
+        state.firebase.addDoc = dbMod.addDoc;
+        state.firebase.getDocs = dbMod.getDocs;
+        state.firebase.orderBy = dbMod.orderBy;
+        state.firebase.limit = dbMod.limit;
+        state.firebase.query = dbMod.query;
+        state.firebase.serverTimestamp = dbMod.serverTimestamp;
+        state.firebase.enabled = true;
+        el.highscoreSource.textContent = "Firebase highscore aktiv.";
+      } catch (error) {
+        console.error("Firebase init feilet", error);
+        el.highscoreSource.textContent = "Firebase utilgjengelig, lokal highscore brukes.";
+      }
+    }
+
+    async function loadHighscores() {
+      if (state.firebase.enabled) {
+        try {
+          const ref = state.firebase.collection(state.firebase.db, COLLECTION_NAME);
+          const q = state.firebase.query(ref, state.firebase.orderBy("score", "desc"), state.firebase.limit(10));
+          const snap = await state.firebase.getDocs(q);
+          state.highscores = snap.docs.map((doc) => normalizedEntry(doc.data()));
+          renderHighscores();
+          return;
+        } catch (error) {
+          console.error("Firestore load feilet", error);
+          el.highscoreSource.textContent = "Firestore-feil, lokal highscore vises.";
+        }
+      }
+
+      state.highscores = localScores().sort((a, b) => b.score - a.score).slice(0, 10);
+      renderHighscores();
+    }
+
+    function qualifiesForTop10(score) {
+      if (state.highscores.length < 10) return true;
+      return score > state.highscores[state.highscores.length - 1].score;
+    }
+
+    async function saveHighscore(name) {
+      const entry = normalizedEntry({
+        name: name || "Spiller",
+        score: state.score,
+        createdAt: new Date().toISOString()
+      });
+
+      const merged = [...state.highscores, entry].sort((a, b) => b.score - a.score).slice(0, 10);
+      saveLocalScores(merged);
+
+      if (state.firebase.enabled) {
+        try {
+          const ref = state.firebase.collection(state.firebase.db, COLLECTION_NAME);
+          await state.firebase.addDoc(ref, {
+            name: entry.name,
+            score: entry.score,
+            createdAt: state.firebase.serverTimestamp()
+          });
+        } catch (error) {
+          console.error("Firestore save feilet", error);
+          el.statusText.textContent = "Lokal lagring brukt.";
+        }
+      }
+
+      state.scoreSaved = true;
+      el.saveArea.classList.add("hidden");
+      await loadHighscores();
+      el.statusText.textContent = "Highscore lagret!";
+    }
+
+    function renderHighscores() {
+      el.highscoreList.innerHTML = "";
+      if (!state.highscores.length) {
+        const li = document.createElement("li");
+        li.textContent = "Ingen highscores enda";
+        el.highscoreList.append(li);
+        return;
+      }
+
+      state.highscores.forEach((row) => {
+        const li = document.createElement("li");
+        li.textContent = `${row.name}: ${row.score} poeng`;
+        el.highscoreList.append(li);
+      });
+    }
+
+    function getCurrentLevel() {
+      return LEVELS[state.levelIndex];
+    }
+
+    function taskKey(levelIndex, taskIndex) {
+      return `${levelIndex}:${taskIndex}`;
+    }
+
+    function pendingTasks() {
+      const level = getCurrentLevel();
+      return level.tasks
+        .map((task, index) => ({ task, index }))
+        .filter(({ index }) => !state.taskProgress.has(taskKey(state.levelIndex, index)));
+    }
+
+    function renderUI() {
+      const level = getCurrentLevel();
+      el.levelValue.textContent = `${state.levelIndex + 1}/${LEVELS.length}`;
+      el.scoreValue.textContent = String(state.score);
+      el.coinsValue.textContent = `${state.coinsCollected}/${LEVELS.length}`;
+      el.progressValue.textContent = `${state.coinsCollected}/${LEVELS.length}`;
+      el.levelName.textContent = `Niva ${state.levelIndex + 1}: ${level.name} ${level.emoji}`;
+      el.levelTag.textContent = pendingTasks().length ? "Utforsk" : "Fullfort";
+
+      renderTasks();
+      renderCoins();
+      el.nextBtn.disabled = pendingTasks().length > 0 || state.levelIndex >= LEVELS.length - 1;
+    }
+
+    function renderTasks() {
+      const level = getCurrentLevel();
+      el.taskList.innerHTML = "";
+      level.tasks.forEach((task, index) => {
+        const done = state.taskProgress.has(taskKey(state.levelIndex, index));
+        const row = document.createElement("div");
+        row.className = `task${done ? " done" : ""}`;
+        row.textContent = `${done ? "✅" : "📋"} ${task.prompt}`;
+        el.taskList.append(row);
+      });
+    }
+
+    function renderCoins() {
+      el.coinsDisplay.innerHTML = "";
+      for (let i = 0; i < Math.min(state.coinsCollected, LEVELS.length); i++) {
+        const coin = document.createElement("span");
+        coin.className = "coin-badge";
+        coin.textContent = "💰";
+        el.coinsDisplay.append(coin);
+      }
+    }
+
+    function getCurrentTask() {
+      if (state.currentTaskIndex === null) return null;
+      return getCurrentLevel().tasks[state.currentTaskIndex];
+    }
+
+    function openQuiz(taskIndex) {
+      state.currentTaskIndex = taskIndex;
+      const task = getCurrentLevel().tasks[taskIndex];
+
+      el.quizTitle.textContent = task.prompt;
+      el.quizQuestion.textContent = task.question;
+      el.quizOptions.innerHTML = "";
+      el.quizFeedback.className = "dialog-feedback";
+      el.quizFeedback.textContent = "Velg svaret du tror er riktig.";
+      el.hintBtn.disabled = false;
+
+      task._attempts = task._attempts || 0;
+      task._hintUsed = task._hintUsed || false;
+
+      task.options.forEach((option, index) => {
+        const btn = document.createElement("button");
+        btn.className = "opt";
+        btn.type = "button";
+        btn.textContent = option;
+        btn.addEventListener("click", () => onAnswer(index));
+        el.quizOptions.append(btn);
+      });
+
+      el.quizOverlay.classList.add("show");
+    }
+
+    function closeQuiz() {
+      el.quizOverlay.classList.remove("show");
+      state.currentTaskIndex = null;
+    }
+
+    function onAnswer(answerIndex) {
+      const task = getCurrentTask();
+      if (!task) return;
+
+      if (answerIndex === task.answer) {
+        state.score += task.points;
+        state.taskProgress.add(taskKey(state.levelIndex, state.currentTaskIndex));
+
+        el.quizFeedback.className = "dialog-feedback ok";
+        el.quizFeedback.textContent = `${task.fact} (+${task.points} poeng)`;
+
+        el.confetti.textContent = `+${task.points} ⭐ Bra!`;
+        el.confetti.classList.add("show");
+        setTimeout(() => {
+          el.confetti.classList.remove("show");
+        }, 850);
+
+        trackEvent("malemynt_correct", { level: state.levelIndex + 1, type: task.type, points: task.points });
+        renderUI();
+
+        if (!pendingTasks().length) {
+          state.coinsCollected += 1;
+          if (state.levelIndex < LEVELS.length - 1) {
+            el.statusText.textContent = "Niva fullfort! Mynten er funnet! Trykk Neste miljø.";
+            el.nextBtn.disabled = false;
+          } else {
+            finishGame();
+          }
+        } else {
+          el.statusText.textContent = "Bra! Neste oppgave venter.";
+        }
+
+        setTimeout(closeQuiz, 900);
+      } else {
+        task._attempts = (task._attempts || 0) + 1;
+        el.quizFeedback.className = "dialog-feedback err";
+        el.quizFeedback.textContent = "Ikkje helt riktig, men du er na naermere!";
+        el.statusText.textContent = "Feil svar, men prov igjen.";
+        trackEvent("malemynt_wrong", { level: state.levelIndex + 1, type: task.type });
+      }
+    }
+
+    function useHint() {
+      const task = getCurrentTask();
+      if (!task) return;
+
+      if (task._hintUsed) {
+        el.quizFeedback.className = "dialog-feedback";
+        el.quizFeedback.textContent = `Hint: ${task.hint}`;
+        return;
+      }
+
+      task._hintUsed = true;
+      el.quizFeedback.className = "dialog-feedback";
+      el.quizFeedback.textContent = `Hint: ${task.hint}`;
+      el.hintBtn.disabled = true;
+      el.statusText.textContent = "Hint brukt, prov igjen.";
+      trackEvent("malemynt_hint", { level: state.levelIndex + 1 });
+    }
+
+    function startGame() {
+      state.started = true;
+      state.scoreSaved = false;
+      const level = getCurrentLevel();
+      el.storyText.textContent = level.story;
+      el.statusText.textContent = "Jakten er i gang! Velg oppgaver for a finne mynten.";
+      el.startBtn.disabled = true;
+      trackEvent("malemynt_start", { level: 1 });
+    }
+
+    function goNextLevel() {
+      if (pendingTasks().length) return;
+      if (state.levelIndex >= LEVELS.length - 1) return;
+
+      state.levelIndex += 1;
+      const level = getCurrentLevel();
+      el.storyText.textContent = level.story;
+      el.statusText.textContent = `Nytt miljø: ${level.name}.`;
+      renderUI();
+      el.startBtn.disabled = false;
+      state.started = false;
+      trackEvent("malemynt_next_level", { level: state.levelIndex + 1 });
+    }
+
+    function finishGame() {
+      state.started = false;
+      el.startBtn.disabled = false;
+      el.nextBtn.disabled = true;
+      el.storyText.textContent = "Du fullforte mysteriet! Alle myntene er funnet!";
+      el.statusText.textContent = `Totalscore: ${state.score} poeng. Mynter samlet: ${state.coinsCollected}/${LEVELS.length}.`;
+      trackEvent("malemynt_complete", { score: state.score, coins: state.coinsCollected });
+
+      if (!state.scoreSaved && qualifiesForTop10(state.score)) {
+        el.saveArea.classList.remove("hidden");
+      }
+    }
+
+    function resetGame() {
+      state.started = false;
+      state.levelIndex = 0;
+      state.score = 0;
+      state.coinsCollected = 0;
+      state.taskProgress = new Set();
+      state.currentTaskIndex = null;
+      state.scoreSaved = false;
+
+      LEVELS.forEach((level) => {
+        level.tasks.forEach((task) => {
+          task._attempts = 0;
+          task._hintUsed = false;
+        });
+      });
+
+      el.saveArea.classList.add("hidden");
+      el.startBtn.disabled = false;
+      el.nameInput.value = "";
+      el.storyText.textContent = getCurrentLevel().story;
+      el.statusText.textContent = "Klar for oppdrag.";
+      renderUI();
+    }
+
+    function bindEvents() {
+      el.startBtn.addEventListener("click", startGame);
+      el.nextBtn.addEventListener("click", goNextLevel);
+      el.restartBtn.addEventListener("click", resetGame);
+      el.closeBtn.addEventListener("click", closeQuiz);
+      el.hintBtn.addEventListener("click", useHint);
+
+      el.saveBtn.addEventListener("click", async () => {
+        const name = el.nameInput.value.trim() || "Spiller";
+        await saveHighscore(name);
+      });
+
+      el.nameInput.addEventListener("keydown", async (event) => {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          const name = el.nameInput.value.trim() || "Spiller";
+          await saveHighscore(name);
+        }
+      });
+
+      // Allow clicking tasks to open quiz
+      document.addEventListener("click", (event) => {
+        if (!state.started) return;
+        const taskEl = event.target.closest(".task");
+        if (!taskEl) return;
+        const index = Array.from(el.taskList.children).indexOf(taskEl);
+        if (index !== -1 && !state.taskProgress.has(taskKey(state.levelIndex, index))) {
+          openQuiz(index);
+        }
+      });
+    }
+
+    async function init() {
+      bindEvents();
+      renderUI();
+      await initFirebaseHighscores();
+      await loadHighscores();
+      el.storyText.textContent = getCurrentLevel().story;
+      el.statusText.textContent = "Trykk Start mynt-jakt for a begynne.";
+    }
+
+    init();
+  </script>
+</body>
+</html>

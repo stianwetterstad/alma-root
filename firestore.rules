@@ -25,5 +25,10 @@ service cloud.firestore {
     match /grunnstoffjakten_highscores/{document=**} {
       allow read, write: if true;
     }
+
+    // Målemyntenes Mysterium highscores
+    match /malemynt_highscores/{document=**} {
+      allow read, write: if true;
+    }
   }
 }
