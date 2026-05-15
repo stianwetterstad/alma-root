@@ -1476,17 +1476,23 @@
         ? `Du fullførte alle ${MAX_LEVEL} nivåer med ${state.score} poeng!`
         : `Du mistet alle liv. Sluttscore: ${state.score} poeng.`;
 
-      showOverlay(true, won ? "Solsystem-mester!" : "Oppdrag avbrutt", summary);
+      const qualifiesForHighscore = isHighscore(state.score);
 
       if (isHighscore(state.score)) {
         el.saveArea.classList.remove("hidden");
+        showOverlay(false);
+        setStatus(`${summary} Lagre highscore i panelet til høyre.`, won ? "good" : "warn");
+      } else {
+        showOverlay(true, won ? "Solsystem-mester!" : "Oppdrag avbrutt", summary);
+        setStatus(summary, won ? "good" : "warn");
       }
 
       trackEvent(won ? "game_win" : "game_over", {
         game: "stjernestigen",
         score: state.score,
         level: state.level,
-        falls: state.falls
+        falls: state.falls,
+        qualifies_for_highscore: qualifiesForHighscore ? 1 : 0
       });
     }
 
