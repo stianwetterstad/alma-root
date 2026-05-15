@@ -1,7 +1,9 @@
-const CACHE_NAME = 'alma-v15';
+const CACHE_NAME = 'alma-v16';
 const OFFLINE_URL = '/offline.html';
 const CACHE_URLS = [
   '/index.html',
+  '/analytics-config.js',
+  '/assets/ga4.js',
   '/favicon.ico',
   '/manifest.webmanifest',
   '/icons/icon-192.png',

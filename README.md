@@ -129,3 +129,17 @@ Hvis du har endret filer i precache-listen i service-worker.js, oppdater CACHE_N
 ### 3) Publiser
 
 Publiser innholdet via GitHub Pages fra repo-roten (statisk deploy). Ingen build-step er nodvendig.
+
+## Enkel bruksstatistikk med GA4
+
+GA4 er klargjort i kodebasen med runtime-konfigurasjon:
+- `analytics-config.js` (trygg i git, satt til `null`)
+- `assets/ga4.js` (delt loader + helper for events)
+
+For a aktivere tracking i produksjon, sett GitHub Actions-secret:
+
+```bash
+gh secret set ALMA_GA4_MEASUREMENT_ID --body "G-XXXXXXXXXX"
+```
+
+Deretter kjor en ny deploy (`Deploy Pages` workflow). Alle `index.html`-sider vil da sende pageviews automatisk.

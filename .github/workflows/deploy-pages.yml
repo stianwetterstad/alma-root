@@ -40,6 +40,7 @@ jobs:
         shell: bash
         env:
           ALMA_FIREBASE_CONFIG_JS: ${{ secrets.ALMA_FIREBASE_CONFIG_JS }}
+          ALMA_GA4_MEASUREMENT_ID: ${{ secrets.ALMA_GA4_MEASUREMENT_ID }}
         run: |
           set -euo pipefail
           if [ -z "${ALMA_FIREBASE_CONFIG_JS}" ]; then
@@ -48,6 +49,14 @@ jobs:
             printf '%s\n' "$ALMA_FIREBASE_CONFIG_JS" > site/laering/gangetrappen/firebase-config.js
             printf '%s\n' "$ALMA_FIREBASE_CONFIG_JS" > site/spill/kosekaos/firebase-config.js
             echo "✓ Optional runtime config injected for gangetrappen and kosekaos"
+          fi
+
+          if [ -z "${ALMA_GA4_MEASUREMENT_ID}" ]; then
+            printf '%s\n' "window.ALMA_GA4_MEASUREMENT_ID = null;" > site/analytics-config.js
+            echo "⚠ Warning: ALMA_GA4_MEASUREMENT_ID secret not set, analytics disabled" >&2
+          else
+            printf "window.ALMA_GA4_MEASUREMENT_ID = '%s';\n" "$ALMA_GA4_MEASUREMENT_ID" > site/analytics-config.js
+            echo "✓ GA4 Measurement ID injected"
           fi
 
       - name: Upload artifact
