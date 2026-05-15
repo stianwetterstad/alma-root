@@ -1,0 +1,1356 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Grunnstoffjakten</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@400;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg-top: #f7f2d9;
+      --bg-mid: #cfeec8;
+      --bg-bottom: #9bd3dd;
+      --ink: #203247;
+      --card: #ffffffee;
+      --accent: #e4582e;
+      --accent-2: #0b7d5b;
+      --accent-3: #f0b429;
+      --danger: #bb2f2f;
+      --shadow: 0 16px 36px rgba(25, 54, 76, 0.18);
+      --radius: 18px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: "Nunito", sans-serif;
+      background:
+        radial-gradient(circle at 18% 14%, #fff6cf 0, #fff6cf55 22%, transparent 45%),
+        radial-gradient(circle at 90% 18%, #ffd4ba 0, #ffd4ba44 20%, transparent 42%),
+        linear-gradient(165deg, var(--bg-top), var(--bg-mid) 40%, var(--bg-bottom));
+      min-height: 100vh;
+    }
+
+    .wrap {
+      width: min(1220px, 94vw);
+      margin: 0 auto;
+      padding: 14px 0 30px;
+    }
+
+    .topbar {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin: 4px 0 16px;
+    }
+
+    .pill {
+      text-decoration: none;
+      color: var(--ink);
+      background: #fff9;
+      border: 2px solid #ffffffcc;
+      border-radius: 999px;
+      padding: 7px 14px;
+      font-weight: 800;
+      box-shadow: 0 4px 10px rgba(23, 49, 66, 0.12);
+    }
+
+    .pill.current {
+      background: var(--accent-2);
+      color: #f7fffb;
+      border-color: transparent;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 16px;
+      margin-bottom: 14px;
+    }
+
+    .hero-main,
+    .hero-stats,
+    .panel,
+    .scoreboard {
+      border-radius: var(--radius);
+      background: var(--card);
+      box-shadow: var(--shadow);
+    }
+
+    .hero-main {
+      padding: 20px;
+      background-image:
+        linear-gradient(140deg, rgba(255, 255, 255, 0.96), rgba(253, 244, 224, 0.9)),
+        url('/laering/assets/grunnstoffjakten.png');
+      background-size: cover;
+      background-position: center;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .hero-main::after {
+      content: "";
+      position: absolute;
+      right: -80px;
+      top: -80px;
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #f8cb5f99, #f8cb5f00 72%);
+      pointer-events: none;
+      animation: pulse 4.2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(0.92); opacity: 0.6; }
+      50% { transform: scale(1.08); opacity: 1; }
+    }
+
+    h1,
+    h2,
+    h3 {
+      font-family: "Baloo 2", cursive;
+      margin: 0;
+      line-height: 1.05;
+    }
+
+    h1 {
+      font-size: clamp(34px, 5vw, 54px);
+      color: #0d3e57;
+    }
+
+    .subtitle {
+      margin: 10px 0 14px;
+      font-size: clamp(17px, 2.3vw, 22px);
+      max-width: 62ch;
+      font-weight: 700;
+    }
+
+    .badges {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      background: #103f57;
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+    }
+
+    .hero-stats {
+      padding: 16px;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      align-content: start;
+    }
+
+    .stat {
+      background: linear-gradient(150deg, #f7f2ff, #f9fdfb);
+      border: 1px solid #00000010;
+      border-radius: 14px;
+      padding: 12px;
+    }
+
+    .stat-label {
+      font-size: 12px;
+      text-transform: uppercase;
+      font-weight: 800;
+      opacity: 0.75;
+      letter-spacing: 0.05em;
+    }
+
+    .stat-value {
+      margin-top: 4px;
+      font-size: 27px;
+      font-weight: 900;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 1.35fr .9fr;
+      gap: 16px;
+      align-items: start;
+    }
+
+    .panel {
+      padding: 16px;
+    }
+
+    .level-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+
+    .level-tag {
+      border-radius: 999px;
+      padding: 5px 11px;
+      background: #083c5a;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .mission {
+      margin-bottom: 12px;
+      background: #f9fbff;
+      border: 1px solid #00000010;
+      border-radius: 14px;
+      padding: 10px 12px;
+      min-height: 64px;
+      font-weight: 700;
+    }
+
+    .tasks {
+      display: grid;
+      gap: 7px;
+      margin-bottom: 12px;
+    }
+
+    .task {
+      border-radius: 10px;
+      border: 1px dashed #0e486522;
+      background: #fcffff;
+      padding: 8px 10px;
+      font-size: 15px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .task.done {
+      color: #27654f;
+      border-style: solid;
+      border-color: #5dc29a66;
+      background: #ecfff6;
+      text-decoration: line-through;
+    }
+
+    .scene-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .object-btn {
+      border: 0;
+      border-radius: 14px;
+      min-height: 108px;
+      padding: 10px 8px;
+      color: #123;
+      cursor: pointer;
+      background: linear-gradient(170deg, #ffffff, #dff8f0);
+      box-shadow: 0 8px 16px rgba(17, 53, 66, 0.16);
+      transition: transform .15s ease, box-shadow .15s ease;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      gap: 2px;
+    }
+
+    .object-btn:hover,
+    .object-btn:focus-visible {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 22px rgba(17, 53, 66, 0.2);
+      outline: 3px solid #44a0d044;
+    }
+
+    .object-icon {
+      font-size: 35px;
+      line-height: 1;
+    }
+
+    .object-name {
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .status {
+      border-radius: 12px;
+      background: #083e5a;
+      color: #fff;
+      padding: 10px 12px;
+      min-height: 46px;
+      font-weight: 700;
+    }
+
+    .actions {
+      margin-top: 12px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      border: 0;
+      border-radius: 999px;
+      cursor: pointer;
+      padding: 10px 15px;
+      font-size: 15px;
+      font-weight: 900;
+      letter-spacing: .01em;
+      color: #fff;
+      background: var(--accent);
+      box-shadow: 0 8px 16px rgba(210, 90, 43, 0.35);
+    }
+
+    .btn.secondary {
+      background: var(--accent-2);
+      box-shadow: 0 8px 16px rgba(11, 125, 91, 0.3);
+    }
+
+    .btn.ghost {
+      background: #6d7f8f;
+      box-shadow: 0 8px 16px rgba(33, 55, 72, 0.28);
+    }
+
+    .btn:disabled {
+      opacity: .4;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .scoreboard {
+      padding: 14px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .elements-book {
+      border-radius: 12px;
+      border: 1px solid #00000018;
+      background: #fffcf4;
+      padding: 10px;
+      min-height: 128px;
+    }
+
+    .elements-book h3 {
+      margin-bottom: 8px;
+      font-size: 24px;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .chip {
+      border-radius: 12px;
+      border: 1px solid #00000018;
+      background: #fff;
+      padding: 5px 8px;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .chip b {
+      color: #0f4966;
+      margin-right: 4px;
+    }
+
+    .source {
+      font-size: 12px;
+      font-weight: 800;
+      opacity: .75;
+      margin-top: -4px;
+    }
+
+    #highscoreList {
+      margin: 0;
+      padding-left: 22px;
+      min-height: 158px;
+      font-weight: 700;
+    }
+
+    #highscoreList li {
+      margin-bottom: 4px;
+    }
+
+    .save {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .save.hidden {
+      display: none;
+    }
+
+    #nameInput {
+      border: 2px solid #315f77;
+      border-radius: 10px;
+      padding: 8px 10px;
+      min-width: 140px;
+      font-size: 14px;
+      font-family: inherit;
+    }
+
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: #091f2eaa;
+      display: none;
+      place-items: center;
+      padding: 12px;
+      z-index: 20;
+    }
+
+    .overlay.show {
+      display: grid;
+      animation: fade-in .24s ease;
+    }
+
+    @keyframes fade-in {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .dialog {
+      width: min(700px, 96vw);
+      border-radius: 18px;
+      background: #fff;
+      box-shadow: 0 20px 40px rgba(9, 21, 33, 0.35);
+      padding: 16px;
+    }
+
+    .dialog h3 {
+      font-size: 32px;
+      color: #0b4666;
+      margin-bottom: 8px;
+    }
+
+    .dialog .question {
+      font-weight: 800;
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+
+    .dialog-options {
+      display: grid;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .opt {
+      width: 100%;
+      text-align: left;
+      padding: 11px 12px;
+      border-radius: 10px;
+      border: 2px solid #0b3f5d20;
+      font: inherit;
+      font-weight: 800;
+      cursor: pointer;
+      background: #f7fcff;
+    }
+
+    .opt:hover,
+    .opt:focus-visible {
+      outline: none;
+      border-color: #2b9ed5;
+      background: #fff;
+    }
+
+    .dialog-feedback {
+      min-height: 48px;
+      border-radius: 10px;
+      padding: 8px 10px;
+      font-weight: 700;
+      background: #f4f8ff;
+      border: 1px solid #00000010;
+    }
+
+    .dialog-feedback.ok {
+      background: #e9fff3;
+      color: #1f724f;
+    }
+
+    .dialog-feedback.err {
+      background: #ffefef;
+      color: var(--danger);
+    }
+
+    .confetti {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 24px;
+      text-align: center;
+      pointer-events: none;
+      font-size: 34px;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all .35s ease;
+      z-index: 21;
+    }
+
+    .confetti.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @media (max-width: 940px) {
+      .hero,
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .scene-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+  </style>
+  <script src="/analytics-config.js"></script>
+  <script defer src="/assets/ga4.js"></script>
+  <script src="/spill/grunnstoffjakten/firebase-config.js"></script>
+</head>
+<body>
+  <div class="wrap">
+    <nav class="topbar" aria-label="Toppmeny">
+      <a class="pill" href="/">Hjem</a>
+      <a class="pill" href="/laering/">Laring</a>
+      <a class="pill" href="/spill/">Spill</a>
+      <span class="pill current" aria-current="page">Grunnstoffjakten</span>
+    </nav>
+
+    <section class="hero">
+      <div class="hero-main">
+        <h1>Grunnstoffjakten</h1>
+        <p class="subtitle">Utforsk rom, park, laboratorium og stue for a finne grunnstoff i ting du kjenner fra hverdagen.</p>
+        <div class="badges">
+          <span class="badge">5 miljoer</span>
+          <span class="badge">12 grunnstoff</span>
+          <span class="badge">Utforsking + quiz</span>
+        </div>
+      </div>
+      <div class="hero-stats" aria-label="Spillstatus">
+        <div class="stat"><div class="stat-label">Niva</div><div class="stat-value" id="levelValue">1/5</div></div>
+        <div class="stat"><div class="stat-label">Poeng</div><div class="stat-value" id="scoreValue">0</div></div>
+        <div class="stat"><div class="stat-label">Streak</div><div class="stat-value" id="streakValue">0</div></div>
+        <div class="stat"><div class="stat-label">Hint brukt</div><div class="stat-value" id="hintValue">0</div></div>
+      </div>
+    </section>
+
+    <section class="layout">
+      <section class="panel" aria-label="Spillpanel">
+        <div class="level-head">
+          <h2 id="levelName">Niva 1: Kjokkenet</h2>
+          <span class="level-tag" id="levelTag">Utforsk</span>
+        </div>
+        <div class="mission" id="missionText">Trykk Start for a fa forste oppdrag.</div>
+
+        <div class="tasks" id="taskList"></div>
+        <div class="scene-grid" id="sceneGrid"></div>
+        <div class="status" id="statusText">Klar for oppdrag.</div>
+
+        <div class="actions">
+          <button class="btn" id="startBtn">Start jakt</button>
+          <button class="btn secondary" id="nextBtn" disabled>Neste miljo</button>
+          <button class="btn ghost" id="restartBtn">Start pa nytt</button>
+        </div>
+      </section>
+
+      <aside class="scoreboard">
+        <section class="elements-book">
+          <h3>Elementkort</h3>
+          <div class="chips" id="collectionChips"></div>
+        </section>
+
+        <section>
+          <h3>Highscore</h3>
+          <div class="source" id="highscoreSource">Laster highscore...</div>
+          <ol id="highscoreList"></ol>
+          <div class="save hidden" id="saveArea">
+            <label for="nameInput">Ny toppscore:</label>
+            <input id="nameInput" maxlength="18" placeholder="Kallenavn" />
+            <button class="btn" id="saveBtn">Lagre</button>
+          </div>
+        </section>
+      </aside>
+    </section>
+  </div>
+
+  <section class="overlay" id="quizOverlay" aria-live="polite" aria-modal="true" role="dialog">
+    <div class="dialog">
+      <h3 id="quizObject">Objekt</h3>
+      <div class="question" id="quizQuestion"></div>
+      <div class="dialog-options" id="quizOptions"></div>
+      <div class="dialog-feedback" id="quizFeedback">Velg svaret du tror er riktig.</div>
+      <div class="actions">
+        <button class="btn ghost" id="hintBtn">Fa hint (-30 poeng)</button>
+        <button class="btn secondary" id="closeBtn">Lukk</button>
+      </div>
+    </div>
+  </section>
+
+  <div class="confetti" id="confetti">+120 ⭐ Bra jobba!</div>
+
+  <script>
+    const GAME_KEY = "grunnstoffjakten_scores_v1";
+    const COLLECTION_NAME = "grunnstoffjakten_highscores";
+
+    const LEVELS = [
+      {
+        name: "Kjokkenet",
+        intro: "Finn grunnstoff i mat og kjokkenutstyr.",
+        objects: [
+          { id: "water", label: "Vannglass", icon: "💧" },
+          { id: "pan", label: "Stekepanne", icon: "🍳" },
+          { id: "milk", label: "Melk", icon: "🥛" },
+          { id: "salt", label: "Salt", icon: "🧂" },
+          { id: "banana", label: "Banan", icon: "🍌" },
+          { id: "spoon", label: "Skje", icon: "🥄" }
+        ],
+        tasks: [
+          {
+            objectId: "water",
+            prompt: "Finn objektet som viser at vann inneholder hydrogen.",
+            question: "Hvilket symbol hører til hydrogen i vann?",
+            options: ["H", "O", "Fe"],
+            answer: 0,
+            hint: "Hydrogen er det letteste grunnstoffet.",
+            fact: "Riktig! Vann er laget av hydrogen og oksygen.",
+            symbol: "H",
+            element: "Hydrogen",
+            group: "Ikke-metall"
+          },
+          {
+            objectId: "pan",
+            prompt: "Finn noe av metall i kjokkenet.",
+            question: "Hvilket grunnstoff finner vi ofte i jernpanne?",
+            options: ["He", "Fe", "Ne"],
+            answer: 1,
+            hint: "Symbolet starter med F.",
+            fact: "Ja! Fe betyr jern, et sterkt metall.",
+            symbol: "Fe",
+            element: "Jern",
+            group: "Metall"
+          },
+          {
+            objectId: "milk",
+            prompt: "Finn drikken som inneholder kalsium.",
+            question: "Hva er symbolet for kalsium?",
+            options: ["Ca", "Cu", "C"],
+            answer: 0,
+            hint: "To bokstaver: C + en liten bokstav.",
+            fact: "Bra! Kalsium hjelper skjelettet ditt.",
+            symbol: "Ca",
+            element: "Kalsium",
+            group: "Metall"
+          }
+        ]
+      },
+      {
+        name: "Parken",
+        intro: "Koble naturen til grunnstoffene vi trenger for liv.",
+        objects: [
+          { id: "tree", label: "Tre", icon: "🌳" },
+          { id: "air", label: "Luft", icon: "🌬️" },
+          { id: "coin", label: "Mynt", icon: "🪙" },
+          { id: "bench", label: "Benk", icon: "🪑" },
+          { id: "dog", label: "Hund", icon: "🐕" },
+          { id: "bottle", label: "Drikkeflaske", icon: "🧴" }
+        ],
+        tasks: [
+          {
+            objectId: "tree",
+            prompt: "Finn et objekt som binder karbon.",
+            question: "Hvilket symbol er karbon?",
+            options: ["Co", "C", "Ca"],
+            answer: 1,
+            hint: "Karbon har bare en bokstav i symbol.",
+            fact: "Supert! Traer og planter bruker karbon i vekst.",
+            symbol: "C",
+            element: "Karbon",
+            group: "Ikke-metall"
+          },
+          {
+            objectId: "air",
+            prompt: "Finn noe usynlig men livsviktig.",
+            question: "Hvilket grunnstoff puster vi mest av i lufta?",
+            options: ["Oksygen (O)", "Gull (Au)", "Kobber (Cu)"],
+            answer: 0,
+            hint: "Det hjelper oss med a puste.",
+            fact: "Riktig! Oksygen trengs i hver eneste pust.",
+            symbol: "O",
+            element: "Oksygen",
+            group: "Ikke-metall"
+          },
+          {
+            objectId: "coin",
+            prompt: "Finn metall i parken.",
+            question: "Mynt inneholder ofte kobber. Hvilket symbol er kobber?",
+            options: ["Cu", "C", "K"],
+            answer: 0,
+            hint: "Start med C, men ikke karbon.",
+            fact: "Perfekt! Kobber er et metall brukt i mynter og ledninger.",
+            symbol: "Cu",
+            element: "Kobber",
+            group: "Metall"
+          }
+        ]
+      },
+      {
+        name: "Skolelaboratoriet",
+        intro: "Na blir oppdragene litt mer avanserte.",
+        objects: [
+          { id: "balloon", label: "Ballong", icon: "🎈" },
+          { id: "pencil", label: "Blyant", icon: "✏️" },
+          { id: "lamp", label: "Lampe", icon: "💡" },
+          { id: "chalk", label: "Kritt", icon: "🧪" },
+          { id: "wire", label: "Kobbertrad", icon: "🧵" },
+          { id: "charcoal", label: "Kullbit", icon: "🪨" }
+        ],
+        tasks: [
+          {
+            objectId: "balloon",
+            prompt: "Finn grunnstoffet som far ballonger til a stige.",
+            question: "Helium tilhorer hvilken gruppe?",
+            options: ["Metall", "Gass", "Vaeske"],
+            answer: 1,
+            hint: "Det er lett og usynlig.",
+            fact: "Yes! Helium er en edelgass.",
+            symbol: "He",
+            element: "Helium",
+            group: "Gass"
+          },
+          {
+            objectId: "charcoal",
+            prompt: "Finn objektet som inneholder mye karbon.",
+            question: "Hvilket symbol passer for karbon?",
+            options: ["C", "Cl", "Cr"],
+            answer: 0,
+            hint: "En enkel bokstav.",
+            fact: "Riktig! Kull er rikt pa karbon.",
+            symbol: "C",
+            element: "Karbon",
+            group: "Ikke-metall"
+          },
+          {
+            objectId: "wire",
+            prompt: "Sorter grunnstoffet i riktig gruppe.",
+            question: "Kobber (Cu) er ...",
+            options: ["et metall", "en gass", "en plasttype"],
+            answer: 0,
+            hint: "Ledninger leder strom fordi materialet er metall.",
+            fact: "Helt riktig! Kobber er et metall som leder strom godt.",
+            symbol: "Cu",
+            element: "Kobber",
+            group: "Metall"
+          }
+        ]
+      },
+      {
+        name: "Fjell og steinbrudd",
+        intro: "Na jakter vi pa sjeldne og verdifulle metaller.",
+        objects: [
+          { id: "gold", label: "Gullnugget", icon: "🥇" },
+          { id: "ore", label: "Kobbermalm", icon: "⛏️" },
+          { id: "helmet", label: "Gruvehjelm", icon: "⛑️" },
+          { id: "cart", label: "Tralle", icon: "🛒" },
+          { id: "rock", label: "Stein", icon: "🪨" },
+          { id: "map", label: "Skattekart", icon: "🗺️" }
+        ],
+        tasks: [
+          {
+            objectId: "gold",
+            prompt: "Finn det blanke metallet som brukes i smykker.",
+            question: "Hva er symbolet for gull?",
+            options: ["Ag", "Au", "G"],
+            answer: 1,
+            hint: "Det begynner med A.",
+            fact: "Bra! Gull har symbolet Au.",
+            symbol: "Au",
+            element: "Gull",
+            group: "Metall"
+          },
+          {
+            objectId: "ore",
+            prompt: "Finn metallet som ofte finnes i malm.",
+            question: "Kobber har symbolet ...",
+            options: ["Co", "Cu", "Cb"],
+            answer: 1,
+            hint: "Samme symbol som i forrige miljo.",
+            fact: "Supert! Cu er kobber.",
+            symbol: "Cu",
+            element: "Kobber",
+            group: "Metall"
+          },
+          {
+            objectId: "cart",
+            prompt: "Velg riktig materiale for en tung metalldel.",
+            question: "Hvilket grunnstoff brukes i stalldeler i en tralle?",
+            options: ["Jern (Fe)", "Helium (He)", "Neon (Ne)"],
+            answer: 0,
+            hint: "Tungt og sterkt metall.",
+            fact: "Riktig! Jern er et viktig metall i verktoy og bygg.",
+            symbol: "Fe",
+            element: "Jern",
+            group: "Metall"
+          }
+        ]
+      },
+      {
+        name: "Dagligstuen",
+        intro: "Siste oppdrag: repeter alt du har lart.",
+        objects: [
+          { id: "candle", label: "Stearinlys", icon: "🕯️" },
+          { id: "soda", label: "Brus", icon: "🥤" },
+          { id: "lego", label: "Byggesett", icon: "🧱" },
+          { id: "plant", label: "Potteplante", icon: "🪴" },
+          { id: "window", label: "Vindu", icon: "🪟" },
+          { id: "clock", label: "Veggur", icon: "🕒" }
+        ],
+        tasks: [
+          {
+            objectId: "candle",
+            prompt: "Finn hva et stearinlys trenger for a brenne.",
+            question: "Hvilket grunnstoff er viktig i forbrenning?",
+            options: ["Oksygen (O)", "Gull (Au)", "Jern (Fe)"],
+            answer: 0,
+            hint: "Det samme grunnstoffet du puster inn.",
+            fact: "Nydelig! Oksygen gjor at flammen kan fortsette.",
+            symbol: "O",
+            element: "Oksygen",
+            group: "Ikke-metall"
+          },
+          {
+            objectId: "soda",
+            prompt: "Finn hva boblene i brus inneholder.",
+            question: "Karbondioksid inneholder hvilket grunnstoff?",
+            options: ["Karbon (C)", "Kalium (K)", "Kobolt (Co)"],
+            answer: 0,
+            hint: "Det samme grunnstoffet finnes i trar.",
+            fact: "Riktig! C star for karbon.",
+            symbol: "C",
+            element: "Karbon",
+            group: "Ikke-metall"
+          },
+          {
+            objectId: "lego",
+            prompt: "Master-oppdrag: velg riktig symbol for metall i byggesett.",
+            question: "Hvilket symbol horer til jern?",
+            options: ["Ir", "Fe", "Fn"],
+            answer: 1,
+            hint: "Tenk pa stekepannen fra niva 1.",
+            fact: "Fantastisk! Du har fullfort Grunnstoffjakten.",
+            symbol: "Fe",
+            element: "Jern",
+            group: "Metall"
+          }
+        ]
+      }
+    ];
+
+    const el = {
+      levelValue: document.getElementById("levelValue"),
+      scoreValue: document.getElementById("scoreValue"),
+      streakValue: document.getElementById("streakValue"),
+      hintValue: document.getElementById("hintValue"),
+      levelName: document.getElementById("levelName"),
+      levelTag: document.getElementById("levelTag"),
+      missionText: document.getElementById("missionText"),
+      taskList: document.getElementById("taskList"),
+      sceneGrid: document.getElementById("sceneGrid"),
+      statusText: document.getElementById("statusText"),
+      collectionChips: document.getElementById("collectionChips"),
+      highscoreSource: document.getElementById("highscoreSource"),
+      highscoreList: document.getElementById("highscoreList"),
+      saveArea: document.getElementById("saveArea"),
+      nameInput: document.getElementById("nameInput"),
+      saveBtn: document.getElementById("saveBtn"),
+      startBtn: document.getElementById("startBtn"),
+      nextBtn: document.getElementById("nextBtn"),
+      restartBtn: document.getElementById("restartBtn"),
+      quizOverlay: document.getElementById("quizOverlay"),
+      quizObject: document.getElementById("quizObject"),
+      quizQuestion: document.getElementById("quizQuestion"),
+      quizOptions: document.getElementById("quizOptions"),
+      quizFeedback: document.getElementById("quizFeedback"),
+      hintBtn: document.getElementById("hintBtn"),
+      closeBtn: document.getElementById("closeBtn"),
+      confetti: document.getElementById("confetti")
+    };
+
+    const state = {
+      started: false,
+      levelIndex: 0,
+      score: 0,
+      streak: 0,
+      hintsUsed: 0,
+      wrongAnswers: 0,
+      discovered: new Map(),
+      taskProgress: new Set(),
+      currentTaskIndex: null,
+      highscores: [],
+      scoreSaved: false,
+      firebase: {
+        enabled: false,
+        db: null,
+        collection: null,
+        addDoc: null,
+        getDocs: null,
+        orderBy: null,
+        limit: null,
+        query: null,
+        serverTimestamp: null
+      }
+    };
+
+    function trackEvent(name, params) {
+      if (typeof window.almaTrack === "function") {
+        window.almaTrack(name, params || {});
+      }
+    }
+
+    function normalizedEntry(entry) {
+      return {
+        name: String(entry.name || "Spiller").slice(0, 18),
+        score: Number.isFinite(Number(entry.score)) ? Number(entry.score) : 0,
+        hintsUsed: Number.isFinite(Number(entry.hintsUsed)) ? Number(entry.hintsUsed) : 0,
+        wrongAnswers: Number.isFinite(Number(entry.wrongAnswers)) ? Number(entry.wrongAnswers) : 0,
+        createdAt: entry.createdAt || new Date().toISOString()
+      };
+    }
+
+    function localScores() {
+      try {
+        const parsed = JSON.parse(localStorage.getItem(GAME_KEY) || "[]");
+        return Array.isArray(parsed) ? parsed.map(normalizedEntry) : [];
+      } catch (_error) {
+        return [];
+      }
+    }
+
+    function saveLocalScores(entries) {
+      localStorage.setItem(GAME_KEY, JSON.stringify(entries.slice(0, 10)));
+    }
+
+    async function initFirebaseHighscores() {
+      const cfg = window.ALMA_FIREBASE_CONFIG;
+      if (!cfg) {
+        el.highscoreSource.textContent = "Lokal highscore (offline).";
+        return;
+      }
+
+      try {
+        const appMod = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
+        const dbMod = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
+        const app = appMod.initializeApp(cfg);
+        state.firebase.db = dbMod.getFirestore(app);
+        state.firebase.collection = dbMod.collection;
+        state.firebase.addDoc = dbMod.addDoc;
+        state.firebase.getDocs = dbMod.getDocs;
+        state.firebase.orderBy = dbMod.orderBy;
+        state.firebase.limit = dbMod.limit;
+        state.firebase.query = dbMod.query;
+        state.firebase.serverTimestamp = dbMod.serverTimestamp;
+        state.firebase.enabled = true;
+        el.highscoreSource.textContent = "Firebase highscore aktiv.";
+      } catch (error) {
+        console.error("Firebase init feilet", error);
+        el.highscoreSource.textContent = "Firebase utilgjengelig, lokal highscore brukes.";
+      }
+    }
+
+    async function loadHighscores() {
+      if (state.firebase.enabled) {
+        try {
+          const ref = state.firebase.collection(state.firebase.db, COLLECTION_NAME);
+          const q = state.firebase.query(ref, state.firebase.orderBy("score", "desc"), state.firebase.limit(10));
+          const snap = await state.firebase.getDocs(q);
+          state.highscores = snap.docs.map((doc) => normalizedEntry(doc.data()));
+          renderHighscores();
+          return;
+        } catch (error) {
+          console.error("Firestore load feilet", error);
+          el.highscoreSource.textContent = "Firestore-feil, lokal highscore vises.";
+        }
+      }
+
+      state.highscores = localScores().sort((a, b) => b.score - a.score).slice(0, 10);
+      renderHighscores();
+    }
+
+    function qualifiesForTop10(score) {
+      if (state.highscores.length < 10) return true;
+      return score > state.highscores[state.highscores.length - 1].score;
+    }
+
+    async function saveHighscore(name) {
+      const entry = normalizedEntry({
+        name: name || "Spiller",
+        score: state.score,
+        hintsUsed: state.hintsUsed,
+        wrongAnswers: state.wrongAnswers,
+        createdAt: new Date().toISOString()
+      });
+
+      const merged = [...state.highscores, entry].sort((a, b) => b.score - a.score).slice(0, 10);
+      saveLocalScores(merged);
+
+      if (state.firebase.enabled) {
+        try {
+          const ref = state.firebase.collection(state.firebase.db, COLLECTION_NAME);
+          await state.firebase.addDoc(ref, {
+            name: entry.name,
+            score: entry.score,
+            hintsUsed: entry.hintsUsed,
+            wrongAnswers: entry.wrongAnswers,
+            createdAt: state.firebase.serverTimestamp()
+          });
+        } catch (error) {
+          console.error("Firestore save feilet", error);
+          el.statusText.textContent = "Kunne ikke lagre til Firestore akkurat na. Lokal lagring brukt.";
+        }
+      }
+
+      state.scoreSaved = true;
+      el.saveArea.classList.add("hidden");
+      await loadHighscores();
+      el.statusText.textContent = "Highscore lagret. Bra jobba!";
+    }
+
+    function renderHighscores() {
+      el.highscoreList.innerHTML = "";
+      if (!state.highscores.length) {
+        const li = document.createElement("li");
+        li.textContent = "Ingen highscores enda";
+        el.highscoreList.append(li);
+        return;
+      }
+
+      state.highscores.forEach((row) => {
+        const li = document.createElement("li");
+        li.textContent = `${row.name}: ${row.score} poeng`;
+        el.highscoreList.append(li);
+      });
+    }
+
+    function getCurrentLevel() {
+      return LEVELS[state.levelIndex];
+    }
+
+    function taskKey(levelIndex, taskIndex) {
+      return `${levelIndex}:${taskIndex}`;
+    }
+
+    function pendingTasks() {
+      const level = getCurrentLevel();
+      return level.tasks
+        .map((task, index) => ({ task, index }))
+        .filter(({ index }) => !state.taskProgress.has(taskKey(state.levelIndex, index)));
+    }
+
+    function renderUI() {
+      const level = getCurrentLevel();
+      el.levelValue.textContent = `${state.levelIndex + 1}/${LEVELS.length}`;
+      el.scoreValue.textContent = String(state.score);
+      el.streakValue.textContent = String(state.streak);
+      el.hintValue.textContent = String(state.hintsUsed);
+      el.levelName.textContent = `Niva ${state.levelIndex + 1}: ${level.name}`;
+      el.levelTag.textContent = pendingTasks().length ? "Utforsk" : "Fullfort";
+
+      renderTasks();
+      renderScene();
+      renderCollection();
+
+      el.nextBtn.disabled = pendingTasks().length > 0 || state.levelIndex >= LEVELS.length - 1;
+    }
+
+    function renderTasks() {
+      const level = getCurrentLevel();
+      el.taskList.innerHTML = "";
+      level.tasks.forEach((task, index) => {
+        const done = state.taskProgress.has(taskKey(state.levelIndex, index));
+        const row = document.createElement("div");
+        row.className = `task${done ? " done" : ""}`;
+        row.textContent = `${done ? "✅" : "🔍"} ${task.prompt}`;
+        el.taskList.append(row);
+      });
+    }
+
+    function renderScene() {
+      const level = getCurrentLevel();
+      el.sceneGrid.innerHTML = "";
+      level.objects.forEach((object) => {
+        const btn = document.createElement("button");
+        btn.className = "object-btn";
+        btn.type = "button";
+        btn.setAttribute("aria-label", object.label);
+        btn.innerHTML = `<span class="object-icon">${object.icon}</span><span class="object-name">${object.label}</span>`;
+        btn.addEventListener("click", () => onObjectClick(object.id));
+        el.sceneGrid.append(btn);
+      });
+    }
+
+    function renderCollection() {
+      el.collectionChips.innerHTML = "";
+      const cards = Array.from(state.discovered.values());
+      if (!cards.length) {
+        el.collectionChips.innerHTML = "<span class='chip'>Ingen element funnet enda</span>";
+        return;
+      }
+
+      cards.sort((a, b) => a.symbol.localeCompare(b.symbol, "no"));
+      cards.forEach((card) => {
+        const chip = document.createElement("span");
+        chip.className = "chip";
+        chip.innerHTML = `<b>${card.symbol}</b>${card.element} (${card.group})`;
+        el.collectionChips.append(chip);
+      });
+    }
+
+    function onObjectClick(objectId) {
+      if (!state.started) {
+        el.statusText.textContent = "Trykk Start jakt for a begynne.";
+        return;
+      }
+
+      const level = getCurrentLevel();
+      const nextTask = level.tasks
+        .map((task, index) => ({ task, index }))
+        .find(({ task, index }) => task.objectId === objectId && !state.taskProgress.has(taskKey(state.levelIndex, index)));
+
+      if (!nextTask) {
+        const randomPending = pendingTasks()[0];
+        if (randomPending) {
+          el.statusText.textContent = `Pro tip: Prøv ${level.objects.find(o => o.id === randomPending.task.objectId).label}.`;
+        } else {
+          el.statusText.textContent = "Miljoet er fullfort. Klar for neste!";
+        }
+        return;
+      }
+
+      openQuiz(nextTask.index);
+    }
+
+    function openQuiz(taskIndex) {
+      state.currentTaskIndex = taskIndex;
+      const level = getCurrentLevel();
+      const task = level.tasks[taskIndex];
+
+      el.quizObject.textContent = `${level.objects.find((obj) => obj.id === task.objectId).icon} ${level.objects.find((obj) => obj.id === task.objectId).label}`;
+      el.quizQuestion.textContent = task.question;
+      el.quizOptions.innerHTML = "";
+      el.quizFeedback.className = "dialog-feedback";
+      el.quizFeedback.textContent = "Velg svaret du tror er riktig.";
+      el.hintBtn.disabled = false;
+
+      task._attempts = task._attempts || 0;
+      task._hintUsed = task._hintUsed || false;
+
+      task.options.forEach((option, index) => {
+        const btn = document.createElement("button");
+        btn.className = "opt";
+        btn.type = "button";
+        btn.textContent = option;
+        btn.addEventListener("click", () => onAnswer(index));
+        el.quizOptions.append(btn);
+      });
+
+      el.quizOverlay.classList.add("show");
+    }
+
+    function closeQuiz() {
+      el.quizOverlay.classList.remove("show");
+      state.currentTaskIndex = null;
+    }
+
+    function scoreFromTask(task) {
+      const base = 120;
+      const hintPenalty = task._hintUsed ? 30 : 0;
+      const wrongPenalty = Math.min(2, task._attempts) * 15;
+      const streakBonus = Math.min(state.streak, 5) * 12;
+      return Math.max(35, base - hintPenalty - wrongPenalty + streakBonus);
+    }
+
+    function popConfetti(points) {
+      el.confetti.textContent = `+${points} ⭐ Bra jobba!`;
+      el.confetti.classList.add("show");
+      setTimeout(() => {
+        el.confetti.classList.remove("show");
+      }, 850);
+    }
+
+    function onAnswer(answerIndex) {
+      const level = getCurrentLevel();
+      const task = level.tasks[state.currentTaskIndex];
+
+      if (answerIndex === task.answer) {
+        const gained = scoreFromTask(task);
+        state.score += gained;
+        state.streak += 1;
+        state.taskProgress.add(taskKey(state.levelIndex, state.currentTaskIndex));
+        state.discovered.set(task.symbol, {
+          symbol: task.symbol,
+          element: task.element,
+          group: task.group
+        });
+
+        el.quizFeedback.className = "dialog-feedback ok";
+        el.quizFeedback.textContent = `${task.fact} (+${gained} poeng)`;
+        popConfetti(gained);
+        trackEvent("grunnstoffjakten_correct", { level: state.levelIndex + 1, symbol: task.symbol, points: gained });
+
+        renderUI();
+        if (!pendingTasks().length) {
+          if (state.levelIndex < LEVELS.length - 1) {
+            el.statusText.textContent = "Miljo fullfort! Trykk Neste miljo.";
+            el.nextBtn.disabled = false;
+          } else {
+            finishGame();
+          }
+        } else {
+          const next = pendingTasks()[0].task;
+          el.missionText.textContent = next.prompt;
+          el.statusText.textContent = "Bra funn! Velg neste objekt.";
+        }
+
+        setTimeout(closeQuiz, 900);
+      } else {
+        task._attempts = (task._attempts || 0) + 1;
+        state.streak = 0;
+        state.wrongAnswers += 1;
+        el.quizFeedback.className = "dialog-feedback err";
+        el.quizFeedback.textContent = "Ikke helt. Tenk pa hintet eller prov igjen.";
+        el.statusText.textContent = "Feil svar, men du er naermere losningen na.";
+        trackEvent("grunnstoffjakten_wrong", { level: state.levelIndex + 1 });
+        renderUI();
+      }
+    }
+
+    function useHint() {
+      if (state.currentTaskIndex === null) return;
+      const task = getCurrentLevel().tasks[state.currentTaskIndex];
+      if (task._hintUsed) {
+        el.quizFeedback.className = "dialog-feedback";
+        el.quizFeedback.textContent = `Hint: ${task.hint}`;
+        return;
+      }
+
+      task._hintUsed = true;
+      state.hintsUsed += 1;
+      el.quizFeedback.className = "dialog-feedback";
+      el.quizFeedback.textContent = `Hint: ${task.hint}`;
+      el.hintBtn.disabled = true;
+      el.statusText.textContent = "Hint brukt. Litt lavere poeng, men bedre sjanse for riktig svar.";
+      renderUI();
+      trackEvent("grunnstoffjakten_hint", { level: state.levelIndex + 1 });
+    }
+
+    function startGame() {
+      state.started = true;
+      state.scoreSaved = false;
+      const first = pendingTasks()[0];
+      el.missionText.textContent = first ? first.task.prompt : "Miljoet er allerede fullfort.";
+      el.statusText.textContent = "Jakten er i gang. Trykk pa objekter for a finne grunnstoff.";
+      el.startBtn.disabled = true;
+      trackEvent("grunnstoffjakten_start", { level: 1 });
+    }
+
+    function goNextLevel() {
+      if (pendingTasks().length) return;
+      if (state.levelIndex >= LEVELS.length - 1) return;
+
+      state.levelIndex += 1;
+      const next = pendingTasks()[0];
+      el.missionText.textContent = next ? next.task.prompt : getCurrentLevel().intro;
+      el.statusText.textContent = `Nytt miljo: ${getCurrentLevel().name}.`;
+      renderUI();
+      trackEvent("grunnstoffjakten_next_level", { level: state.levelIndex + 1 });
+    }
+
+    function finishGame() {
+      state.started = false;
+      el.startBtn.disabled = false;
+      el.nextBtn.disabled = true;
+      el.missionText.textContent = "Du fullforte alle miljoene!";
+      el.statusText.textContent = `Totalscore: ${state.score}. Samlingen din har ${state.discovered.size} elementkort.`;
+      trackEvent("grunnstoffjakten_complete", { score: state.score, hintsUsed: state.hintsUsed });
+
+      if (!state.scoreSaved && qualifiesForTop10(state.score)) {
+        el.saveArea.classList.remove("hidden");
+      }
+    }
+
+    function resetGame() {
+      state.started = false;
+      state.levelIndex = 0;
+      state.score = 0;
+      state.streak = 0;
+      state.hintsUsed = 0;
+      state.wrongAnswers = 0;
+      state.discovered = new Map();
+      state.taskProgress = new Set();
+      state.currentTaskIndex = null;
+      state.scoreSaved = false;
+
+      LEVELS.forEach((level) => {
+        level.tasks.forEach((task) => {
+          task._attempts = 0;
+          task._hintUsed = false;
+        });
+      });
+
+      el.saveArea.classList.add("hidden");
+      el.startBtn.disabled = false;
+      el.nameInput.value = "";
+      el.missionText.textContent = "Trykk Start for a fa forste oppdrag.";
+      el.statusText.textContent = "Klar for oppdrag.";
+      renderUI();
+    }
+
+    function bindEvents() {
+      el.startBtn.addEventListener("click", startGame);
+      el.nextBtn.addEventListener("click", goNextLevel);
+      el.restartBtn.addEventListener("click", resetGame);
+      el.closeBtn.addEventListener("click", closeQuiz);
+      el.hintBtn.addEventListener("click", useHint);
+
+      el.saveBtn.addEventListener("click", async () => {
+        const name = el.nameInput.value.trim() || "Spiller";
+        await saveHighscore(name);
+      });
+
+      el.nameInput.addEventListener("keydown", async (event) => {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          const name = el.nameInput.value.trim() || "Spiller";
+          await saveHighscore(name);
+        }
+      });
+    }
+
+    async function init() {
+      bindEvents();
+      renderUI();
+      await initFirebaseHighscores();
+      await loadHighscores();
+      el.missionText.textContent = getCurrentLevel().intro;
+      el.statusText.textContent = "Trykk Start jakt for a begynne.";
+    }
+
+    init();
+  </script>
+</body>
+</html>

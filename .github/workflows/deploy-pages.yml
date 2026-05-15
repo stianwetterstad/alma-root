@@ -33,7 +33,7 @@ jobs:
         run: |
           set -euo pipefail
           rm -rf site
-          mkdir -p site/laering/gangetrappen site/spill/kosekaos site/spill/stjernestigen
+          mkdir -p site/laering/gangetrappen site/spill/kosekaos site/spill/stjernestigen site/spill/grunnstoffjakten
           git archive --format=tar HEAD | tar -xf - -C site
 
       - name: Inject optional runtime config
@@ -49,7 +49,8 @@ jobs:
             printf '%s\n' "$ALMA_FIREBASE_CONFIG_JS" > site/laering/gangetrappen/firebase-config.js
             printf '%s\n' "$ALMA_FIREBASE_CONFIG_JS" > site/spill/kosekaos/firebase-config.js
             printf '%s\n' "$ALMA_FIREBASE_CONFIG_JS" > site/spill/stjernestigen/firebase-config.js
-            echo "✓ Optional runtime config injected for gangetrappen, kosekaos and stjernestigen"
+            printf '%s\n' "$ALMA_FIREBASE_CONFIG_JS" > site/spill/grunnstoffjakten/firebase-config.js
+            echo "✓ Optional runtime config injected for gangetrappen, kosekaos, stjernestigen and grunnstoffjakten"
           fi
 
           if [ -z "${ALMA_GA4_MEASUREMENT_ID}" ]; then

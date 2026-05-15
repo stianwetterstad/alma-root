@@ -20,5 +20,10 @@ service cloud.firestore {
     match /stjernestigen_highscores/{document=**} {
       allow read, write: if true;
     }
+
+    // Grunnstoffjakten highscores
+    match /grunnstoffjakten_highscores/{document=**} {
+      allow read, write: if true;
+    }
   }
 }
