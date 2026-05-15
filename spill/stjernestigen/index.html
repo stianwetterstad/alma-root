@@ -1,0 +1,1532 @@
+<!doctype html>
+<html lang="no">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>StjerneStigen | Alma.rocks</title>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-1: #04152d;
+      --bg-2: #062e49;
+      --bg-3: #0b4760;
+      --panel: rgba(8, 32, 58, 0.85);
+      --panel-border: rgba(144, 227, 255, 0.35);
+      --text: #f6fbff;
+      --muted: #b7d9e9;
+      --good: #5af78e;
+      --warn: #ffd056;
+      --bad: #ff7b7b;
+      --accent: #64d9ff;
+      --accent-2: #ffbd59;
+      --star: #fff4b5;
+      font-family: "Baloo 2", system-ui, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      background:
+        radial-gradient(1100px 700px at 10% -10%, rgba(103, 228, 255, 0.2), transparent 60%),
+        radial-gradient(900px 600px at 90% 10%, rgba(255, 187, 90, 0.18), transparent 60%),
+        linear-gradient(180deg, var(--bg-1), var(--bg-2) 48%, var(--bg-3));
+      overflow-x: hidden;
+    }
+
+    .stars,
+    .stars::before,
+    .stars::after {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      content: "";
+      background-image:
+        radial-gradient(circle at 10% 20%, rgba(255, 244, 181, 0.9) 0 1px, transparent 2px),
+        radial-gradient(circle at 30% 80%, rgba(255, 255, 255, 0.8) 0 1px, transparent 2px),
+        radial-gradient(circle at 55% 35%, rgba(255, 244, 181, 0.9) 0 1px, transparent 2px),
+        radial-gradient(circle at 75% 70%, rgba(255, 255, 255, 0.8) 0 1px, transparent 2px),
+        radial-gradient(circle at 90% 15%, rgba(255, 244, 181, 0.9) 0 1px, transparent 2px);
+      background-size: 420px 320px;
+      animation: drift 26s linear infinite;
+      opacity: 0.5;
+      z-index: 0;
+    }
+
+    .stars::before {
+      animation-duration: 37s;
+      opacity: 0.33;
+      transform: scale(1.15);
+    }
+
+    .stars::after {
+      animation-duration: 48s;
+      opacity: 0.25;
+      transform: scale(1.25);
+    }
+
+    @keyframes drift {
+      from { transform: translateY(0); }
+      to { transform: translateY(22px); }
+    }
+
+    .wrap {
+      width: min(1200px, 94vw);
+      margin: 16px auto 28px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .topbar {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+      padding: 12px;
+      border: 2px solid var(--panel-border);
+      border-radius: 16px;
+      background: rgba(8, 32, 58, 0.75);
+      backdrop-filter: blur(6px);
+    }
+
+    .pill {
+      text-decoration: none;
+      color: #04253f;
+      font-weight: 800;
+      font-size: 15px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: linear-gradient(180deg, #a6f0ff, #6fddff);
+      box-shadow: 0 8px 14px rgba(0, 0, 0, 0.25);
+    }
+
+    .pill.current {
+      background: linear-gradient(180deg, #ffe2a0, #ffc65d);
+    }
+
+    .hero {
+      margin: 18px 0;
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: 14px;
+    }
+
+    .card {
+      border: 2px solid var(--panel-border);
+      border-radius: 18px;
+      background: var(--panel);
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.28);
+      padding: 16px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(32px, 5.1vw, 52px);
+      line-height: 0.96;
+      letter-spacing: 0.5px;
+      color: #fff6cf;
+      text-shadow: 0 8px 24px rgba(255, 202, 87, 0.35);
+    }
+
+    .subtitle {
+      margin: 10px 0 0;
+      color: var(--muted);
+      font-size: clamp(16px, 2.2vw, 20px);
+      line-height: 1.35;
+      max-width: 52ch;
+    }
+
+    .hero-badges {
+      margin-top: 12px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border: 1px solid rgba(148, 229, 255, 0.5);
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 14px;
+      color: #dff6ff;
+      background: rgba(77, 189, 255, 0.14);
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      align-content: start;
+    }
+
+    .stat {
+      border-radius: 12px;
+      border: 1px solid rgba(148, 229, 255, 0.32);
+      padding: 10px 12px;
+      background: rgba(16, 53, 84, 0.65);
+    }
+
+    .stat-label {
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 700;
+      letter-spacing: 0.2px;
+    }
+
+    .stat-value {
+      margin-top: 2px;
+      font-size: clamp(21px, 3.2vw, 30px);
+      font-weight: 800;
+      line-height: 1;
+      color: #f6fdff;
+    }
+
+    .main {
+      display: grid;
+      grid-template-columns: 1.3fr 0.9fr;
+      gap: 14px;
+      align-items: start;
+    }
+
+    .track {
+      border-radius: 14px;
+      border: 1px solid rgba(148, 229, 255, 0.3);
+      background: linear-gradient(180deg, rgba(13, 52, 86, 0.85), rgba(8, 36, 62, 0.86));
+      padding: 12px;
+      margin-bottom: 12px;
+      overflow-x: auto;
+    }
+
+    .track-inner {
+      min-width: 840px;
+      display: grid;
+      grid-template-columns: repeat(10, minmax(70px, 1fr));
+      gap: 12px;
+      align-items: end;
+      position: relative;
+    }
+
+    .planet {
+      text-align: center;
+      padding: 8px 4px;
+      border-radius: 10px;
+      border: 1px solid rgba(146, 226, 255, 0.3);
+      background: rgba(8, 32, 56, 0.72);
+      position: relative;
+    }
+
+    .planet .icon {
+      font-size: 30px;
+      display: block;
+      filter: drop-shadow(0 8px 10px rgba(0, 0, 0, 0.35));
+    }
+
+    .planet .icon.planet-skin {
+      width: 34px;
+      height: 34px;
+      margin: 0 auto 6px;
+      border-radius: 999px;
+      border: 1px solid rgba(240, 250, 255, 0.65);
+      position: relative;
+      overflow: visible;
+      box-shadow: 0 0 12px rgba(180, 230, 255, 0.28);
+      filter: none;
+    }
+
+    .planet .icon.planet-skin.merkur {
+      background:
+        radial-gradient(circle at 24% 20%, rgba(255, 255, 255, 0.5), transparent 34%),
+        radial-gradient(circle at 72% 78%, rgba(45, 51, 58, 0.24), transparent 36%),
+        radial-gradient(circle at 30% 75%, rgba(40, 46, 54, 0.3), transparent 30%),
+        linear-gradient(155deg, #d6d8dd, #9da3ab 58%, #767d88);
+    }
+
+    .planet .icon.planet-skin.merkur::after {
+      content: "";
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      border-radius: 999px;
+      background: rgba(68, 74, 83, 0.6);
+      top: 7px;
+      left: 8px;
+      box-shadow:
+        8px 2px 0 0 rgba(88, 96, 107, 0.58),
+        14px 10px 0 1px rgba(77, 84, 95, 0.55),
+        5px 15px 0 0 rgba(88, 96, 107, 0.5),
+        18px 17px 0 0 rgba(66, 72, 82, 0.56);
+    }
+
+    .planet .icon.planet-skin.venus {
+      background:
+        radial-gradient(circle at 26% 24%, rgba(255, 247, 223, 0.52), transparent 36%),
+        linear-gradient(145deg, #ffd290, #ffbb72 46%, #f79654 72%, #da7b45);
+    }
+
+    .planet .icon.planet-skin.venus::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background:
+        repeating-linear-gradient(20deg,
+          rgba(255, 227, 171, 0.36) 0 4px,
+          rgba(235, 143, 76, 0.22) 4px 8px);
+      mix-blend-mode: screen;
+      opacity: 0.88;
+    }
+
+    .planet .icon.planet-skin.uranus {
+      background:
+        radial-gradient(circle at 30% 25%, rgba(230, 255, 255, 0.62), transparent 34%),
+        linear-gradient(160deg, #96f1f0, #65dbe7 52%, #43bccf);
+    }
+
+    .planet .icon.planet-skin.uranus::before {
+      content: "";
+      position: absolute;
+      width: 46px;
+      height: 16px;
+      border-radius: 50%;
+      border: 2px solid rgba(206, 252, 255, 0.86);
+      top: 8px;
+      left: -7px;
+      transform: rotate(-26deg);
+      box-shadow: 0 0 10px rgba(170, 250, 255, 0.45);
+      pointer-events: none;
+    }
+
+    .planet .icon.planet-skin.sun {
+      background:
+        radial-gradient(circle at 34% 30%, rgba(255, 253, 219, 0.68), transparent 36%),
+        radial-gradient(circle at 65% 68%, rgba(255, 159, 72, 0.35), transparent 44%),
+        linear-gradient(145deg, #ffe992, #ffcb5f 48%, #ff9f45);
+      box-shadow: 0 0 16px rgba(255, 194, 87, 0.75), 0 0 24px rgba(255, 132, 67, 0.55);
+    }
+
+    .planet .icon.planet-skin.earth {
+      background:
+        radial-gradient(circle at 32% 26%, rgba(205, 244, 255, 0.58), transparent 34%),
+        radial-gradient(circle at 58% 56%, rgba(87, 202, 126, 0.88), transparent 40%),
+        radial-gradient(circle at 35% 67%, rgba(92, 186, 93, 0.74), transparent 34%),
+        linear-gradient(160deg, #63d4ff, #2d9fe8 56%, #1f7ec2);
+    }
+
+    .planet .icon.planet-skin.moon {
+      background:
+        radial-gradient(circle at 30% 26%, rgba(255, 255, 255, 0.58), transparent 32%),
+        linear-gradient(150deg, #eceff4, #c3cad5 56%, #9da6b3);
+    }
+
+    .planet .icon.planet-skin.moon::after {
+      content: "";
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      border-radius: 999px;
+      background: rgba(119, 126, 138, 0.45);
+      top: 10px;
+      left: 9px;
+      box-shadow:
+        9px 4px 0 0 rgba(126, 132, 145, 0.4),
+        6px 13px 0 0 rgba(117, 124, 136, 0.45),
+        16px 14px 0 0 rgba(124, 131, 143, 0.42);
+    }
+
+    .planet .icon.planet-skin.mars {
+      background:
+        radial-gradient(circle at 26% 22%, rgba(255, 210, 176, 0.46), transparent 34%),
+        radial-gradient(circle at 68% 72%, rgba(148, 42, 30, 0.35), transparent 40%),
+        linear-gradient(150deg, #ff9a7f, #e1614a 58%, #b13c2f);
+    }
+
+    .planet .icon.planet-skin.jupiter {
+      background:
+        radial-gradient(circle at 30% 26%, rgba(255, 245, 211, 0.5), transparent 34%),
+        linear-gradient(180deg,
+          #f4d4a3 0 17%,
+          #d8ae7c 17% 31%,
+          #f0cf9a 31% 45%,
+          #c89865 45% 58%,
+          #e3be8a 58% 72%,
+          #b8875f 72% 86%,
+          #ddb78c 86% 100%);
+    }
+
+    .planet .icon.planet-skin.saturn {
+      background:
+        radial-gradient(circle at 28% 24%, rgba(255, 250, 222, 0.55), transparent 35%),
+        linear-gradient(160deg, #f5dca1, #d9b875 56%, #b99259);
+    }
+
+    .planet .icon.planet-skin.saturn::before {
+      content: "";
+      position: absolute;
+      width: 50px;
+      height: 18px;
+      border-radius: 50%;
+      border: 2px solid rgba(248, 227, 167, 0.92);
+      top: 7px;
+      left: -9px;
+      transform: rotate(8deg);
+      box-shadow: 0 0 10px rgba(245, 214, 132, 0.42);
+      pointer-events: none;
+    }
+
+    .planet .icon.planet-skin.neptun {
+      background:
+        radial-gradient(circle at 30% 25%, rgba(224, 243, 255, 0.58), transparent 34%),
+        linear-gradient(160deg, #79a6ff, #4c72e6 58%, #2f48b8);
+    }
+
+    .planet .name {
+      margin-top: 2px;
+      font-size: 13px;
+      font-weight: 800;
+      color: #d8f4ff;
+    }
+
+    .planet .req {
+      font-size: 12px;
+      color: #accde0;
+    }
+
+    .planet.active {
+      border-color: rgba(255, 211, 113, 0.95);
+      box-shadow: 0 0 0 2px rgba(255, 211, 113, 0.24), 0 0 18px rgba(255, 199, 95, 0.5);
+      transform: translateY(-4px);
+    }
+
+    .planet.completed {
+      border-color: rgba(95, 245, 157, 0.95);
+      box-shadow: 0 0 0 2px rgba(95, 245, 157, 0.18);
+    }
+
+    .ship {
+      position: absolute;
+      width: 40px;
+      height: 40px;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      background: radial-gradient(circle at 30% 25%, #ffe9ad, #ffba56 62%, #b06a1e);
+      box-shadow: 0 0 16px rgba(255, 198, 99, 0.75);
+      transition: left 360ms ease, top 360ms ease;
+      font-size: 20px;
+      pointer-events: none;
+    }
+
+    .mission {
+      border-radius: 16px;
+      border: 2px solid rgba(148, 229, 255, 0.34);
+      padding: 14px;
+      background: rgba(11, 42, 67, 0.78);
+    }
+
+    .meta-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+
+    .tag {
+      padding: 7px 10px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 800;
+      background: rgba(100, 217, 255, 0.15);
+      border: 1px solid rgba(148, 229, 255, 0.45);
+      color: #e3f8ff;
+    }
+
+    .tag.warn {
+      background: rgba(255, 189, 89, 0.18);
+      border-color: rgba(255, 205, 123, 0.5);
+      color: #fff2cf;
+    }
+
+    .question {
+      font-size: clamp(20px, 3vw, 31px);
+      font-weight: 800;
+      line-height: 1.15;
+      margin: 8px 0 10px;
+      color: #f4fcff;
+      min-height: 3.2em;
+    }
+
+    .options {
+      display: grid;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .option {
+      width: 100%;
+      text-align: left;
+      border: 2px solid rgba(148, 229, 255, 0.35);
+      border-radius: 12px;
+      background: rgba(16, 56, 88, 0.65);
+      color: #f3fbff;
+      font: inherit;
+      font-size: clamp(16px, 2vw, 21px);
+      line-height: 1.2;
+      font-weight: 700;
+      padding: 12px 14px;
+      cursor: pointer;
+      transition: transform 0.12s ease, border-color 0.15s ease, background 0.15s ease;
+      touch-action: manipulation;
+      min-height: 52px;
+    }
+
+    .option:hover {
+      transform: translateY(-2px);
+      border-color: rgba(255, 203, 102, 0.85);
+      background: rgba(24, 72, 110, 0.7);
+    }
+
+    .option:disabled {
+      cursor: not-allowed;
+      opacity: 0.85;
+    }
+
+    .option.correct {
+      border-color: rgba(90, 247, 142, 0.95);
+      background: rgba(33, 97, 64, 0.8);
+    }
+
+    .option.wrong {
+      border-color: rgba(255, 123, 123, 0.95);
+      background: rgba(98, 38, 38, 0.83);
+    }
+
+    .status {
+      min-height: 52px;
+      margin-top: 12px;
+      padding: 9px 11px;
+      border-radius: 10px;
+      border: 1px solid rgba(148, 229, 255, 0.35);
+      background: rgba(14, 49, 76, 0.72);
+      font-size: 15px;
+      line-height: 1.33;
+      color: #dff6ff;
+    }
+
+    .status.good {
+      border-color: rgba(90, 247, 142, 0.7);
+      color: #e4ffe9;
+    }
+
+    .status.bad {
+      border-color: rgba(255, 123, 123, 0.8);
+      color: #ffe6e6;
+    }
+
+    .status.warn {
+      border-color: rgba(255, 205, 123, 0.7);
+      color: #fff4d7;
+    }
+
+    .timer {
+      margin-top: 12px;
+      position: relative;
+      height: 14px;
+      border-radius: 999px;
+      background: rgba(15, 50, 78, 0.75);
+      overflow: hidden;
+      border: 1px solid rgba(148, 229, 255, 0.35);
+    }
+
+    .timer-bar {
+      height: 100%;
+      width: 100%;
+      background: linear-gradient(90deg, #59f08c, #ffc75a);
+      transform-origin: left center;
+      transition: transform 0.1s linear, background 0.2s ease;
+    }
+
+    .timer-bar.critical {
+      background: linear-gradient(90deg, #ffa953, #ff6565);
+    }
+
+    .actions {
+      margin-top: 12px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      border: 0;
+      border-radius: 999px;
+      padding: 10px 16px;
+      font: inherit;
+      font-size: 15px;
+      font-weight: 800;
+      cursor: pointer;
+      background: linear-gradient(180deg, #9beeff, #66dcff);
+      color: #02334f;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.24);
+      touch-action: manipulation;
+      min-height: 44px;
+    }
+
+    .btn.secondary {
+      background: linear-gradient(180deg, #ffe5ad, #ffc86d);
+      color: #523104;
+    }
+
+    .side {
+      display: grid;
+      gap: 12px;
+    }
+
+    .highscores {
+      border-radius: 16px;
+      border: 2px solid rgba(148, 229, 255, 0.34);
+      background: rgba(11, 42, 67, 0.78);
+      padding: 12px;
+    }
+
+    .highscores h2 {
+      margin: 0;
+      font-size: 22px;
+      line-height: 1.05;
+      color: #eefaff;
+    }
+
+    .source {
+      margin-top: 2px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .highscores ol {
+      margin: 10px 0 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 7px;
+    }
+
+    .highscores li {
+      border-radius: 10px;
+      border: 1px solid rgba(148, 229, 255, 0.32);
+      background: rgba(14, 52, 80, 0.74);
+      padding: 8px 10px;
+      display: grid;
+      grid-template-columns: 30px 1fr auto;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .rank {
+      width: 30px;
+      height: 30px;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      font-size: 13px;
+      font-weight: 900;
+      color: #10334f;
+      background: linear-gradient(180deg, #f0f9ff, #bce8ff);
+    }
+
+    .meta {
+      color: #b8d8e8;
+      font-size: 12px;
+      line-height: 1.15;
+      margin-top: 1px;
+    }
+
+    .save {
+      margin-top: 10px;
+      border: 1px solid rgba(148, 229, 255, 0.35);
+      border-radius: 10px;
+      padding: 9px;
+      background: rgba(14, 52, 80, 0.75);
+      display: grid;
+      gap: 8px;
+    }
+
+    .save input {
+      width: 100%;
+      border: 1px solid rgba(148, 229, 255, 0.5);
+      border-radius: 9px;
+      background: rgba(8, 34, 56, 0.82);
+      color: #eef9ff;
+      font: inherit;
+      font-size: 16px;
+      font-weight: 700;
+      padding: 10px;
+    }
+
+    .save.hidden {
+      display: none;
+    }
+
+    .facts {
+      border-radius: 16px;
+      border: 2px solid rgba(148, 229, 255, 0.34);
+      background: rgba(11, 42, 67, 0.78);
+      padding: 12px;
+    }
+
+    .facts h3 {
+      margin: 0;
+      font-size: 20px;
+      color: #f5fcff;
+    }
+
+    .facts ul {
+      margin: 8px 0 0;
+      padding-left: 18px;
+      color: #d7f3ff;
+      line-height: 1.32;
+    }
+
+    .overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+      background: rgba(3, 16, 30, 0.72);
+      backdrop-filter: blur(4px);
+    }
+
+    .overlay.hidden {
+      display: none;
+    }
+
+    .overlay-card {
+      width: min(560px, 96vw);
+      border-radius: 18px;
+      border: 2px solid rgba(148, 229, 255, 0.45);
+      background: linear-gradient(180deg, rgba(10, 39, 63, 0.95), rgba(8, 28, 48, 0.96));
+      box-shadow: 0 20px 35px rgba(0, 0, 0, 0.35);
+      padding: 18px;
+      text-align: center;
+    }
+
+    .overlay h2 {
+      margin: 0;
+      font-size: clamp(30px, 7vw, 48px);
+      line-height: 0.95;
+      color: #fff3c8;
+    }
+
+    .overlay p {
+      margin: 10px 0;
+      font-size: 18px;
+      color: #d3f1ff;
+      line-height: 1.28;
+    }
+
+    @media (max-width: 1000px) {
+      .hero,
+      .main {
+        grid-template-columns: 1fr;
+      }
+
+      .stats {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+
+    @media (max-width: 700px) {
+      .stats {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .option {
+        font-size: 18px;
+      }
+
+      .question {
+        font-size: 25px;
+      }
+    }
+  </style>
+  <script src="/analytics-config.js"></script>
+  <script defer src="/assets/ga4.js"></script>
+  <script src="/spill/stjernestigen/firebase-config.js"></script>
+</head>
+<body>
+  <div class="stars" aria-hidden="true"></div>
+
+  <div class="wrap">
+    <nav class="topbar" aria-label="Toppmeny">
+      <a class="pill" href="/">Hjem</a>
+      <a class="pill" href="/spill/">Spill</a>
+      <span class="pill current" aria-current="page">StjerneStigen</span>
+    </nav>
+
+    <section class="hero">
+      <div class="card">
+        <h1>StjerneStigen</h1>
+        <p class="subtitle">Reis gjennom solsystemet ved å svare raskt og riktig. Tre riktige på rad sender deg videre til neste verden.</p>
+        <div class="hero-badges">
+          <span class="hero-badge">10 nivåer</span>
+          <span class="hero-badge">Naturfag 4. trinn</span>
+          <span class="hero-badge">Streak-bonus</span>
+        </div>
+      </div>
+      <div class="card stats" aria-label="Spillstatus">
+        <div class="stat"><div class="stat-label">Nivå</div><div class="stat-value" id="levelValue">1</div></div>
+        <div class="stat"><div class="stat-label">Poeng</div><div class="stat-value" id="scoreValue">0</div></div>
+        <div class="stat"><div class="stat-label">Liv</div><div class="stat-value" id="livesValue">3</div></div>
+        <div class="stat"><div class="stat-label">Streak</div><div class="stat-value" id="streakValue">0</div></div>
+      </div>
+    </section>
+
+    <section class="main">
+      <div>
+        <section class="track" aria-label="Reiserute i solsystemet">
+          <div class="track-inner" id="trackInner"></div>
+        </section>
+
+        <section class="mission">
+          <div class="meta-row">
+            <span class="tag" id="destinationTag">Destinasjon: Sol</span>
+            <span class="tag warn" id="progressTag">Riktige på rad: 0 / 3</span>
+            <span class="tag" id="timerTag">Tid: 12.0s</span>
+          </div>
+          <div class="question" id="questionText">Trykk Start for å få første spørsmål.</div>
+          <div class="options" id="options"></div>
+          <div class="status" id="statusText">Bygg kunnskap og fly videre i stige for stige.</div>
+          <div class="timer" aria-hidden="true"><div class="timer-bar" id="timerBar"></div></div>
+          <div class="actions">
+            <button class="btn" id="startBtn">Start runde</button>
+            <button class="btn secondary" id="restartBtn">Ny runde</button>
+          </div>
+        </section>
+      </div>
+
+      <aside class="side">
+        <section class="highscores" aria-label="Highscores">
+          <h2>Highscores</h2>
+          <div class="source" id="highscoreSource">Laster highscore...</div>
+          <ol id="highscoreList"></ol>
+          <div class="save hidden" id="saveArea">
+            <label for="nameInput">Ny rekord! Skriv kallenavn:</label>
+            <input id="nameInput" maxlength="18" placeholder="Romhelt" />
+            <button class="btn" id="saveBtn">Lagre score</button>
+          </div>
+        </section>
+
+        <section class="facts" aria-label="Tips">
+          <h3>Spillregler</h3>
+          <ul>
+            <li>Tre riktige på rad sender deg til neste planet.</li>
+            <li>To feil på samme nivå gir tilbakeslag til forrige nivå.</li>
+            <li>Et tilbakeslag koster ett liv. Mister du tre liv er runden over.</li>
+            <li>Raske svar gir bonuspoeng.</li>
+          </ul>
+        </section>
+      </aside>
+    </section>
+  </div>
+
+  <section class="overlay" id="overlay" aria-live="polite">
+    <div class="overlay-card">
+      <h2 id="overlayTitle">Klar for oppskytning?</h2>
+      <p id="overlayMessage">Svar på spørsmål om solsystemet, planeter, dag og natt, årstider og månefaser.</p>
+      <div class="actions" style="justify-content:center;">
+        <button class="btn" id="overlayStartBtn">Start StjerneStigen</button>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    const LEVELS = [
+      { name: "Solen", icon: "", skin: "sun" },
+      { name: "Merkur", icon: "", skin: "merkur" },
+      { name: "Venus", icon: "", skin: "venus" },
+      { name: "Jorda", icon: "", skin: "earth" },
+      { name: "Månen", icon: "", skin: "moon" },
+      { name: "Mars", icon: "", skin: "mars" },
+      { name: "Jupiter", icon: "", skin: "jupiter" },
+      { name: "Saturn", icon: "", skin: "saturn" },
+      { name: "Uranus", icon: "", skin: "uranus" },
+      { name: "Neptun", icon: "", skin: "neptun" }
+    ];
+
+    const QUESTIONS = {
+      1: [
+        { prompt: "Hva heter stjernen i midten av solsystemet vårt?", options: ["Solen", "Månen", "Jorda", "Saturn"], correct: 0, explanation: "Solen er stjernen som planetene går i bane rundt." },
+        { prompt: "Hva gir Solen oss?", options: ["Lys og varme", "Snø og regn", "Ringene til Saturn", "Tidevann"], correct: 0, explanation: "Solen gir både lys og varme som gjør livet mulig." },
+        { prompt: "Hvilken retning går Jorda rundt Solen?", options: ["I bane rundt", "Rett opp", "Frem og tilbake", "Står stille"], correct: 0, explanation: "Jorda går i en bane rundt Solen." },
+        { prompt: "Når er det dag på den siden av Jorda som vender mot Solen?", options: ["Ja", "Nei", "Bare om vinteren", "Bare om sommeren"], correct: 0, explanation: "Siden som vender mot Solen får lys og har dag." }
+      ],
+      2: [
+        { prompt: "Hvilken planet er nærmest Solen?", options: ["Merkur", "Venus", "Jorda", "Mars"], correct: 0, explanation: "Merkur er den innerste planeten." },
+        { prompt: "Hvordan ser Merkur ofte ut?", options: ["Steinete og grå", "Med store ringer", "Blå med hav", "Dekket av is og hav"], correct: 0, explanation: "Merkur er en liten steinplanet med mange kratere." },
+        { prompt: "Er et år på Merkur kortere eller lengre enn på Jorda?", options: ["Kortere", "Lengre", "Like langt", "Ingen år"], correct: 0, explanation: "Merkur bruker kortere tid rundt Solen enn Jorda." },
+        { prompt: "Har Merkur tykk atmosfære?", options: ["Nei, veldig tynn", "Ja, veldig tykk", "Bare om natta", "Kun om sommeren"], correct: 0, explanation: "Merkur har nesten ingen atmosfære." }
+      ],
+      3: [
+        { prompt: "Hvilken planet kalles ofte Jordas tvilling i størrelse?", options: ["Venus", "Mars", "Jupiter", "Neptun"], correct: 0, explanation: "Venus er nesten like stor som Jorda." },
+        { prompt: "Hvorfor er Venus veldig varm?", options: ["Sterk drivhuseffekt", "Fordi den har isringer", "Fordi den er blå", "Fordi den ikke roterer"], correct: 0, explanation: "Tykk atmosfære holder på varmen med drivhuseffekt." },
+        { prompt: "Hva er en atmosfære?", options: ["Luftlaget rundt en planet", "Et fjell", "Et krater", "En måne"], correct: 0, explanation: "Atmosfæren er gasslaget rundt en planet." },
+        { prompt: "Boss: Hvilken planet er varmest i solsystemet?", options: ["Venus", "Merkur", "Jupiter", "Mars"], correct: 0, explanation: "Venus er varmest på grunn av kraftig drivhuseffekt." }
+      ],
+      4: [
+        { prompt: "Hva tar det ca. 24 timer for Jorda å gjøre?", options: ["Snurre rundt seg selv", "Gå rundt Solen", "Bytte måne", "Stoppe rotasjon"], correct: 0, explanation: "Jorda roterer rundt egen akse på omtrent ett døgn." },
+        { prompt: "Hva skaper dag og natt?", options: ["Jordas rotasjon", "Månens lys", "Regn", "Årstidene"], correct: 0, explanation: "Når Jorda roterer, får vi veksling mellom dag og natt." },
+        { prompt: "Hvorfor har vi årstider?", options: ["Jordaksen heller", "Solen blir større", "Månen skifter farge", "Jorda stopper"], correct: 0, explanation: "Jordaksens helning gjør at solstrålene treffer ulikt gjennom året." },
+        { prompt: "Hva er Jorda i solsystemet?", options: ["En planet", "En stjerne", "En komet", "En galakse"], correct: 0, explanation: "Jorda er en planet som går i bane rundt Solen." }
+      ],
+      5: [
+        { prompt: "Hvorfor ser vi ulike månefaser?", options: ["Vi ser ulike opplyste deler av Månen", "Månen skrur av lyset", "Skyer lager fasene", "Månen blir større"], correct: 0, explanation: "Månefaser handler om hvordan sollyset treffer Månen sett fra Jorda." },
+        { prompt: "Hva kalles fasen når vi ikke ser månen tydelig?", options: ["Nymåne", "Fullmåne", "Halvmåne", "Supermåne"], correct: 0, explanation: "Ved nymåne vender den opplyste siden bort fra oss." },
+        { prompt: "Hva er fullmåne?", options: ["Når hele måneskiven er opplyst", "Når månen er blå", "Når månen er ny", "Når månen er usynlig"], correct: 0, explanation: "Ved fullmåne ser vi hele den opplyste siden." },
+        { prompt: "Boss: Hvor lang tid bruker månen omtrent rundt Jorda?", options: ["Ca. 1 måned", "Ca. 1 dag", "Ca. 1 år", "Ca. 10 år"], correct: 0, explanation: "Månen bruker omtrent en måned på en runde rundt Jorda." }
+      ],
+      6: [
+        { prompt: "Hvilken planet kalles ofte den røde planeten?", options: ["Mars", "Venus", "Merkur", "Uranus"], correct: 0, explanation: "Mars ser rød ut på grunn av jernoksid i støvet." },
+        { prompt: "Hva kan finnes på Mars overflater?", options: ["Store vulkaner og daler", "Bare hav", "Kun skog", "Ingen fjell"], correct: 0, explanation: "Mars har både store vulkaner og store daler." },
+        { prompt: "Har Mars kortere eller lengre år enn Jorda?", options: ["Lengre", "Kortere", "Lik lengde", "Ingen år"], correct: 0, explanation: "Mars bruker lenger tid rundt Solen." },
+        { prompt: "På hvilken planet har mennesker landet roboter for utforskning?", options: ["Mars", "Saturn", "Venus", "Neptun"], correct: 0, explanation: "Flere roboter har landet på Mars." }
+      ],
+      7: [
+        { prompt: "Hvilken planet er størst i solsystemet?", options: ["Jupiter", "Saturn", "Neptun", "Jorda"], correct: 0, explanation: "Jupiter er den største planeten." },
+        { prompt: "Hva slags planet er Jupiter?", options: ["Gasskjempe", "Steinplanet", "Dvergplanet", "Ismåne"], correct: 0, explanation: "Jupiter består mest av gasser og kalles gasskjempe." },
+        { prompt: "Hva er den store røde flekken på Jupiter?", options: ["En kjempestor storm", "En innsjø", "Et fjell", "Et krater"], correct: 0, explanation: "Den røde flekken er en langvarig storm." },
+        { prompt: "Boss: Har Jupiter få eller mange måner?", options: ["Mange", "Få", "Ingen", "Akkurat én"], correct: 0, explanation: "Jupiter har svært mange måner." }
+      ],
+      8: [
+        { prompt: "Hvilken planet er kjent for ringene sine?", options: ["Saturn", "Mars", "Merkur", "Venus"], correct: 0, explanation: "Saturn har de mest tydelige ringsystemene." },
+        { prompt: "Hva er Saturns ringer laget av?", options: ["Is, støv og steinbiter", "Bare gass", "Vann som flyter", "Lava"], correct: 0, explanation: "Ringene består av mange små biter av is og stein." },
+        { prompt: "Er Saturn en steinplanet eller gasskjempe?", options: ["Gasskjempe", "Steinplanet", "Dvergplanet", "Komet"], correct: 0, explanation: "Saturn er også en gasskjempe." },
+        { prompt: "Hvilken planet har den største tydelige ringen?", options: ["Saturn", "Uranus", "Neptun", "Jorda"], correct: 0, explanation: "Saturns ringer er mest iøynefallende." }
+      ],
+      9: [
+        { prompt: "Hvilken planet ligger lengst ute av de iskalde kjempene før Neptun?", options: ["Uranus", "Jupiter", "Mars", "Venus"], correct: 0, explanation: "Uranus er en av de ytre iskjempeplanetene." },
+        { prompt: "Hva er spesielt med Uranus sin rotasjon?", options: ["Den ligger nesten på siden", "Den står helt stille", "Den snurrer ikke", "Den går baklengs rundt sola"], correct: 0, explanation: "Uranus roterer med veldig skjev akse, nesten på siden." },
+        { prompt: "Hvordan ser Uranus ofte ut i bilder?", options: ["Blågrønn", "Rød", "Gull", "Helt svart"], correct: 0, explanation: "Metan i atmosfæren gir blågrønn farge." },
+        { prompt: "Boss: Hva gjør at vi får årstider på Jorda?", options: ["Helningen på jordaksen", "Månen skifter fase", "Vind", "Skydannelse"], correct: 0, explanation: "Årstider skyldes jordaksens helning gjennom året." }
+      ],
+      10: [
+        { prompt: "Hvilken planet er den ytterste av de åtte planetene?", options: ["Neptun", "Uranus", "Saturn", "Jupiter"], correct: 0, explanation: "Neptun er ytterst i planetsystemet vårt." },
+        { prompt: "Hvordan er det på Neptun?", options: ["Kaldt og vindfullt", "Varmt med skog", "Fylt med lava", "Som på Jorda"], correct: 0, explanation: "Neptun er svært kald og har kraftige vinder." },
+        { prompt: "Hva kalles reisen din når du har fullført alle nivåer?", options: ["Solsystem-mester", "Asteroidefanger", "Kometjeger", "Skyvandrer"], correct: 0, explanation: "Du har blitt Solsystem-mester når du når helt ut." },
+        { prompt: "Finale: Hvilken rekkefølge er riktig fra sola?", options: ["Merkur, Venus, Jorda, Mars", "Mars, Venus, Merkur, Jorda", "Jorda, Merkur, Venus, Mars", "Venus, Merkur, Mars, Jorda"], correct: 0, explanation: "Riktig rekkefølge i starten er Merkur, Venus, Jorda, Mars." }
+      ]
+    };
+
+    const MAX_LEVEL = LEVELS.length;
+    const REQUIRED_STREAK = 3;
+    const MAX_LEVEL_MISTAKES = 2;
+    const MAX_FALLS = 3;
+    const QUESTION_TIME_MS = 12000;
+    const HIGHSCORE_LIMIT = 10;
+    const STORAGE_KEY = "stjernestigen-highscores-v1";
+
+    const state = {
+      running: false,
+      level: 1,
+      score: 0,
+      lives: 3,
+      streak: 0,
+      levelMistakes: 0,
+      falls: 0,
+      answeredCount: 0,
+      currentQuestion: null,
+      currentQuestionSet: [],
+      currentQuestionPointer: 0,
+      timerId: null,
+      timerStartedAt: 0,
+      timerRemaining: QUESTION_TIME_MS,
+      rafId: null,
+      highscores: [],
+      scoreSaved: false,
+      firebase: {
+        enabled: false,
+        db: null,
+        addDoc: null,
+        collection: null,
+        getDocs: null,
+        query: null,
+        orderBy: null,
+        limit: null,
+        serverTimestamp: null
+      }
+    };
+
+    const el = {
+      levelValue: document.getElementById("levelValue"),
+      scoreValue: document.getElementById("scoreValue"),
+      livesValue: document.getElementById("livesValue"),
+      streakValue: document.getElementById("streakValue"),
+      destinationTag: document.getElementById("destinationTag"),
+      progressTag: document.getElementById("progressTag"),
+      timerTag: document.getElementById("timerTag"),
+      questionText: document.getElementById("questionText"),
+      options: document.getElementById("options"),
+      statusText: document.getElementById("statusText"),
+      timerBar: document.getElementById("timerBar"),
+      startBtn: document.getElementById("startBtn"),
+      restartBtn: document.getElementById("restartBtn"),
+      trackInner: document.getElementById("trackInner"),
+      overlay: document.getElementById("overlay"),
+      overlayTitle: document.getElementById("overlayTitle"),
+      overlayMessage: document.getElementById("overlayMessage"),
+      overlayStartBtn: document.getElementById("overlayStartBtn"),
+      highscoreSource: document.getElementById("highscoreSource"),
+      highscoreList: document.getElementById("highscoreList"),
+      saveArea: document.getElementById("saveArea"),
+      nameInput: document.getElementById("nameInput"),
+      saveBtn: document.getElementById("saveBtn")
+    };
+
+    function escapeHtml(text) {
+      return String(text)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;");
+    }
+
+    function trackEvent(name, params = {}) {
+      if (typeof window.almaTrack === "function") {
+        window.almaTrack(name, params);
+      }
+    }
+
+    function normalizeScoreEntry(entry) {
+      return {
+        name: String(entry.name || "Spiller").slice(0, 18),
+        score: Math.max(0, Number(entry.score) || 0),
+        level: Math.max(1, Math.min(MAX_LEVEL, Number(entry.level) || 1)),
+        falls: Math.max(0, Number(entry.falls) || 0),
+        createdAt: Number(entry.createdAt) || Date.now()
+      };
+    }
+
+    function sortScores(entries) {
+      return [...entries]
+        .map(normalizeScoreEntry)
+        .sort((a, b) => {
+          if (b.score !== a.score) {
+            return b.score - a.score;
+          }
+          return a.createdAt - b.createdAt;
+        })
+        .slice(0, HIGHSCORE_LIMIT);
+    }
+
+    function readLocalHighscores() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) {
+          return [];
+        }
+        const parsed = JSON.parse(raw);
+        if (!Array.isArray(parsed)) {
+          return [];
+        }
+        return parsed.map(normalizeScoreEntry);
+      } catch (_error) {
+        return [];
+      }
+    }
+
+    function writeLocalHighscores(scores) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(scores.slice(0, HIGHSCORE_LIMIT)));
+    }
+
+    function isHighscore(score) {
+      if (score <= 0) {
+        return false;
+      }
+      if (state.highscores.length < HIGHSCORE_LIMIT) {
+        return true;
+      }
+      return score > state.highscores[state.highscores.length - 1].score;
+    }
+
+    function renderHighscores() {
+      el.highscoreList.innerHTML = "";
+      if (state.highscores.length === 0) {
+        const li = document.createElement("li");
+        li.innerHTML = "<span class='rank'>-</span><div>Ingen highscores enda<div class='meta'>Bli den første astronauten.</div></div><strong>0</strong>";
+        el.highscoreList.appendChild(li);
+        return;
+      }
+
+      state.highscores.forEach((entry, index) => {
+        const li = document.createElement("li");
+        li.innerHTML = `<span class="rank">${index + 1}</span><div><div>${escapeHtml(entry.name)}</div><div class="meta">Nivå ${entry.level}, fall ${entry.falls}</div></div><strong>${entry.score}</strong>`;
+        el.highscoreList.appendChild(li);
+      });
+    }
+
+    async function initFirebaseIfConfigured() {
+      const config = window.ALMA_FIREBASE_CONFIG;
+      if (!config || !config.apiKey || !config.projectId) {
+        el.highscoreSource.textContent = "Lokal highscore (Firebase ikke satt opp enda).";
+        return;
+      }
+
+      try {
+        const [appModule, firestoreModule] = await Promise.all([
+          import("https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js"),
+          import("https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js")
+        ]);
+
+        const app = appModule.initializeApp(config);
+        const db = firestoreModule.getFirestore(app);
+
+        state.firebase.enabled = true;
+        state.firebase.db = db;
+        state.firebase.addDoc = firestoreModule.addDoc;
+        state.firebase.collection = firestoreModule.collection;
+        state.firebase.getDocs = firestoreModule.getDocs;
+        state.firebase.query = firestoreModule.query;
+        state.firebase.orderBy = firestoreModule.orderBy;
+        state.firebase.limit = firestoreModule.limit;
+        state.firebase.serverTimestamp = firestoreModule.serverTimestamp;
+
+        el.highscoreSource.textContent = "Firebase highscore aktiv.";
+      } catch (error) {
+        console.error("Firebase init feilet:", error);
+        el.highscoreSource.textContent = "Lokal highscore (Firebase utilgjengelig akkurat nå).";
+      }
+    }
+
+    async function loadHighscores() {
+      const local = readLocalHighscores();
+
+      if (!state.firebase.enabled) {
+        state.highscores = sortScores(local);
+        renderHighscores();
+        return;
+      }
+
+      try {
+        const q = state.firebase.query(
+          state.firebase.collection(state.firebase.db, "stjernestigen_highscores"),
+          state.firebase.orderBy("score", "desc"),
+          state.firebase.limit(HIGHSCORE_LIMIT)
+        );
+
+        const snap = await state.firebase.getDocs(q);
+        const remote = snap.docs.map((doc) => {
+          const data = doc.data();
+          return normalizeScoreEntry({
+            name: data.name,
+            score: data.score,
+            level: data.level,
+            falls: data.falls,
+            createdAt: data.createdAt?.toMillis?.() || Date.now()
+          });
+        });
+
+        state.highscores = sortScores([...remote, ...local]);
+        renderHighscores();
+      } catch (error) {
+        console.error("Kunne ikke hente Firebase-highscore:", error);
+        state.highscores = sortScores(local);
+        renderHighscores();
+      }
+    }
+
+    async function saveHighscore(name) {
+      const entry = normalizeScoreEntry({
+        name,
+        score: state.score,
+        level: state.level,
+        falls: state.falls,
+        createdAt: Date.now()
+      });
+
+      writeLocalHighscores(sortScores([...readLocalHighscores(), entry]));
+
+      if (state.firebase.enabled) {
+        try {
+          await state.firebase.addDoc(
+            state.firebase.collection(state.firebase.db, "stjernestigen_highscores"),
+            {
+              name: entry.name,
+              score: entry.score,
+              level: entry.level,
+              falls: entry.falls,
+              createdAt: state.firebase.serverTimestamp()
+            }
+          );
+        } catch (error) {
+          console.error("Firebase save feilet:", error);
+        }
+      }
+
+      state.scoreSaved = true;
+      el.saveArea.classList.add("hidden");
+      await loadHighscores();
+      setStatus("Highscore lagret!", "good");
+      trackEvent("save_score", {
+        game: "stjernestigen",
+        score: state.score,
+        level: state.level
+      });
+    }
+
+    function setStatus(message, mode = "") {
+      el.statusText.textContent = message;
+      el.statusText.className = `status ${mode}`.trim();
+    }
+
+    function showOverlay(show, title = "", message = "") {
+      el.overlay.classList.toggle("hidden", !show);
+      if (title) {
+        el.overlayTitle.textContent = title;
+      }
+      if (message) {
+        el.overlayMessage.textContent = message;
+      }
+    }
+
+    function renderTrack() {
+      el.trackInner.innerHTML = "";
+      LEVELS.forEach((planet, index) => {
+        const level = index + 1;
+        const div = document.createElement("div");
+        div.className = "planet";
+        if (level < state.level) {
+          div.classList.add("completed");
+        }
+        if (level === state.level) {
+          div.classList.add("active");
+        }
+        div.dataset.level = String(level);
+        const iconClass = planet.skin ? `icon planet-skin ${planet.skin}` : "icon";
+        const iconText = planet.skin ? "" : planet.icon;
+        div.innerHTML = `<span class="${iconClass}">${iconText}</span><div class="name">${planet.name}</div><div class="req">Nivå ${level}</div>`;
+        el.trackInner.appendChild(div);
+      });
+
+      const active = el.trackInner.querySelector(`.planet[data-level="${state.level}"]`);
+      if (active) {
+        const ship = document.createElement("div");
+        ship.className = "ship";
+        ship.textContent = "🚀";
+        ship.style.left = `${active.offsetLeft + active.clientWidth / 2 - 20}px`;
+        ship.style.top = `${Math.max(0, active.offsetTop - 42)}px`;
+        el.trackInner.appendChild(ship);
+      }
+    }
+
+    function updateTopUi() {
+      el.levelValue.textContent = String(state.level);
+      el.scoreValue.textContent = String(state.score);
+      el.livesValue.textContent = String(state.lives);
+      el.streakValue.textContent = String(state.streak);
+      el.destinationTag.textContent = `Destinasjon: ${LEVELS[state.level - 1].name}`;
+      el.progressTag.textContent = `Riktige på rad: ${state.streak} / ${REQUIRED_STREAK}`;
+      el.timerTag.textContent = `Tid: ${(state.timerRemaining / 1000).toFixed(1)}s`;
+      renderTrack();
+    }
+
+    function lockOptions(locked) {
+      const buttons = el.options.querySelectorAll("button");
+      buttons.forEach((button) => {
+        button.disabled = locked;
+      });
+    }
+
+    function getQuestionsForLevel(level) {
+      const pool = QUESTIONS[level] || [];
+      if (pool.length === 0) {
+        return [{ prompt: "Ingen spørsmål funnet.", options: ["OK"], correct: 0, explanation: "" }];
+      }
+      return [...pool].sort(() => Math.random() - 0.5);
+    }
+
+    function nextQuestion() {
+      if (!state.running) {
+        return;
+      }
+
+      if (state.currentQuestionPointer >= state.currentQuestionSet.length) {
+        state.currentQuestionSet = getQuestionsForLevel(state.level);
+        state.currentQuestionPointer = 0;
+      }
+
+      state.currentQuestion = state.currentQuestionSet[state.currentQuestionPointer];
+      state.currentQuestionPointer += 1;
+
+      el.questionText.textContent = state.currentQuestion.prompt;
+      el.options.innerHTML = "";
+
+      state.currentQuestion.options.forEach((optionText, index) => {
+        const button = document.createElement("button");
+        button.className = "option";
+        button.textContent = optionText;
+        button.addEventListener("click", () => answer(index));
+        el.options.appendChild(button);
+      });
+
+      state.timerRemaining = QUESTION_TIME_MS;
+      state.timerStartedAt = performance.now();
+      startTimerLoop();
+      setStatus("Velg riktig svar før tiden renner ut.");
+      updateTopUi();
+    }
+
+    function clearTimerLoop() {
+      if (state.rafId) {
+        cancelAnimationFrame(state.rafId);
+        state.rafId = null;
+      }
+    }
+
+    function startTimerLoop() {
+      clearTimerLoop();
+      const tick = (now) => {
+        if (!state.running) {
+          return;
+        }
+        const elapsed = now - state.timerStartedAt;
+        state.timerRemaining = Math.max(0, QUESTION_TIME_MS - elapsed);
+        const ratio = state.timerRemaining / QUESTION_TIME_MS;
+        el.timerBar.style.transform = `scaleX(${ratio})`;
+        el.timerBar.classList.toggle("critical", ratio < 0.32);
+        el.timerTag.textContent = `Tid: ${(state.timerRemaining / 1000).toFixed(1)}s`;
+
+        if (state.timerRemaining <= 0) {
+          answer(-1);
+          return;
+        }
+
+        state.rafId = requestAnimationFrame(tick);
+      };
+
+      state.rafId = requestAnimationFrame(tick);
+    }
+
+    function scoreForCorrectAnswer() {
+      const base = 100;
+      const speedBonus = Math.floor((state.timerRemaining / QUESTION_TIME_MS) * 90);
+      const streakBonus = Math.max(0, (state.streak - 1) * 12);
+      return base + speedBonus + streakBonus;
+    }
+
+    function answer(index) {
+      if (!state.running || !state.currentQuestion) {
+        return;
+      }
+
+      clearTimerLoop();
+      lockOptions(true);
+
+      const buttons = Array.from(el.options.querySelectorAll("button"));
+      const isTimeout = index === -1;
+      const isCorrect = !isTimeout && index === state.currentQuestion.correct;
+      const correctIndex = state.currentQuestion.correct;
+
+      if (buttons[correctIndex]) {
+        buttons[correctIndex].classList.add("correct");
+      }
+
+      if (isCorrect) {
+        state.streak += 1;
+        state.levelMistakes = 0;
+        const gained = scoreForCorrectAnswer();
+        state.score += gained;
+        state.answeredCount += 1;
+
+        setStatus(`Riktig! +${gained} poeng. ${state.currentQuestion.explanation}`, "good");
+        trackEvent("question_correct", {
+          game: "stjernestigen",
+          level: state.level,
+          streak: state.streak,
+          points: gained
+        });
+
+        if (state.streak >= REQUIRED_STREAK) {
+          state.streak = 0;
+          const previousLevel = state.level;
+          if (state.level < MAX_LEVEL) {
+            state.level += 1;
+            state.currentQuestionSet = getQuestionsForLevel(state.level);
+            state.currentQuestionPointer = 0;
+            state.score += 180;
+            setStatus(`Nivå opp! Du landet på ${LEVELS[state.level - 1].name}. +180 bonuspoeng.`, "good");
+            trackEvent("level_up", {
+              game: "stjernestigen",
+              from_level: previousLevel,
+              to_level: state.level
+            });
+          } else {
+            finishGame(true);
+            return;
+          }
+        }
+      } else {
+        if (buttons[index]) {
+          buttons[index].classList.add("wrong");
+        }
+
+        state.streak = 0;
+        state.levelMistakes += 1;
+
+        if (isTimeout) {
+          setStatus(`Tiden gikk ut. ${state.currentQuestion.explanation}`, "warn");
+        } else {
+          setStatus(`Ikke helt riktig. ${state.currentQuestion.explanation}`, "bad");
+        }
+
+        trackEvent("question_wrong", {
+          game: "stjernestigen",
+          level: state.level,
+          timeout: isTimeout ? 1 : 0
+        });
+
+        if (state.levelMistakes >= MAX_LEVEL_MISTAKES) {
+          state.levelMistakes = 0;
+          state.falls += 1;
+          state.lives = Math.max(0, MAX_FALLS - state.falls);
+          if (state.level > 1) {
+            state.level -= 1;
+            state.currentQuestionSet = getQuestionsForLevel(state.level);
+            state.currentQuestionPointer = 0;
+          }
+          setStatus(`Tilbakeslag! Du mistet et liv og falt til ${LEVELS[state.level - 1].name}.`, "bad");
+          trackEvent("level_fall", {
+            game: "stjernestigen",
+            level: state.level,
+            falls: state.falls
+          });
+
+          if (state.falls >= MAX_FALLS) {
+            finishGame(false);
+            return;
+          }
+        }
+      }
+
+      updateTopUi();
+      setTimeout(() => {
+        if (!state.running) {
+          return;
+        }
+        lockOptions(false);
+        nextQuestion();
+      }, 980);
+    }
+
+    function startGame() {
+      state.running = true;
+      state.level = 1;
+      state.score = 0;
+      state.lives = MAX_FALLS;
+      state.streak = 0;
+      state.levelMistakes = 0;
+      state.falls = 0;
+      state.answeredCount = 0;
+      state.currentQuestionSet = getQuestionsForLevel(1);
+      state.currentQuestionPointer = 0;
+      state.scoreSaved = false;
+      el.saveArea.classList.add("hidden");
+      el.nameInput.value = "";
+      el.saveBtn.disabled = false;
+      showOverlay(false);
+      updateTopUi();
+      nextQuestion();
+
+      trackEvent("game_start", {
+        game: "stjernestigen"
+      });
+    }
+
+    function resetGame() {
+      clearTimerLoop();
+      state.running = false;
+      state.level = 1;
+      state.score = 0;
+      state.lives = MAX_FALLS;
+      state.streak = 0;
+      state.levelMistakes = 0;
+      state.falls = 0;
+      state.currentQuestion = null;
+      state.timerRemaining = QUESTION_TIME_MS;
+      el.questionText.textContent = "Trykk Start for å få første spørsmål.";
+      el.options.innerHTML = "";
+      setStatus("Ny runde klar. Start når du vil.");
+      updateTopUi();
+      showOverlay(true, "Klar for oppskytning?", "Svar riktig på naturfagspørsmål og nå helt til Neptun.");
+    }
+
+    function finishGame(won) {
+      clearTimerLoop();
+      state.running = false;
+      lockOptions(true);
+
+      const summary = won
+        ? `Du fullførte alle ${MAX_LEVEL} nivåer med ${state.score} poeng!`
+        : `Du mistet alle liv. Sluttscore: ${state.score} poeng.`;
+
+      showOverlay(true, won ? "Solsystem-mester!" : "Oppdrag avbrutt", summary);
+
+      if (isHighscore(state.score)) {
+        el.saveArea.classList.remove("hidden");
+      }
+
+      trackEvent(won ? "game_win" : "game_over", {
+        game: "stjernestigen",
+        score: state.score,
+        level: state.level,
+        falls: state.falls
+      });
+    }
+
+    function wireEvents() {
+      el.startBtn.addEventListener("click", startGame);
+      el.overlayStartBtn.addEventListener("click", startGame);
+      el.restartBtn.addEventListener("click", resetGame);
+
+      el.saveBtn.addEventListener("click", async () => {
+        if (state.scoreSaved) {
+          return;
+        }
+        const name = el.nameInput.value.trim() || "Spiller";
+        el.saveBtn.disabled = true;
+        await saveHighscore(name);
+      });
+
+      el.nameInput.addEventListener("keydown", async (event) => {
+        if (event.key !== "Enter") {
+          return;
+        }
+        event.preventDefault();
+        if (state.scoreSaved) {
+          return;
+        }
+        const name = el.nameInput.value.trim() || "Spiller";
+        el.saveBtn.disabled = true;
+        await saveHighscore(name);
+      });
+    }
+
+    async function bootstrap() {
+      wireEvents();
+      updateTopUi();
+      await initFirebaseIfConfigured();
+      await loadHighscores();
+      setStatus("Bygg kunnskap og fly videre i stige for stige.");
+    }
+
+    bootstrap();
+  </script>
+</body>
+</html>

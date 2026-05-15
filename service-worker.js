@@ -1,4 +1,4 @@
-const CACHE_NAME = 'alma-v16';
+const CACHE_NAME = 'alma-v17';
 const OFFLINE_URL = '/offline.html';
 const CACHE_URLS = [
   '/index.html',
@@ -16,6 +16,9 @@ const CACHE_URLS = [
   '/spill/kosekaos/firebase-config.js',
   '/spill/loopelakk-5000/',
   '/spill/loopelakk-5000/index.html',
+  '/spill/stjernestigen/',
+  '/spill/stjernestigen/index.html',
+  '/spill/stjernestigen/firebase-config.js',
   '/tur/',
   '/tur/index.html',
   '/tur/sykkeltur-frotvedt-kart.png',
@@ -32,6 +35,7 @@ const CACHE_URLS = [
   '/laering/assets/lagetavki.png',
   '/laering/assets/lagetavkimedfork.png',
   '/laering/assets/delingsduellen.png',
+  '/laering/assets/stjernestigen.png',
   '/laering/gangetrappen/',
   '/laering/gangetrappen/index.html',
   '/laering/gangetrappen/firebase-config.js',
