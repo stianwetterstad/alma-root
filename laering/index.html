@@ -248,6 +248,7 @@
     @media (max-width: 700px) {
       .wrap {
         width: min(560px, 95vw);
+        padding-top: 24px;
       }
 
       .topbar {
@@ -273,16 +274,31 @@
       .grid {
         grid-template-columns: 1fr;
         gap: 14px;
+        margin-top: 14px;
       }
 
       .card {
         padding: 14px;
+        background: rgba(10, 15, 40, 0.42);
       }
 
       .card-image {
         width: calc(100% + 28px);
         margin: -14px -14px 8px -14px;
         height: 210px;
+      }
+
+      .card::after {
+        opacity: 0.45;
+      }
+
+      body::before {
+        background: linear-gradient(
+          180deg,
+          rgba(5, 8, 30, 0.34) 0%,
+          rgba(5, 8, 30, 0.30) 32%,
+          rgba(5, 8, 30, 0.46) 100%
+        );
       }
     }
 
