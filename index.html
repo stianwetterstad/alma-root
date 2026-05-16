@@ -27,7 +27,7 @@
     body {
       margin: 0;
       font-family: 'Nunito', system-ui, -apple-system, sans-serif;
-      min-height: 100vh;
+      min-height: 100dvh;
       text-align: center;
       color: #fff;
       background-color: #1a0a2e;
@@ -56,7 +56,7 @@
     .page-wrap {
       position: relative;
       z-index: 1;
-      padding-bottom: 3rem;
+      padding-bottom: calc(3rem + env(safe-area-inset-bottom));
     }
 
     /* ── HEADER ── */
@@ -96,9 +96,9 @@
     /* ── MENU BUTTONS ── */
     .buttons {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 1.2rem;
-      max-width: 740px;
+      max-width: 760px;
       margin: 0 auto;
       padding: 0 1rem;
     }
@@ -199,7 +199,7 @@
 
     /* ── KI IMAGE SECTION (far down the page) ── */
     .ki-section {
-      margin-top: 80vh;
+      margin-top: 62vh;
       padding: 0 1rem 1rem;
       scroll-margin-top: 1rem;
     }
@@ -260,6 +260,75 @@
       display: block;
       width: 100%;
       height: auto;
+    }
+
+    @media (min-width: 980px) {
+      .buttons {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        max-width: 980px;
+      }
+    }
+
+    @media (max-width: 900px) {
+      .hero {
+        padding-top: 1.8rem;
+      }
+
+      .button {
+        padding: 1.3rem 0.8rem 1.15rem;
+        font-size: 1.25rem;
+      }
+
+      .btn-icon {
+        font-size: 2rem;
+      }
+
+      .ki-section {
+        margin-top: 50vh;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .hero {
+        padding: 1.2rem 0.9rem 0.8rem;
+      }
+
+      h1 {
+        font-size: clamp(2.7rem, 18vw, 4rem);
+      }
+
+      .subtitle {
+        margin-bottom: 1.2rem;
+      }
+
+      .buttons {
+        grid-template-columns: 1fr;
+        max-width: 420px;
+        gap: 0.85rem;
+      }
+
+      .button {
+        border-radius: 18px;
+        padding: 1.05rem 0.8rem 0.95rem;
+      }
+
+      .ki-teaser {
+        margin-top: 1.2rem;
+      }
+
+      .ki-section {
+        margin-top: 36vh;
+      }
+
+      .ki-promo {
+        border-radius: 16px;
+      }
+    }
+
+    @media (hover: none), (pointer: coarse) {
+      body {
+        background-attachment: scroll;
+      }
     }
 
     /* ── FOOTER ── */
