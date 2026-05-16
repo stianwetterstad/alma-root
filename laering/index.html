@@ -245,6 +245,41 @@
       }
     }
 
+    @media (max-width: 900px) {
+      .wrap {
+        width: min(620px, 93vw);
+        padding-top: 24px;
+      }
+
+      .topbar {
+        position: static;
+        margin-bottom: 6px;
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+        margin-top: 14px;
+      }
+
+      .card {
+        background: rgba(10, 15, 40, 0.34);
+      }
+
+      .card::after {
+        opacity: 0.38;
+      }
+
+      body::before {
+        background: linear-gradient(
+          180deg,
+          rgba(5, 8, 30, 0.24) 0%,
+          rgba(5, 8, 30, 0.22) 34%,
+          rgba(5, 8, 30, 0.36) 100%
+        );
+      }
+    }
+
     @media (max-width: 700px) {
       .wrap {
         width: min(560px, 95vw);
@@ -279,7 +314,7 @@
 
       .card {
         padding: 14px;
-        background: rgba(10, 15, 40, 0.42);
+        background: rgba(10, 15, 40, 0.28);
       }
 
       .card-image {
@@ -295,9 +330,9 @@
       body::before {
         background: linear-gradient(
           180deg,
-          rgba(5, 8, 30, 0.34) 0%,
-          rgba(5, 8, 30, 0.30) 32%,
-          rgba(5, 8, 30, 0.46) 100%
+          rgba(5, 8, 30, 0.18) 0%,
+          rgba(5, 8, 30, 0.16) 32%,
+          rgba(5, 8, 30, 0.32) 100%
         );
       }
     }
