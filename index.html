@@ -16,6 +16,10 @@
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@800;900&display=swap');
 
+    html {
+      scroll-behavior: smooth;
+    }
+
     *, *::before, *::after {
       box-sizing: border-box;
     }
@@ -178,9 +182,26 @@
     .laering:hover { box-shadow: 0 14px 40px rgba(249,115,22,0.7), 0 2px 0 rgba(0,0,0,0.3); }
 
     /* ── KI PROMO SECTION ── */
-    .ki-section {
-      margin-top: 2.5rem;
+    /* ── KI TEASER (anchor link near buttons) ── */
+    .ki-teaser {
+      margin-top: 2rem;
       padding: 0 1rem;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .ki-teaser:hover .ki-label {
+      text-shadow:
+        0 0 16px rgba(216,180,254,1),
+        0 0 40px rgba(167,81,254,0.9),
+        2px 2px 0 #4c1d95;
+    }
+
+    /* ── KI IMAGE SECTION (far down the page) ── */
+    .ki-section {
+      margin-top: 80vh;
+      padding: 0 1rem 1rem;
+      scroll-margin-top: 1rem;
     }
 
     .ki-label {
@@ -284,9 +305,12 @@
       </a>
     </div>
 
-    <div class="ki-section">
+    <a class="ki-teaser" href="#ki-seksjon" aria-label="Scroll ned for å se KI-bilde">
       <div class="ki-label">✨ Laget av KI ✨</div>
       <span class="ki-arrow">▼</span>
+    </a>
+
+    <div class="ki-section" id="ki-seksjon">
       <a class="ki-promo" href="/laering/ki/" aria-label="Gå til KI-siden">
         <img src="/laering/assets/lagetavkimedfork.png" alt="Laget av KI med forklaring" />
       </a>
