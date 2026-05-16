@@ -5,86 +5,234 @@
   <title>Alma</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="manifest" href="/manifest.webmanifest" />
-  <meta name="theme-color" content="#f0f7ff" />
+  <meta name="theme-color" content="#1a0a2e" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Alma" />
   <link rel="icon" href="/favicon.ico" />
   <link rel="apple-touch-icon" href="/icons/icon-192.png" />
 
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@800;900&display=swap');
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
     body {
       margin: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont,
-                   "Segoe UI", Arial, sans-serif;
-      background: #f0f7ff;
+      font-family: 'Nunito', system-ui, -apple-system, sans-serif;
+      min-height: 100vh;
       text-align: center;
-      color: #102a43;
+      color: #fff;
+      background-color: #1a0a2e;
+      background-image: url('/assets/almarocks2.png');
+      background-size: cover;
+      background-position: center top;
+      background-attachment: fixed;
+      overflow-x: hidden;
+    }
+
+    /* Dark gradient overlay for readability */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(
+        180deg,
+        rgba(10, 4, 26, 0.55) 0%,
+        rgba(10, 4, 26, 0.45) 40%,
+        rgba(10, 4, 26, 0.70) 100%
+      );
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .page-wrap {
+      position: relative;
+      z-index: 1;
+      padding-bottom: 3rem;
+    }
+
+    /* ── HEADER ── */
+    .hero {
+      padding: 2.5rem 1rem 1rem;
     }
 
     h1 {
-      font-size: 3rem;
-      margin-top: 2rem;
+      font-family: 'Bangers', Impact, fantasy;
+      font-size: clamp(3.5rem, 14vw, 6.5rem);
+      letter-spacing: 0.06em;
+      margin: 0 0 0.1em;
+      line-height: 1;
+      color: #fff;
+      text-shadow:
+        0 0 20px rgba(255, 100, 220, 0.9),
+        0 0 60px rgba(255, 60, 200, 0.5),
+        4px 4px 0 #6600cc,
+        6px 6px 0 #33004d;
+      animation: pulse-glow 3s ease-in-out infinite alternate;
     }
 
-    p {
-      font-size: 1.4rem;
-      margin-bottom: 2rem;
+    @keyframes pulse-glow {
+      from { text-shadow: 0 0 20px rgba(255,100,220,0.9), 0 0 60px rgba(255,60,200,0.5), 4px 4px 0 #6600cc, 6px 6px 0 #33004d; }
+      to   { text-shadow: 0 0 30px rgba(255,180,255,1),   0 0 90px rgba(200,80,255,0.8), 4px 4px 0 #8800ff, 6px 6px 0 #33004d; }
     }
 
+    .subtitle {
+      font-size: clamp(1.1rem, 4vw, 1.5rem);
+      font-weight: 800;
+      color: #e0c8ff;
+      letter-spacing: 0.04em;
+      margin: 0 0 2rem;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.7);
+    }
+
+    /* ── MENU BUTTONS ── */
     .buttons {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 1.5rem;
-      max-width: 720px;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.2rem;
+      max-width: 740px;
       margin: 0 auto;
-      padding: 1rem;
+      padding: 0 1rem;
     }
 
     .button {
-      display: block;
-      padding: 2rem 1.5rem;
-      font-size: 1.8rem;
-      font-weight: 700;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.35em;
+      padding: 1.6rem 1rem 1.4rem;
+      font-size: 1.5rem;
+      font-weight: 900;
       text-decoration: none;
-      border-radius: 20px;
-      color: white;
-      box-shadow: 0 8px 0 rgba(0, 0, 0, 0.15);
-      transition: transform 0.1s ease;
+      border-radius: 22px;
+      color: #fff;
+      letter-spacing: 0.03em;
+      border: 3px solid rgba(255,255,255,0.25);
+      backdrop-filter: blur(10px) saturate(180%);
+      -webkit-backdrop-filter: blur(10px) saturate(180%);
+      transition: transform 0.12s ease, box-shadow 0.12s ease, border-color 0.12s ease;
+      position: relative;
+      overflow: hidden;
     }
 
+    /* Sheen sweep on hover */
+    .button::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(120deg, transparent 30%, rgba(255,255,255,0.18) 50%, transparent 70%);
+      transform: translateX(-100%);
+      transition: transform 0.4s ease;
+    }
+    .button:hover::after { transform: translateX(100%); }
+
+    .button:hover {
+      transform: translateY(-4px) scale(1.03);
+    }
     .button:active {
-      transform: translateY(6px);
-      box-shadow: 0 2px 0 rgba(0, 0, 0, 0.15);
+      transform: translateY(4px) scale(0.97);
     }
 
-    .ukelonn {
-      background: #22c55e;
+    .btn-icon {
+      font-size: 2.4rem;
+      line-height: 1;
+      filter: drop-shadow(0 2px 6px rgba(0,0,0,0.5));
     }
+
+    .btn-label {
+      text-shadow: 0 2px 6px rgba(0,0,0,0.5);
+    }
+
+    /* Individual button colors with neon glow */
+    .ukelonn {
+      background: linear-gradient(145deg, rgba(16,185,89,0.75) 0%, rgba(5,150,60,0.85) 100%);
+      box-shadow: 0 8px 32px rgba(16,185,89,0.45), 0 2px 0 rgba(0,0,0,0.3);
+      border-color: rgba(74,255,160,0.5);
+    }
+    .ukelonn:hover { box-shadow: 0 14px 40px rgba(16,185,89,0.7), 0 2px 0 rgba(0,0,0,0.3); }
 
     .spill {
-      background: #3b82f6;
+      background: linear-gradient(145deg, rgba(59,130,246,0.75) 0%, rgba(37,99,235,0.85) 100%);
+      box-shadow: 0 8px 32px rgba(59,130,246,0.45), 0 2px 0 rgba(0,0,0,0.3);
+      border-color: rgba(147,197,253,0.5);
     }
+    .spill:hover { box-shadow: 0 14px 40px rgba(59,130,246,0.7), 0 2px 0 rgba(0,0,0,0.3); }
 
     .tur {
-      background: #0ea5a6;
+      background: linear-gradient(145deg, rgba(6,182,212,0.75) 0%, rgba(8,145,178,0.85) 100%);
+      box-shadow: 0 8px 32px rgba(6,182,212,0.45), 0 2px 0 rgba(0,0,0,0.3);
+      border-color: rgba(103,232,249,0.5);
     }
+    .tur:hover { box-shadow: 0 14px 40px rgba(6,182,212,0.7), 0 2px 0 rgba(0,0,0,0.3); }
 
     .laering {
-      background: #f97316;
+      background: linear-gradient(145deg, rgba(249,115,22,0.75) 0%, rgba(234,88,12,0.85) 100%);
+      box-shadow: 0 8px 32px rgba(249,115,22,0.45), 0 2px 0 rgba(0,0,0,0.3);
+      border-color: rgba(253,186,116,0.5);
+    }
+    .laering:hover { box-shadow: 0 14px 40px rgba(249,115,22,0.7), 0 2px 0 rgba(0,0,0,0.3); }
+
+    /* ── KI PROMO SECTION ── */
+    .ki-section {
+      margin-top: 2.5rem;
+      padding: 0 1rem;
+    }
+
+    .ki-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: 'Bangers', Impact, fantasy;
+      font-size: clamp(1.6rem, 6vw, 2.4rem);
+      letter-spacing: 0.08em;
+      color: #d8b4fe;
+      text-shadow:
+        0 0 12px rgba(192,132,252,0.9),
+        0 0 30px rgba(147,51,234,0.6),
+        2px 2px 0 #4c1d95;
+      margin-bottom: 0.4rem;
+    }
+
+    .ki-arrow {
+      display: block;
+      font-size: 2rem;
+      color: #c084fc;
+      text-shadow: 0 0 10px rgba(192,132,252,0.8);
+      animation: bounce-down 1.4s ease-in-out infinite;
+      margin-bottom: 1rem;
+    }
+
+    @keyframes bounce-down {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(8px); }
     }
 
     .ki-promo {
       display: inline-block;
-      margin: 1.5rem auto 0;
       max-width: min(92vw, 640px);
       text-decoration: none;
       border-radius: 24px;
       overflow: hidden;
-      box-shadow: 0 14px 30px rgba(0, 0, 0, 0.12);
-      border: 4px solid white;
-      background: white;
+      box-shadow:
+        0 14px 40px rgba(0, 0, 0, 0.5),
+        0 0 0 3px rgba(192,132,252,0.6),
+        0 0 40px rgba(147,51,234,0.3);
+      background: rgba(255,255,255,0.08);
+      backdrop-filter: blur(4px);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .ki-promo:hover {
+      transform: scale(1.02);
+      box-shadow:
+        0 20px 50px rgba(0, 0, 0, 0.6),
+        0 0 0 3px rgba(216,180,254,0.9),
+        0 0 60px rgba(147,51,234,0.5);
     }
 
     .ki-promo img {
@@ -93,45 +241,61 @@
       height: auto;
     }
 
+    /* ── FOOTER ── */
     footer {
-      margin-top: 3rem;
+      margin-top: 2.5rem;
       font-size: 0.9rem;
-      color: #486581;
+      color: rgba(255,255,255,0.5);
+      text-shadow: 0 1px 4px rgba(0,0,0,0.5);
     }
+
+    footer a { color: inherit; text-decoration: none; }
   </style>
   <script src="/analytics-config.js"></script>
   <script defer src="/assets/ga4.js"></script>
 </head>
 
 <body>
-  <h1>Hei Alma 👋</h1>
-  <p>Velg hva du vil gjøre</p>
+  <div class="page-wrap">
+    <div class="hero">
+      <h1>Hei Alma 🤘</h1>
+      <p class="subtitle">Velg hva du vil gjøre</p>
+    </div>
 
-  <div class="buttons">
-    <a class="button ukelonn" href="/ukelonn/">
-      💰 Ukelønn
-    </a>
+    <div class="buttons">
+      <a class="button ukelonn" href="/ukelonn/">
+        <span class="btn-icon">💰</span>
+        <span class="btn-label">Ukelønn</span>
+      </a>
 
-    <a class="button spill" href="/spill/">
-      🎮 Spill
-    </a>
+      <a class="button spill" href="/spill/">
+        <span class="btn-icon">🎮</span>
+        <span class="btn-label">Spill</span>
+      </a>
 
-    <a class="button tur" href="/tur/">
-      🚲 Tur
-    </a>
+      <a class="button tur" href="/tur/">
+        <span class="btn-icon">🚲</span>
+        <span class="btn-label">Tur</span>
+      </a>
 
-    <a class="button laering" href="/laering/">
-      📘 Læring
-    </a>
+      <a class="button laering" href="/laering/">
+        <span class="btn-icon">📘</span>
+        <span class="btn-label">Læring</span>
+      </a>
+    </div>
+
+    <div class="ki-section">
+      <div class="ki-label">✨ Laget av KI ✨</div>
+      <span class="ki-arrow">▼</span>
+      <a class="ki-promo" href="/laering/ki/" aria-label="Gå til KI-siden">
+        <img src="/laering/assets/lagetavkimedfork.png" alt="Laget av KI med forklaring" />
+      </a>
+    </div>
+
+    <footer>
+      Laget av pappa <a href="https://stianwetterstad.github.io/ukelonn/parent/" title="Forelder-innlogging">❤️</a>
+    </footer>
   </div>
-
-  <a class="ki-promo" href="/laering/ki/" aria-label="Gå til KI-siden">
-    <img src="/laering/assets/lagetavkimedfork.png" alt="Laget av KI med forklaring" />
-  </a>
-
-  <footer>
-    Laget av pappa <a href="https://stianwetterstad.github.io/ukelonn/parent/" style="color: inherit; text-decoration: none;" title="Forelder-innlogging">❤️</a>
-  </footer>
 
   <script>
     if ("serviceWorker" in navigator) {
